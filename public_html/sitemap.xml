@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+            
+<url>
+  <loc>https://9gforex.com/</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/register</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/login</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/event-calendar</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/fx-academy</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/faqs</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/contact-us</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/login?intended_url=user/make-deposit</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/login?intended_url=user/make-withdrawal</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/shop/full-view/1/course/Forex-101</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/forgot-password</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/login?intended_url=user/cart</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://9gforex.com/login?intended_url=courses/read/1</loc>
+  <lastmod>2020-04-05T13:28:54+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
