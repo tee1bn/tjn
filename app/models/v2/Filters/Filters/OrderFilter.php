@@ -44,13 +44,11 @@ class OrderFilter extends QueryFilter
 
 			$user_ids =  User::WhereRaw("firstname like ? 
 	                                      OR lastname like ? 
-	                                      OR middlename like ? 
 	                                      OR email like ? 
 	                                      OR phone like ? 
 	                                      OR username like ? 
 	                                      ",
 	                                      array(
-	                                          '%'.$user.'%',
 	                                          '%'.$user.'%',
 	                                          '%'.$user.'%',
 	                                          '%'.$user.'%',
@@ -97,27 +95,26 @@ class OrderFilter extends QueryFilter
 	}
 
 
-	
-
-	public function registration($start_date=null , $end_date=null )
+	public function phone($phone = null)
 	{
+		if ($phone == null) {
+			return ;
+		}
+		$user_ids = \User::where('phone', 'like', "%$phone%")->get()->pluck('id')->toArray();
 
-		if (($start_date == null) &&  ($end_date == null) ) {
+        $this->builder->whereIn('user_id', $user_ids);
+	}
+
+	public function username($username = null)
+	{
+		if ($username == null) {
 			return ;
 		}
 
-		$date = compact('start_date','end_date');
-
-		if ($end_date == null) {
-			$date = $start_date;
-		}
-
-		$this->date($date, 'created_at');
+		$user =  User::where('username', $username)->first();
+		$this->builder->where('user_id', $user->id);
 	}
 
-
-
-	
 
 	public function ordered($start_date=null , $end_date=null )
 	{

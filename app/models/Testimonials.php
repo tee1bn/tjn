@@ -11,7 +11,7 @@ class Testimonials extends Eloquent
 {
 	use Filterable;
 	
-	protected $fillable = ['attester','attester_pic', 'user_id', 'bio',	'content',	'type',	'video_link', 'approval_status', 'published_status'];
+	protected $fillable = ['attester', 'user_id',	'content',	'type',	'video_link', 'approval_status', 'published_status'];
 	
 	protected $table = 'testimonials';
 
@@ -101,28 +101,6 @@ public function getDisplayPublishedStatusAttribute()
 
 	return $status;
 }
-
-
-public function upload_pic($file)
-{
-
-	$directory 	= 'uploads/testimonials';
-	$handle  	= new Upload($file);
-
-	if (explode('/', $handle->file_src_mime)[0] == 'image') {
-
-		$handle->Process($directory);
- 		$original_file  = $directory.'/'.$handle->file_dst_name;
-
-		(new Upload($this->attester_pic))->clean();
-		$this->update(['attester_pic' => $original_file]);
-	}
-
-}
-
-
-
-
 
 }
 

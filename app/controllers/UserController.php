@@ -1,779 +1,1298 @@
 <?php
 
-
-use v2\Shop\Shop;
-use  v2\Models\Broker;
-use  v2\Models\TradingAccount;
-use  v2\Models\FinancialBank;
-use  v2\Models\DepositOrder;
-use  Filters\Filters\DepositOrderFilter;
-use  Filters\Filters\WithdrawalFilter;
-use  v2\Models\Withdrawal;
-use  Filters\Filters\SupportTicketFilter;
-use  Filters\Filters\TradingAccountFilter;
+use Filters\Filters\OrderFilter;
+use Filters\Filters\SupportTicketFilter;
+use Filters\Filters\TestimonialsFilter;
+use Filters\Filters\WalletFilter;
+use Filters\Filters\WithdrawalFilter;
 use Illuminate\Database\Capsule\Manager as DB;
-
+use v2\Models\Commission;
+use v2\Models\Document;
+use v2\Models\HeldCoin;
+use v2\Models\HotWallet;
+use v2\Models\InvestmentPackage;
+use v2\Models\PayoutWallet;
+use v2\Models\Wallet;
+use v2\Models\Withdrawal;
+use v2\Security\TwoFactor;
+use v2\Shop\Shop;
 
 /**
- * this class is the default controller of our application,
- * 
-*/
+ *
+ */
 class UserController extends controller
 {
 
-
-	public function __construct(){
-
-		// if (! $this->admin()) {
-
-			$this->middleware('current_user')
-				->mustbe_loggedin()
-				->must_have_verified_email()
-				;
-		// }		
-	}
-	
-	
-
-	public function supportmessages($value='')
-	{
-		$this->view('auth/support-messages');
-	}
-
-
-
-
-
-
-	public function instructor()
-	{
-
-		$this->view('auth/instructor-dashboard');
-	}
-
-
-	public function preview_post($post_id)
-	{
-		$post =  Post::where('id',$post_id)
-		                  ->where('user_id', $this->auth()->id)
-		                  ->first();
-
-			if ($post == null) {
-				Redirect::back();
-			}
-
-		$this->view('guest/single-post', compact('post'));  //note this is
-	}
-
-
-
-
-	public function blogger()
-	{
-		$this->view('auth/blogger-dashboard');
-
-	}
-
-
-	public function courses()
-	{
-
-		$this->view('auth/courses');
-	}
-
-	public function notifications($notification_id = 'all')
-	{
-		switch ($notification_id) {
-			case 'all':
-			$notifications = Notifications::all_notifications($this->auth()->id);
-
-				break;
-			
-			default:
-			
-
-			$notifications = Notifications::where('user_id', $this->auth()->id)->where('id', $notification_id)->first();
-
-			Notifications::mark_as_seen([$notifications->id]);
-
-
-			if ($notifications == null) {
-				Session::putFlash("danger", "Invalid Request");
-				Redirect::back();
-			}
-
-
-
-			if ($notifications->DefaultUrl != $notifications->UsefulUrl) {
-
-				Redirect::to($notifications->UsefulUrl);
-			}
-
-
-
-				break;
-		}
-
-
-
-		$this->view('auth/notifications', compact('notifications'));
-	}
-
-
-
-	public function company()
-	{
-		$company = $this->auth()->company;
-		$this->view('auth/company', compact('company'));
-	}
-
-
-	public function order($order_id=null)
-	{
-
-		$order  =  Orders::where('id', $order_id)->where('user_id', $this->auth()->id)->first();
-
-
-		$this->view('auth/order_detail', compact('order'));
-	}
-
-	
-
-
-	public function products_orders()
-	{
-		$this->view('auth/products_orders');
-	}
-
-
-
-
-	public function cart()
-	{
-		$shop = new Shop;
-
-		$cart = json_decode($_SESSION['cart'], true)['$items'];
-
-		if (count($cart) == 0) {
-			Session::putFlash("info","Your cart is empty.");
-			Redirect::to('shop');
-		}
-		
-    	$this->view('auth/cart', compact('shop'));
-	}
-
-
-
-	public function create_upgrade_request($subscription_id=null)
-	{
-
-
-
-		$subscription_id = $_POST['subscription_id'];
-		
-		$response = SubscriptionPlan::create_subscription_request($subscription_id, $this->auth()->id);
-
-
-			header("content-type:application/json");
-			echo $response;
-
-		// Redirect::back();
-	}
-
-	public function subscription_orders()
-	{
-			$this->view('auth/subscription_orders');
-	}
-
-
-	public function package()
-	{
-			$this->view('auth/package');
-	}
-
-
- 	public function update_testimonial()
+    public function __construct()
     {
 
-    	echo "<pre>";
-    	$testimony_id = Input::get('testimony_id');
-     	$testimony = Testimonials::find($testimony_id);
+        if (!$this->admin()) {
+            $this->middleware('current_user')
+                ->mustbe_loggedin()
+                ->must_have_verified_email()
+                ->connect_wp_account()
+            ;
+            // ->must_have_verified_company();
+        }
 
-    	$attester =  $this->auth()->lastname.' '. $this->auth()->firstname;
-
-
-    	$testimony->update([
-    						 'attester' =>$attester,
-							  'user_id'	 => $this->auth()->id, 
-							  'content'  =>Input::get('testimony'),
-							  'approval_status' => 0 
-							]);
-
-
-    	Session::putFlash('success','Testimonial updated successfully. Awaiting approval');
-
-    	Redirect::back();
     }
 
-
-
-	public function create_testimonial()
+    public function courses()
     {
-    	if (Input::exists() || true) {
-
-    		$auth = $this->auth();
-
-	    	$testimony = Testimonials::create([
-	    						'attester' => $auth->lastname.' '. $auth->firstname,
-								  'user_id'	 => $auth->id, 
-								  'content'  =>Input::get('testimony')]);
-
-    	}
-    	Redirect::to("user/edit_testimony/{$testimony->id}");
+        $this->shop();
+        return;
     }
 
+    public function direct_ranks()
+    {
+        $direct_ranks = $this->auth()->referred_members_downlines(1)[1];
+        $direct_ranks = User::whereIn('id', collect($direct_ranks)->where('rank', '>', -1)->pluck('id')->toArray())->get();
+        $this->view('auth/direct_ranks', compact('direct_ranks'));
+    }
+
+    public function send_email_code()
+    {
+        echo "<pre>";
+        print_r($_POST);
+
+        $this->create_email_code();
+    }
+
+    public function resources($category_key = null)
+    {
+
+        $category = Document::$categories[$category_key] ?? null;
+
+        $documents = Document::where('category', $category)->get();
+        $title = "$category";
+
+        if ($documents->isEmpty()) {
+            $documents = Document::get();
+            $title = "All Documents";
+        }
+
+        $this->view('auth/resources', compact('title', 'documents'));
+
+    }
+
+    public function faqs()
+    {
+        $this->view('auth/faqs');
+    }
+
+    public function supportmessages($value = '')
+    {
+        $this->view('auth/support-messages');
+    }
+
+    public function sell_hotwallet_coins()
+    {
+        $auth = $this->auth();
+        //put held coins to cash in payout wallet
+
+        $balances = Withdrawal::payoutBalanceFor($auth->id);
+        echo $amount = $balances['available_hot_wallet'];
+
+        $comment = "Sold $amount to company";
+        $today = date("Y-m-d H:i:s");
+        // return;
+        DB::beginTransaction();
+        try {
+
+            $debit = HotWallet::createTransaction(
+                'debit',
+                $auth->id,
+                null,
+                $amount,
+                'completed',
+                'hot_wallet',
+                $comment,
+                null,
+                null,
+                null);
+
+            if ($debit == false) {
+                throw new \Exception("Could not debit", 1);
+            }
+
+            $credit = PayoutWallet::createTransaction(
+                'credit',
+                $auth->id,
+                null,
+                $amount,
+                'completed',
+                'hot_wallet',
+                $comment,
+                null,
+                null,
+                null,
+                null,
+                $today
+            );
+
+            if ($credit == false) {
+                throw new \Exception("Could not debit", 1);
+            }
+
+            DB::commit();
+            Session::putFlash("success", "Successfully Completed");
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+            Session::putFlash("danger", "Something went wrong. PLease try again.");
+
+            DB::rollback();
+
+        }
+
+        Redirect::back();
 
+    }
 
-	public function edit_testimony($testimony_id =null)
-	{
-		if (($testimony_id != null)  ) {
-		$testimony = Testimonials::find($testimony_id);
-			if (($testimony != null) && ($testimony->user_id == $this->auth()->id)) {
+    public function submit_2fa()
+    {
+        $auth = $this->auth();
 
-						$this->view('auth/edit_testimony', ['testimony'=>$testimony ]);
-						return;
-			}else{
-				Session::putFlash('danger','Invalid Request');
-				Redirect::back();
-			}
+        if ($_POST['code'] == '') {
+            Session::putFlash('danger', "Invalid Code");
+            Redirect::back();
+        }
 
-		}
+        $this->verify_2fa_only();
 
-	}
+        $existing_settings = $auth->SettingsArray;
 
-	public function notify_deposit($deposit_id)
-	{
+        $twofa_recovery = MIS::random_string(10);
+        if (!$auth->has_2fa_enabled()) {
+            $existing_settings['enable_2fa'] = 1;
+            $existing_settings['2fa_recovery'] = $twofa_recovery;
+            Session::putFlash('success', "2FA enabled successfully");
 
-		$deposit_id = MIS::dec_enc('decrypt', $deposit_id);
-		$deposit = depositorder::where('id', $deposit_id)->where('user_id', $this->auth()->id)->first();
+        } else {
+            $existing_settings['enable_2fa'] = 0;
+            Session::putFlash('success', "2FA disabled successfully");
+        }
 
-		if ($deposit == null) {
+        $auth->save_settings($existing_settings);
 
-			Session::putFlash('danger','Invalid Request');
-			Redirect::back();
-		}
+        Redirect::back();
+    }
 
-		if (! in_array($deposit->status, ['initialized'])) {
+    public function two_factor_authentication()
+    {
 
-			Session::putFlash('info','Your deposit is currently being treated. You will be notified through your email.');
-			Redirect::back();
-		}
+        $auth = $this->auth();
+        $_2FA = new TwoFactor($auth);
 
-		DB::beginTransaction();
+        if ($auth->has_2fa_enabled()) {
 
+            $image = null;
+        } else {
 
-		try {
+            if (!$_2FA->hasLogin(@$code)) {
+                $image = $_2FA->getQrCode();
+            }
+        }
 
-			$deposit->update(['status' => 'pending']);
+        $this->view('auth/two-factor-authentication', compact('image'));
+    }
 
-			
-			DB::commit();	
-			Session::putFlash('success', "Notification Successful. Your Deposit will be treated.");
-		} catch (Exception $e) {
-			DB::rollback();	
-			Session::putFlash('danger', "Something went wrong.");
-			
-		}
+    public function submit_make_deposit()
+    {
 
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $min_deposit = $rules_settings->settingsArray['min_deposit_usd'];
 
-		$admin_content = "
-					<p><strong>NOTICE</strong></p>
+        $this->validator()->check(Input::all(), array(
+            'amount' => [
+                'required' => true,
+                'min_value' => $min_deposit,
+            ],
+            'payment_method' => [
+                'required' => true,
+            ],
+        ));
 
-					<p>A deposit notification of $deposit->amount$ by {$deposit->user->fullname} </p>
+        if (!$this->validator->passed()) {
 
-				<p>Please <a href='$domain/login/admin_login'>login </a>to confirm.</p>
-		";
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
 
+        DB::beginTransaction();
 
-		$settings = SiteSettings::site_settings();
-		$noreply_email = $settings['noreply_email'];
-		$support_email = $settings['support_email'];
-		$notification_email = $settings['notification_email'];
+        try {
 
+            $deposit = Wallet::create([
+                'user_id' => $this->auth()->id,
+                'amount' => Input::get('amount'),
+                'earning_category' => 'deposit',
+                'comment' => 'Funding Account',
+                'type' => 'credit',
+                'status' => 'pending',
+                'payment_method' => $_POST['payment_method'],
+            ]);
 
+            DB::commit();
 
-		$subject = "Notification Deposit - $project_name";
-		$mailer = new Mailer;
+        } catch (Exception $e) {
+            DB::rollback();
+            Session::putFlash("danger", "We could not initialize the payment process. Please try again");
+            Redirect::back();
+        }
 
-		$admin_content = MIS::compile_email($admin_content);
-		
-		$domain = Config::domain();
-		$project_name = Config::project_name();
+        $callback_param = http_build_query([
+            'item_purchased' => $deposit->name_in_shop,
+            'order_unique_id' => $deposit->id,
+            'payment_method' => $deposit->payment_method,
+        ]);
 
-		Shop::empty_cart_in_session();
+        $callback_url = "shop/checkout?$callback_param";
 
+        /*        $deposit->mark_paid();
+        $shop = new Shop();
+        $shop->empty_cart_in_session();
+         */
 
-		//ADMIN
-		$mailer->sendMail(
-		    $notification_email,
-			"$subject",
-		    $admin_content,
-		    "$project_name",
-		    "$support_email",
-		    "$project_name"
-		);
+        Redirect::to("$callback_url");
 
-		Redirect::back();
+        // $this->deposit_checkout($deposit->id);
 
-	}
+    }
 
+    public function notifications($notification_id = 'all')
+    {
 
-	public function view_testimony()
-	{
-		$this->view('auth/view-testimony');
-	}
+        $auth = $this->auth();
+        $per_page = 50;
+        $page = $_GET['page'] ?? 1;
 
+        switch ($notification_id) {
+            case 'all':
+                $notifications = Notifications::all_notifications($auth->id, $per_page, $page);
+                $total = Notifications::all_notifications($auth->id)->count();
+                break;
 
+            default:
 
-	public function testimony()
-	{
-		$this->view('auth/testimony');
-	}
+                $total = null;
 
+                $notifications = Notifications::where('user_id', $auth->id)->where('id', $notification_id)->first();
 
+                Notifications::mark_as_seen([$notifications->id]);
 
+                if ($notifications == null) {
+                    Session::putFlash("danger", "Invalid Request");
+                    Redirect::back();
+                }
 
-	public function news()
-	{
-		$this->view('auth/news');
-	}
+                if ($notifications->DefaultUrl != $notifications->UsefulUrl) {
 
+                    Redirect::to($notifications->UsefulUrl);
+                }
 
+                break;
+        }
 
+        $this->view('auth/notifications', compact('notifications', 'per_page', 'total'));
+    }
 
-	public function profile()
-	{
+    public function company()
+    {
+        $company = $this->auth()->company;
+        $this->view('auth/company', compact('company'));
+    }
 
-    	$this->view('auth/profile');
-	}
+    public function order($order_id = null)
+    {
 
+        $order = SubscriptionOrder::where('id', $order_id)->where('user_id', $this->auth()->id)->first();
+        echo $this->buildView('auth/order_detail', compact('order'));
 
+    }
 
+    public function download_invoice($order_id = null)
+    {
+        $order = HotWallet::where('id', $order_id)->where('user_id', $this->auth()->id)->first();
+        if ($order == null) {
+            Session::putFlash("danger", "Invalid Request.");
+            Redirect::back();
+        }
 
-	public function contact_us()
-	{
-		$this->view('auth/contact-us');
+        $order->getInvoice();
+    }
 
-	}
+    public function product_order($order_id = null)
+    {
 
-	public function support()
-	{
-		$auth = $this->auth();
+        $order = Orders::where('id', $order_id)->where('user_id', $this->auth()->id)->first();
+        if ($order == null) {
+            Redirect::back();
+        }
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve);
+        $this->view('auth/order_detail', compact('order'));
+    }
 
-		$query = SupportTicket::where('user_id', $auth->id)->latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 20;
-		$skip = (($page -1 ) * $per_page) ;
+    public function products_orders()
+    {
 
-		$filter =  new  SupportTicketFilter($sieve);
+        $sieve = $_REQUEST;
+        $query = Orders::where('id', '!=', null)->where('user_id', $this->auth()->id);
+        $sieve = array_merge($sieve);
 
-		$data =  $query->Filter($filter)->count();
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$tickets =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        $filter = new OrderFilter($sieve);
 
+        $data = $query->Filter($filter)->count();
 
-		$this->view('auth/support', compact('tickets', 'sieve', 'data','per_page'));
+        $result_query = Orders::query()->Filter($filter);
 
-	}
+        $orders = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->latest()
+            ->get(); //filtered
 
-	public function view_ticket($ticket_id){
+        $shop = new Shop;
 
-	 	$support_ticket = SupportTicket::find($ticket_id); 
+        $this->view('auth/products_orders', compact('orders',
+            'data',
+            'per_page',
+            'shop',
+            'sieve'));
 
-		$this->view('auth/support-messages', [
-					'support_ticket'			=> $support_ticket 
-									]);  
+    }
 
+    public function cart()
+    {
+        $shop = new Shop;
 
-	}
+        $cart = json_decode($_SESSION['cart'], true)['$items'];
 
+        if (count($cart) == 0) {
+            Session::putFlash("info", "Your cart is empty.");
+            Redirect::to('user/shop');
+        }
 
+        $this->view('auth/cart', compact('shop'));
+    }
 
-	public function index()
-	{
-		$this->view('auth/dashboard');
-	}
+    public function view_cart()
+    {
 
+        $cart = json_decode($_SESSION['cart'], true)['$items'];
 
-	public function open_trading_account($broker_id =1)
-	{	
-		$broker = Broker::where('id', $broker_id)->first();
-		if ($broker == null) {
-			Session::putFlash('danger',"Invalid Request");
-			Redirect::back();
-		}
+        if (count($cart) == 0) {
+            Session::putFlash("info", "Your cart is empty.");
+            Redirect::to('user/shop');
+        }
+        $this->view('auth/view_cart');
+    }
 
-		$account_opening_page = $broker->getAccountOpeningPage();
+    public function shop()
+    {
 
-		Redirect::to($broker->DetailsArray['open_account']);
+        $products = $this->auth()->accessible_products();
 
+        $this->view('auth/shop', compact('products'));
+    }
 
-		// $this->view("auth/account_opening_page", compact('broker'));
-	}
+    public function scheme()
+    {
 
-	public function make_deposit($account_number='', $broker_id= '')
-	{
-		$shop = new Shop;
+        $subscription = $this->auth()->subscription;
 
-		$this->view("auth/making_deposit", compact('shop','account_number', 'broker_id'));
-	}
+        if ($subscription == null) {
 
+            Redirect::back();
+        }
 
-	public function make_withdrawal($account_number='', $broker_id= '')
-	{
-		$shop = new Shop;
+        $this->view('auth/subscription_confirmation', compact('subscription'));
+    }
 
-		$this->view("auth/making_withdrawal", compact('shop','account_number', 'broker_id'));
-	}
+    public function download($ebook_id)
+    {
 
+        $ebook = Ebooks::find($ebook_id);
+        $ebook->download();
+    }
 
+    public function create_upgrade_request($subscription_id = null)
+    {
 
-	public function deposit_history()
-	{
-			
-		$auth = $this->auth();
+        $subscription_id = $_REQUEST['subscription_id'];
 
+        $response = SubscriptionPlan::create_subscription_request($subscription_id, $this->auth()->id);
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve);
+        header("content-type:application/json");
+        echo $response;
 
-		$query = DepositOrder::where('user_id', $auth->id)->latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        Redirect::back();
+    }
 
-		$filter =  new  DepositOrderFilter($sieve);
+    public function deposit_orders_history()
+    {
+        $deposit_orders = Wallet::Category('deposit')->where('user_id', $this->auth()->id)->Credit()->Pending()->Unpaid()->latest()->get();
 
-		$data =  $query->Filter($filter)->count();
+        $this->view('auth/deposit_orders_history', compact('deposit_orders'));
+    }
 
-		$deposits =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+    public function invoices()
+    {
+        $packs = InvestmentPackage::for($this->auth()->id) {
+                ->latest()->get();
+        }
 
+        $this->view('auth/invoices', compact('packs'));
+    }
 
-		$shop = new Shop;
+    public function hot_wallet()
+    {
 
-		$this->view('auth/deposit-history', compact('deposits','shop', 'sieve', 'data','per_page'));
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $setting = $rules_settings->settingsArray;
+        $trucash_exchange = $setting['one_trucash_is_x_usd'];
 
-	}
+        $auth = $this->auth();
 
-	public function withdrawal_history()
-	{
-			
-		$auth = $this->auth();
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve);
+        $query = HotWallet::for($auth->id) {
+                ->Category(['hot_wallet', 'rank'])->latest();
+        }
 
-		$query = Withdrawal::where('user_id', $auth->id)->latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$filter =  new  WithdrawalFilter($sieve);
+        $filter = new WalletFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+        $data = $query->Filter($filter)->count();
 
-		$withdrawals =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        $sql = $query->Filter($filter);
 
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
 
-		$shop = new Shop;
+        $hot_wallet_balance = HotWallet::availableBalanceOnUser($auth->id, 'hot_wallet');
 
-		$this->view("auth/withdrawal-history", compact('withdrawals','shop', 'sieve', 'data','per_page'));
-	}
+        $this->view('auth/hot_wallet', compact('records', 'hot_wallet_balance', 'trucash_exchange', 'sieve', 'data', 'per_page'));
+    }
 
+    public function cold_wallet()
+    {
 
-	public function deposit_withdrawal()
-	{
-			
-		$auth = $this->auth();
-		$deposits = DepositOrder::where('user_id', $auth->id)->latest()->get();
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $setting = $rules_settings->settingsArray;
+        $trucash_exchange = $setting['one_trucash_is_x_usd'];
 
-		$this->view("auth/deposit-withdrawal", compact('deposits'));
-	}
+        $auth = $this->auth();
 
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
 
-	public function bank_transfer($order_id, $type)
-	{
-		$auth = $this->auth();
-		$register = [
-			'deposit' => [
-				'class' => 'v2\Models\DepositOrder' ,
-			],
-			'course' => [
-				'class' => 'Orders' ,
-			],
-		];
+        $query = HeldCoin::for($auth->id) {
+                ->Category(['heldcoin', 'hot_wallet'])->latest();
+        }
 
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
+        $filter = new WalletFilter($sieve);
 
-		$class = $register[$type]['class'];
+        $data = $query->Filter($filter)->count();
 
-		switch ($type) {
-			case 'deposit':
+        $sql = $query->Filter($filter);
 
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
 
-					 $order = $class::where('id', $order_id)
-					 							->where('payment_method', 'bank_transfer')
-												 ->where('status','initialized')
-												 ->where('user_id', $auth->id)
-												 ->where('paid_at', null)->first();
+        $cold_wallet_balance = HeldCoin::availableBalanceOnUser($auth->id);
 
+        $this->view('auth/cold_wallet', compact('records', 'cold_wallet_balance', 'trucash_exchange', 'sieve', 'data', 'per_page'));
+    }
 
-			case 'course':
+    public function payout_wallet()
+    {
 
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $setting = $rules_settings->settingsArray;
+        $trucash_exchange = $setting['one_trucash_is_x_usd'];
 
-					 $order = $class::where('id', $order_id)
-					 						->where('payment_method', 'bank_transfer')
-												 ->where('user_id', $auth->id)
-												 ->where('paid_at', null)->first();
+        $auth = $this->auth();
 
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
 
-				break;
-			
-			default:
-				# code...
-				break;
-		}
+        $query = PayoutWallet::for($auth->id) {
+                ->latest();
+        }
 
-		if ($order==null) {
-			// Session::putFlash('danger','Invalid Request');
-			Redirect::back();
-		}
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		Shop::empty_cart_in_session();
+        $filter = new WalletFilter($sieve);
 
-		$this->view('auth/deposit_bank_transfer', compact('order','type'));
+        $data = $query->Filter($filter)->count();
 
-	}
+        $sql = $query->Filter($filter);
 
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
 
-	public function show_invoice($order_id, $type)
-	{
+        $cold_wallet_balance = PayoutWallet::availableBalanceOnUser($auth->id, 'heldcoin');
 
-		$auth = $this->auth();
-		$register = [
-			'deposit' => [
-				'class' => 'v2\Models\DepositOrder' ,
-			],
-			'course' => [
-				'class' => 'Orders' ,
-			],
-		];
+        $this->view('auth/payout_wallet', compact('records', 'cold_wallet_balance', 'trucash_exchange', 'sieve', 'data', 'per_page'));
+    }
 
-		$class = $register[$type]['class'];
+    public function commission_history()
+    {
 
+        $auth = $this->auth();
 
-		switch ($type) {
-			case 'deposit':
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
 
+        $query = Commission::for($auth->id) {
+                ->latest();
+        }
 
-					 $order = $class::where('id', $order_id)
-					 // ->where('payment_method', 'bank_transfer')
-												 ->where('status','initialized')
-												 ->where('user_id', $auth->id)
-												 ->where('paid_at', null)->first();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
+        $filter = new WalletFilter($sieve);
 
-			case 'course':
+        $balance = $query->Credit()->sum('amount');
 
+        $total = $query->count();
 
-					 $order = $class::where('id', $order_id)
-					 // ->where('payment_method', 'bank_transfer')
-												 ->where('user_id', $auth->id)
-												 ->where('paid_at', null)->first();
+        $data = $query->Filter($filter)->count();
 
+        $sql = $query->Filter($filter);
 
-				break;
-			
-			default:
-				# code...
-				break;
-		}
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
 
+        $balance = Commission::availableBalanceOnUser($auth->id);
 
-		if ($order==null) {
-			// Session::putFlash('danger','Invalid Request');
-			Redirect::back();
-		}
+        $note = MIS::filter_note($records->count(), $data, $total, $sieve, 1);
 
-		Shop::empty_cart_in_session();
+        $this->view('auth/commission_history', compact('records', 'balance', 'sieve', 'data', 'per_page', 'note'));
+    }
 
-		// $invoice = 
-		// $invoice = 
-		$order->getInvoice();
+    public function transfer_history()
+    {
 
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $setting = $rules_settings->settingsArray;
+        $trucash_exchange = $setting['one_trucash_is_x_usd'];
 
-	}
+        $auth = $this->auth();
 
-	
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
 
+        $query = Wallet::for($auth->id) {
+                ->latest()->where('payment_method', 'transfer');
+        }
 
-	public function confirm_deposit($deposit_id)
-	{
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$shop = new Shop;
-		$auth = $this->auth();
+        $filter = new WalletFilter($sieve);
 
-		$deposit = DepositOrder::where('id', $deposit_id)->where('user_id', $auth->id)->where('paid_at', null)->where('status', 'initialized')->first();
+        $data = $query->Filter($filter)->count();
 
-		if ($deposit==null) {
-			// Session::putFlash('danger','Invalid Request');
-			Redirect::to('user/make_deposit');
-		}
+        $sql = $query->Filter($filter);
 
-				$payment_details =	$shop
-									// ->setOrderType('order') //what is being bought
-									->setOrder($deposit)
-									->setPaymentMethod($deposit->payment_method)
-									->initializePayment()
-									->attemptPayment()
-									;
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
 
-					$breakdown = 	$shop->fetchPaymentBreakdown();
-		$this->view('auth/confirm_deposit', compact('shop', 'deposit', 'breakdown'));
-	}
+        $cold_wallet_balance = Wallet::availableBalanceOnUser($auth->id, 'heldcoin');
 
+        $this->view('auth/transfer_history', compact('records', 'cold_wallet_balance', 'trucash_exchange', 'sieve', 'data', 'per_page'));
+    }
 
-	public function confirm_withdrawal($withdrawal_id)
-	{
+    public function your_packs()
+    {
+        $packs = InvestmentPackage::for($this->auth()->id) {
+                ->latest()->get();
+        }
 
-		$shop = new Shop;
-		$auth = $this->auth();
+        $this->view('auth/your_packs', compact('packs'));
+    }
 
-		$withdrawal = Withdrawal::where('id', $withdrawal_id)->where('user_id', $auth->id)->where('status', 1)->first();
+    public function select_pack()
+    {
+        $investment = InvestmentPackage::find($_POST['investment_id']);
 
-		if ($withdrawal==null) {
+        if ($investment == null) {
+            Session::putFlash('danger', "Invalid Request");
+            Redirect::back();
+        }
 
-			// Session::putFlash('danger','Invalid Request');
-			Redirect::to('user/make_withdrawal');
-		}
+        $wallet = new Wallet;
 
-		$breakdown = 	$withdrawal->fetchBreakdown();
-		$this->view('auth/confirm_withdrawal', compact('shop', 'withdrawal', 'breakdown'));
-	}
+        $this->view('auth/select_pack', compact('investment', 'wallet'));
+    }
 
-	
+    public function submit_investment()
+    {
 
-	public function password()
-	{
-		$this->view('auth/password');
-	}
+        echo "<pre>";
 
+        print_r($_POST);
+        $investment = InvestmentPackage::find($_POST['investment_id']);
 
-	public function dashboard()
-	{
+        $amount = $_POST['amount'];
 
-		$this->view('auth/dashboard');
-		// Redirect::to("user/profile");
+        $investment->in_range($_POST['amount']);
 
-	}
+        if (($investment == null) || (!$investment->in_range($amount))) {
+            Session::putFlash('danger', "Invalid Request");
+            Redirect::back();
+        }
 
-	public function broadcast()
-	{
-		$this->view('auth/broadcast');
+        $this->validator()->check(Input::all(), array(
+            'amount' => [
+                'required' => true,
+                'min_value' => $investment->DetailsArray['min_capital'],
+                'max_value' => $investment->DetailsArray['max_capital'],
+            ],
+            'wallet' => [
+                'required' => true,
+            ],
+            'investment_id' => [
+                'required' => true,
+            ],
+        ));
 
-	}
+        if (!$this->validator->passed()) {
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
 
+        $auth = $this->auth();
 
-	public function bank_account()
-	{
-		$this->view('auth/bank-account');
+        //ensure more than one same pack is not running
+        $running_investment = InvestmentPackage::for($auth->id, $investment->id, 0) {
+                ->first();
+        }
 
-	}
+        if ($running_investment != null) {
+            Session::putFlash('danger', "<code>$investment->name</code> is currently running. Please choose another pack");
+            Redirect::to("user/purchase-investment");
 
-	public function all_trading_accounts()
-	{
+        }
 
+        DB::beginTransaction();
 
-		$auth = $this->auth();
+        $wallet_to_use = Wallet::$wallets[$_POST['wallet']];
+        $wallet_class = $wallet_to_use['class'];
+        $wallet_category = $wallet_to_use['category'];
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve);
+        try {
 
-		$query = TradingAccount::where('user_id', $auth->id)->latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+            //debit user
+            $comment = "Purchased $investment->name for $amount";
+            //make debit first
+            $debit = $wallet_class::createTransaction(
+                'debit',
+                $auth->id,
+                null,
+                $amount,
+                'completed',
+                $wallet_category,
+                $comment,
+                null,
+                null,
+                null);
 
-		$filter =  new  TradingAccountFilter($sieve);
+            if ($debit == false) {
 
-		$data =  $query->Filter($filter)->count();
+                throw new Exception("Could not debit", 1);
+            }
 
-		$trading_accounts =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+            $debit->update([
+                'payment_method' => 'pack',
+            ]);
 
+            //now create record for package investment
+            $investment->setAmount($amount);
+            $i_details = [
+                'investment' => $investment->toArray(),
+                'annual_worth' => $investment->getWorth('annual'),
+                'total_worth' => $investment->getWorth('annual'),
+                'capital' => $amount,
+                'annual_roi' => $investment->DetailsArray['annual_roi_percent'],
+                'weekly_worth' => $investment->getWorth('weekly'),
+                'spread' => $investment->spread('weekly'),
+                'is_complete' => 0,
+            ];
 
+            $extra_detail = json_encode($i_details);
 
-		$this->view('auth/all-trading-accounts', compact('trading_accounts', 'sieve', 'data','per_page'));
+            $today = date("Y-m-d H:i:s");
+            $roi = HotWallet::createTransaction(
+                'credit',
+                $auth->id,
+                null,
+                0.00,
+                'completed',
+                'investment',
+                $comment,
+                null,
+                $debit->id,
+                null,
+                $extra_detail,
+                $today
+            );
 
-	}
+            $roi->update(['cost' => $amount]);
 
-	public function verification()
-	{
-		$this->view('auth/verification');
+            $roi->give_referral_commission();
 
-	}
+            if ($roi == false) {
+                throw new Exception("Could not creeate roi", 1);
+            }
 
+            DB::commit();
+            Session::putFlash('success', "$investment->name purchased successfully");
 
+        } catch (Exception $e) {
+            DB::rollback();
+            print_r($e->getMessage());
+            Session::putFlash('danger', 'Action Failed');
+        }
 
+        Redirect::to("user/purchase-investment");
+    }
 
+    public function submit_buy_trucash()
+    {
 
+        echo "<pre>";
 
+        print_r($_POST);
 
+        $amount = $_POST['amount'];
+
+        $this->validator()->check(Input::all(), array(
+            'amount' => [
+                'required' => true,
+            ],
+            'wallet' => [
+                'required' => true,
+            ],
+        ));
+
+        if (!$this->validator->passed()) {
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
+
+        $auth = $this->auth();
+
+        DB::beginTransaction();
+
+        $wallet_to_use = Wallet::$wallets[$_POST['wallet']];
+        $wallet_class = $wallet_to_use['class'];
+        $wallet_category = $wallet_to_use['category'];
+
+        try {
+
+            //debit user
+            $comment = "Purchased $amount$ TruCash ";
+            //make debit first
+            $debit = $wallet_class::createTransaction(
+                'debit',
+                $auth->id,
+                null,
+                $amount,
+                'completed',
+                $wallet_category,
+                $comment,
+                null,
+                null,
+                null);
+
+            if ($debit == false) {
+
+                throw new Exception("Could not debit", 1);
+            }
+
+            $debit->update([
+                'payment_method' => 'trucash',
+            ]);
+
+            //now create record for trucash purchase
+            $today = date("Y-m-d H:i:s");
+            $roi = HeldCoin::createTransaction(
+                'credit',
+                $auth->id,
+                null,
+                $amount,
+                'completed',
+                'heldcoin',
+                $comment,
+                null,
+                $debit->id,
+                null,
+                $extra_detail,
+                $today
+            );
+
+            if ($roi == false) {
+                throw new Exception("Could not creeate roi", 1);
+            }
+
+            DB::commit();
+            Session::putFlash('success', "$amount$ TruCash purchased successfully");
+
+        } catch (Exception $e) {
+            DB::rollback();
+            print_r($e->getMessage());
+            Session::putFlash('danger', 'Action Failed');
+        }
+
+        Redirect::to("user/purchase-investment");
+    }
+
+    public function purchase_investment()
+    {
+        $shop = new Shop;
+        $wallet = new Wallet;
+        $this->view('auth/purchase_investment', compact('shop', 'wallet'));
+    }
+
+    public function account_plan()
+    {
+        $wallet = new Wallet;
+        $this->view('auth/account_plan', compact('wallet'));
+    }
+
+    public function reports()
+    {
+        $this->view('auth/report');
+    }
+
+    public function make_withdrawal_request()
+    {
+
+        $settings = SiteSettings::site_settings();
+        $min_withdrawal = $settings['minimum_withdrawal'];
+
+        $currency = Config::currency();
+        $amount = $_POST['amount'];
+
+        if ($amount < $min_withdrawal) {
+            Session::putFlash('info', "Sorry, Minimum Withdrawal is  $currency$min_withdrawal. ");
+            Redirect::back();
+        }
+
+        LevelIncomeReport::create_withdrawal_request($this->auth()->id, $amount);
+
+        Redirect::back();
+
+    }
+
+    public function submit_user_transfers()
+    {
+        echo "<pre>";
+
+        print_r($_POST);
+
+        $rules_settings = SiteSettings::find_criteria('rules_settings');
+        $transfer_fee = $rules_settings->settingsArray['user_transfer_fee_percent'];
+        $min_transfer = $rules_settings->settingsArray['min_transfer_usd'];
+
+        $this->validator()->check(Input::all(), array(
+            'amount' => [
+                'required' => true,
+                'min_value' => $min_transfer,
+            ],
+            'wallet' => [
+                'required' => true,
+            ],
+
+            'username' => [
+                'required' => true,
+                'exist' => 'User|username',
+            ],
+        ));
+
+        if (!$this->validator->passed()) {
+
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
+
+        $auth = $this->auth();
+        $from = $auth->id;
+        $amount = Input::get('amount');
+        $username = Input::get('username');
+        $wallet = Input::get('wallet');
+
+        $to = User::where('username', $username)->first()->id;
+
+        $wallet_to_use = Wallet::$wallets[$_POST['wallet']];
+        $wallet_class = $wallet_to_use['class'];
+        $wallet_category = $wallet_to_use['category'];
+
+        $transfer = $wallet_class::makeTransfer($from, $to, $amount, $wallet_category, 'commission');
+        $currency = Config::currency();
+        $formatted_amount = MIS::money_format($amount);
+
+        if ($transfer == true) {
+
+            Session::putFlash('success', "$currency$formatted_amount successfully transfered to $username");
+
+        } else {
+
+            Session::putFlash('danger', "Transfer Failed");
+
+        }
+
+        Redirect::back();
+
+    }
+
+    public function user_transfers()
+    {
+        $auth = $this->auth();
+        $wallet = new Wallet;
+        $balance = Commission::availableBalanceOnUser($auth->id);
+
+        $this->view('auth/user-transfers', compact('wallet', 'balance'));
+    }
+
+    public function make_deposit()
+    {
+        $auth = $this->auth();
+        $shop = new Shop;
+        $deposits = Wallet::for($auth->id) {
+                ->Category('deposit')->Paid()->Credit()->Completed()->latest()->get();
+        }
+
+        $deposit_balance = Wallet::availableBalanceOnUser($auth->id, 'deposit');
+
+        $this->view('auth/make_deposit', compact('shop', 'deposit_balance', 'deposits'));
+    }
+
+    public function my_wallet()
+    {
+        $this->view('auth/my_wallet');
+    }
+
+    public function make_withdrawal()
+    {
+        $this->view('auth/make_withdrawal');
+    }
+
+    public function withdrawals()
+    {
+
+        $query = Withdrawal::where('user_id', $this->auth()->id)->latest();
+
+        $sieve = $_REQUEST;
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new WithdrawalFilter($sieve);
+
+        $data = $query->Filter($filter)->count();
+
+        $withdrawals = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
+
+        $this->view('auth/withdrawal-history', compact('withdrawals', 'sieve', 'data', 'per_page'));
+
+        // $this->view('auth/withdrawal-history', compact('withdrawals'));
+    }
+
+    public function update_testimonial()
+    {
+
+        echo "<pre>";
+        $testimony_id = Input::get('testimony_id');
+        $testimony = Testimonials::find($testimony_id);
+
+        if ($testimony->is_approved()) {
+            Session::putFlash('danger', 'Testimonial is approved.');
+            Redirect::back();
+        }
+
+        $attester = $this->auth()->lastname . ' ' . $this->auth()->firstname;
+
+        $testimony->update([
+            'attester' => $attester,
+            'user_id' => $this->auth()->id,
+            'content' => Input::get('testimony'),
+            'video_link' => Input::get('video_link'),
+            'approval_status' => 0,
+        ]);
+
+        Session::putFlash('success', 'Testimonial updated successfully. Awaiting approval');
+
+        Redirect::back();
+    }
+
+    public function create_testimonial($type = 'video')
+    {
+        if (Input::exists() || true) {
+
+            $auth = $this->auth();
+
+            $testimony = Testimonials::create([
+                'attester' => $auth->lastname . ' ' . $auth->firstname,
+                'user_id' => $auth->id,
+                'type' => $type,
+                'content' => Input::get('testimony')]);
+
+        }
+        Redirect::to("user/edit_testimony/{$testimony->id}");
+    }
+
+    public function edit_testimony($testimony_id = null)
+    {
+        if (($testimony_id != null)) {
+            $testimony = Testimonials::find($testimony_id);
+            if (($testimony != null) && ($testimony->user_id == $this->auth()->id)) {
+
+                $this->view('auth/edit_testimony', ['testimony' => $testimony]);
+                return;
+            } else {
+                Session::putFlash('danger', 'Invalid Request');
+                Redirect::back();
+            }
+
+        }
+
+    }
+
+    public function view_testimony()
+    {
+        $this->view('auth/view-testimony');
+    }
+
+    public function testimony()
+    {
+
+        $auth = $this->auth();
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
+
+        $query = Testimonials::latest()->where('user_id', $auth->id);
+
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new TestimonialsFilter($sieve);
+
+        $data = $query->Filter($filter)->count();
+
+        $testimonials = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
+
+        $note = MIS::filter_note($testimonials->count(), ($data), (Testimonials::count()), $sieve, 1);
+
+        $this->view('auth/testimonials', compact('testimonials', 'sieve', 'data', 'per_page', 'note'));
+
+    }
+
+    public function documents()
+    {
+        $show = false;
+        $this->view('auth/documents', compact('show'));
+    }
+
+    public function news()
+    {
+        $this->view('auth/news');
+    }
+
+    public function language()
+    {
+        $this->view('auth/language');
+    }
+
+    public function profile()
+    {
+        $this->view('auth/profile');
+    }
+
+    public function earnings($from = null, $to = null)
+    {
+        $query = LevelIncomeReport::where('status', 'Credit')->where('owner_user_id', $this->auth()->id)->latest();
+        if (($from != null) && ($to != null)) {
+            $query = $query->whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to);
+        }
+
+        $earnings = $query->get();
+        $earnings_total = $query->sum('amount_earned');
+        $this->view('auth/earnings', [
+            'earnings' => $earnings,
+            'earnings_total' => $earnings_total,
+        ]);
+    }
+
+    public function upload_payment_proof()
+    {
+        $order_id = $_POST['order_id'];
+        $order = SubscriptionOrder::find($order_id);
+        $order->upload_payment_proof($_FILES['payment_proof']);
+        Session::putFlash('success', "#$order_id Proof Uploaded Successfully!");
+        Redirect::back();
+
+    }
+
+    public function upload_ph_payment_proof()
+    {
+        $directory = 'uploads/images/payment_proofs';
+
+        $handle = new Upload($_FILES['payment_proof']);
+        $match = Match::find(Input::get('match_id'));
+
+        //if it is image, generate thumbnail
+        if (explode('/', $handle->file_src_mime)[0] == 'image') {
+
+            $handle->Process($directory);
+            $original_file = $directory . '/' . $handle->file_dst_name;
+
+            (new Upload($match->payment_proof))->clean();
+            $match->update(['payment_proof' => $original_file]);
+
+            Session::putFlash('success', 'Proof Uploaded Successfully!');
+            Redirect::back();
+
+        }
+
+    }
+
+    public function contact_us()
+    {
+        $this->view('auth/contact-us');
+
+    }
+
+    public function support()
+    {
+        $auth = $this->auth();
+
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
+
+        $query = SupportTicket::where('user_id', $auth->id)->latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new SupportTicketFilter($sieve);
+
+        $data = $query->Filter($filter)->count();
+
+        $tickets = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
+
+        $this->view('auth/support', compact('tickets', 'sieve', 'data', 'per_page'));
+
+    }
+
+    public function view_ticket($ticket_id)
+    {
+
+        $support_ticket = SupportTicket::find($ticket_id);
+
+        $this->view('auth/support-messages', [
+            'support_ticket' => $support_ticket,
+        ]);
+
+    }
+
+    public function index()
+    {
+        $settings = SiteSettings::site_settings();
+        $this->view('auth/dashboard', compact('settings'));
+    }
+
+    public function accounts()
+    {
+        $this->view('auth/accounts');
+    }
+
+    public function change_password()
+    {
+        $this->accounts();
+    }
+
+    public function dashboard()
+    {
+
+        $settings = SiteSettings::site_settings();
+        $this->view('auth/dashboard', compact('settings'));
+    }
+
+    public function broadcast()
+    {
+
+        $auth = $this->auth();
+
+        $sieve = $_REQUEST;
+        $query = BroadCast::Published()->latest();
+        // ->where('status', 1);  //in review
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $data = $query->count();
+
+        $news = $query
+            ->offset($skip)
+            ->take($per_page)
+            ->get(); //filtered
+
+        $this->view('auth/broadcast', compact('news', 'sieve', 'data', 'per_page'));
+
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-?>

@@ -3,9 +3,14 @@
 $router =[
 	''=>'home',
 	'home'=>'home',
-	// 'w'=>'home',
+	'supportmessages' => 'crud/TicketCrudController',
+	'w'=>'home',
 	'user'=>'UserController',			//this is used to build all urls of the user dashboard
+	'withrawals'=>'WithdrawalsController',		
+	'deposits'=>'DepositController',		
+	'media' => 'crud/MediaController',
 
+	'document' 			=> 'DocumentController',
 	'support' 			=> 'SupportController',
 
 	'user-profile'		=>'UserProfileController',
@@ -14,47 +19,35 @@ $router =[
 	'verify' 			=> 'VerificationController',
 	'shop' 				=> 'shopController',
 	'error' 			=> 'ErrorController',
-	'forex-account' 			=> 'AccountController',
 
 	'test' => 'test/home',
-	'about' => 'AboutBrokersController',
 
-	'course_api' => 'courses/CoursesApiController',
-	// 'courses' => 'courses/CoursesController',
-	'courses' => 'courses/FreeCoursesController',
-	'instructor' => 'courses/InstructorController',
+	'company' => 'api/CompanyController',
 
+	'connect' => 'WpConnectionController',
+	'cms_api' => 'CmsApiController',
 	'guest' 	=> 'GuestController',
-	'blog' 	=> 'BlogController',
+	'terms' 	=> 'TermsController',
 	'genealogy' => 'GenealogyController',
+	'report' 	=> 'ReportsController',
 	'ref' 		=> 'ReferralController', //referral link handler
+	'r' 		=> 'ReferralController', //referral link handler
 	'forgot-password' 	=> 'forgotPasswordController',
 
 	'auto-match' => 'AutoMatchingController',	//this handles routine checks and commssions
 
 	'settings' => 'SettingsController',
+	'testing' => 'testingController',
 
-	'category_crud' => 'crud/CategorySpoof',
-	'campaign_crud' => 'crud/CampaignCrudController',
-	'campaign_execution' => 'crud/CampaignExecution',
-	'userbankcrud' => 'crud/UserBankCrudController',
-	'user_doc_crud' => 'crud/UserDocCrudController',
-	'deposit_crud' => 'crud/UserDepositCrudController',
-	'offer' => 'crud/OfferController',
-	'withdrawal_crud' => 'crud/UserWithdrawalCrudController',
+
+
+
 	'ticket_crud' => 'crud/TicketCrudController',
-	'access_crud' => 'crud/AccessCrud',
-	'survey_crud' => 'crud/SurveyCrud',
 	'cms_crud' => 'crud/CmsCrud',
-	'media' => 'crud/MediaController',
-	'survey_submit' => 'crud/SurveySubmit',
-	'survey' => 'SurveyController',
-	'signals' => 'SignalsController',
+	'user_doc_crud' => 'crud/UserDocCrudController',
+	'package_crud' => 'crud/PackageCrudController',
 
-
-	'survey_crud_2' => 'SurveyCrud2',
-	#apis
-	'world' => 'api/WorldAPi',
+	'paypal' => 'payments/PayPalController', 
 
 
 	#admin

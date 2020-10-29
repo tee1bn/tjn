@@ -1,7 +1,4 @@
 <?php
-use v2\Models\UserDocument;
-use v2\Models\AdminComment;
-use v2\Models\TradingAccount;
 use Illuminate\Database\Capsule\Manager as DB;
 
 
@@ -31,9 +28,9 @@ class MediaController extends controller
 
 					$directory = "uploads/media/$type";
 					$file = $_FILES['upload'];
-					$handle = new Upload ($file);
+					$handle = new \Upload ($file);
 
-						 $file_type = explode('/', $handle->file_src_mime)[0];
+						 echo $file_type = explode('/', $handle->file_src_mime)[0];
 
 			                if (($handle->file_src_mime == 'application/pdf' ) ||($file_type == 'image' ) ) {
 
@@ -48,6 +45,7 @@ class MediaController extends controller
 
 		}catch(Exception $e){
 
+			print_r($e->getMessage());
 
 		}
 

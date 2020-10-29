@@ -72,7 +72,7 @@
     </script>
     
 
-<script src="<?=general_asset;?>/js/ajax-form.js"></script>
+<script src="<?=domain;?>/app/others/js/ajax-form.js"></script>
 
 <!-- Modal -->
 <div id="confirmation_dialog" style="display: none;"  class="modal fade" role="dialog">
@@ -81,16 +81,16 @@
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Confirmation </h4>
+        <h4 class="modal-title" style="color: black;">Confirmation </h4>
       </div>
       <center class="modal-body">
-        <h4 id="dialog_message">Are you sure You want to continue?  </h4>
+        <h4 id="dialog_message" style="color: black;">Are you sure You want to continue?  </h4>
       </center>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">
          No
         </button>
-         <button type="button" class="btn btn-success" onclick="$confirm_dialog.confirm();">
+         <button type="button" class="btn custom-warning" onclick="$confirm_dialog.confirm();">
           Yes
         </button>
       </div>

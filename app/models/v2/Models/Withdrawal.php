@@ -1,306 +1,365 @@
 <?php
-
-
 namespace v2\Models;
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Config, MIS;
 
+include_once 'app/controllers/home.php';
+use v2\Models\Wallet;
+use v2\Models\Commission;
+use v2\Models\HotWallet;
+use v2\Models\HeldCoin;
+use v2\Models\PayoutWallet;
 use  Filters\Traits\Filterable;
-use  v2\Models\AdminComment;
+use  Filters\Traits\CSVExportable;
+
+use SiteSettings, Session;
+
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Capsule\Manager as DB;
+
+
 
 
 class Withdrawal extends Eloquent 
 {
-
 	use Filterable;
+	use CSVExportable;
 	
 	protected $fillable = [
-							'id',	
-							'trans_id',	
-							'broker_id',	
-							'user_id',	
-							'account_number',	
-							'bank_account_id',	
-							'amount',	
-							'breakdown',	
-							'amount_payable',	
-							'status',	
-							'admin_id'	
-						];
+		'user_id',
+		'amount',
+		'fee',
+		'withdrawal_method_id',
+		'method_details',
+		'detail',
+		'admin_id',
+		'completed_at',
+		'status'
+	];
 	
+	protected $table = 'users_withdrawals';
 
-	protected $table = 'user_withdrawals';
+
 	public static $statuses = [
-								1=> 'initialized',
-								2 => 'pending',
-								3=> 'confirmed',
-								4=> 'completed',
-								5=> 'declined'
+							'pending'=> 'pending',
+							'completed'=> 'completed',
+							 'declined'=> 'declined'
 							];
 
 
 
-
-	public function trading_account()
-	{
-		return $this->belongsTo('v2\Models\TradingAccount', 'account_number', 'account_number');
-	}
-
-
-	public static function get_status($status)
-	{
-		$order = new self();
-		$order->status = $status;
-
-		return $order->DisplayStatus;
-	}
-
-
-	public function is_completed(){
-
-		return (bool) ($this->status == 4);
-	}
-
-
-
-
-	public function encrypt_id()
-	{
-		return \MIS::dec_enc('encrypt', $this->id);
-	}
-
-
-
-	public function adminComments()
-	{       
-	     $comments =   AdminComment::where('model_id', $this->id)->where('model', 'withdrawal')->get();
-	     return $comments;
-	}
-
-
-
-	public function user()
+	public static function csv_structure(array $ids =[])
 	{
 
-		return $this->belongsTo('User', 'user_id');
-	}
-
-
-
-	public function broker()
-	{
-		return $this->belongsTo('v2\Models\Broker','broker_id');
-	}
-
-
-
-	public function bank()
-	{
-
-		return $this->belongsTo('v2\Models\UserBank', 'bank_account_id');
-	}
-
-
-
-
-	public function generateOrderID(){
-
-		$substr = substr(strval(time()), 7 );
-		$order_id = "9g{$this->id}W{$substr}";
-
-		return $order_id;
-	}
-
-
-	public function setBreakdown()
-	{
-		$breakdown = $this->getBreakdown();
-
-		$this->update([
-			'breakdown' => json_encode($breakdown),
-			'amount_payable' => $breakdown['amount_payable']['value']
-		]);
-
-		return $this;
-	}
-
-
-
-	public function service_fee()
-	{
-		$setting = \SiteSettings::find_criteria('site_settings')->settingsArray;
-
-
-		$service_fee_percent = $setting['withdrawal_service_charge_percent'];
-
-		$subtotal =  $this->amount_in_naira()  ;
-		$service_fee = $service_fee_percent * .01 * $subtotal;
-		$service_fee = $service_fee + MIS::calculate_vat($service_fee)['value'];
-
-		$result =[
-			'value' => $service_fee,
-			'percent' => $service_fee_percent,
+		$header = [
+			'sn',
+			'id',
+			'firstname',
+			'lastname',
+			'username',
+			'amount',
+			'fee',
+			'payable',
+			'bankcode',
+			'bank',
+			'nuban',
+			'account holder',
+			'status',
+			'date',
 		];
-
-		return $result;
-	}
-
-
-
-
-
-
-	public function amount_in_naira()
-	{
-		$setting = \SiteSettings::find_criteria('site_settings')->settingsArray;
-
-		$exchange = $setting['withdraw_at'];
-
-		$amount = $this->amount;
-		$amount_in_naira = $amount * $exchange;
-		return $amount_in_naira;
-	}
-
-
-	public function getBreakdown()
-	{
-		$amount = $this->amount;
-		$amount_in_naira = $this->amount_in_naira();
-		$currency = Config::currency();
-		$service_fee = $this->service_fee();
-
-		$amount_payable = $amount_in_naira - $service_fee['value'];
-		$breakdown = [
-			'amount' => [
-							'value'=> $amount,
-							'name' => 'Amount($)',
-							],
-
-
-			'amount_in_naira' => [
-							'value'=> $amount_in_naira,
-							'name' => "Amount($currency)",
-							],
-
-
-			'service_fee' => [
-							'value'=> $service_fee['value'],
-							'name' => "Service Charge ($service_fee[percent]%)",
-							],
-
-		
-			'subtotal_payable' => [
-							'value'=> $subtotal_payable,
-							'name' => 'Grand Total',
-							],
-
-			'gateway_fee' => [
-							'value'=> $gateway_fee,
-							'name' => ucfirst($gateway_name)." Fee",
-							],
-
-			'amount_payable' => [
-							'value'=> $amount_payable,
-							'name' => "Total Payable($currency)",
-							],
-							
-		];
-		return $breakdown;
-
-
-	}
-
-	public function fetchBreakdown()
-	{
 		
 
-		$breakdown = $this->getBreakdown();
-		$currency = Config::currency();
-		$line= '';
-		foreach ($breakdown as $key => $value) {
-			if ($value['value'] == 0) {
-				continue;
-			}
-			$amt =  MIS::money_format($value['value']);
-			$size='';
-			if ($value == end($breakdown)) {
-				$size= 'font-size:20px;font-weight:700;';
-			}
+			
+		$all = self::whereIn('id', $ids)->get();
 
-			$line .= "                                   
-                                    <tr>
-                                        <th style='padding: 5px;'>{$value['name']}</th>
-                                        <td class='text-right' style='padding: 5px;$size'>$amt
-                                         
-                                        </td>  
-                                    </tr>
-					";
+
+		$csv_records = [];
+		$i = 1;
+		foreach ($all as $key => $record) {
+			$method = $record->withdrawal_method->MethodDetails;
+			$csv_records[] = [
+				$i,
+				$record->id,
+				$record->user->firstname,
+				$record->user->lastname,
+				$record->user->username,
+				$record->amount,
+				$record->fee,
+				$record->AmountToPay,
+				"{$method['bank_code']}",
+				$method['bank'],
+				$method['account_number'],
+				$method['account_name'],
+				$record->status,
+				$record->created_at,
+			];
 
 		}
 
+		$filename = 'withdrawals';
 
-		$breakdown['line'] =$line;
-
-		return $breakdown;
-			
+		return compact('csv_records','header', 'filename');
 
 	}
 
+
+	public static function push_status(array $ids =[], $action)
+	{
+		echo "<pre>";
+		print_r($_POST);
+
+		DB::beginTransaction();
+		$new_status = [
+			'pend' => [
+				'status' => 'pending',
+			],
+			'complete' => [
+				'status' => 'completed',
+			],
+			'decline' => [
+				'status' => 'declined',
+			],
+		];
+
+		try {
+			
+		$all = self::whereIn('id', $ids);
+
+		$all->update(['status'=> $new_status[$action]['status']]);
+
+		DB::commit();
+		Session::putFlash("success","{$all->count()} rows marked as {$new_status[$action]['status']}");
+		return true;
+		} catch (Exception $e) {
+		DB::rollback();
+		print_r($e->getMessage());
+		Session::putFlash("danger","Something went wrong");
+			
+		}
+
+		return false;
+	}
+
+	
+	//bulk actions registers
+	public static function bulk_action($action , array $ids =[])
+	{
+		$register=[
+			'export_csv' => [
+				'function' => 'export_to_csv',
+			],
+			'pend' => [
+				'function' => 'push_status',
+			],
+			'complete' => [
+				'function' => 'push_status',
+			],
+			'decline' => [
+				'function' => 'push_status',
+			],
+		];
+
+
+		$method = $register[$action]['function'];
+		return self::$method($ids, $action);
+	}
+
+
+
+
+	public static function payoutBalanceFor($user_id)
+	{
+
+
+		$rules_settings =  SiteSettings::find_criteria('rules_settings');
+		$setting = $rules_settings->settingsArray;
+		$withdrawal_fee = $setting['withdrawal_fee_percent'];
+		$min_withdrawal = $setting['min_withdrawal_usd'];
+
+
+		$commission_balance =  Commission::bookBalanceOnUser($user_id);
+
+		$commission_credits = Commission::onUser($user_id)->Credit()->Cleared()->sum('amount') ;
+
+		$total_earnings =  $commission_credits;
+
+		$completed_withdrawal = self::where('user_id' , $user_id)->Completed()->sum('amount');
+		$pending_withdrawal = self::where('user_id' , $user_id)->Pending()->sum('amount');
+
+
+		$total_amount_withdrawn = $completed_withdrawal + $pending_withdrawal ;
+
+		$payout_wallet    =  Commission::availableBalanceOnUser($user_id);
+
+		$payout_balance = $payout_wallet  - $total_amount_withdrawn;
+
+		$payout_book_balance = $payout_wallet  - $completed_withdrawal;
+
+		$available_payout_balance = ($payout_balance >= $min_withdrawal)? $payout_balance: 0 ;
+
+
+
+		$state = compact(
+			'withdrawal_fee',
+			'min_withdrawal',
+			'commission_balance',
+			'total_earnings',
+			'payout_balance',
+			'payout_book_balance',
+			'available_payout_balance',
+			'completed_withdrawal'
+		);
+
+		return $state;
+
+
+	}
+	
+
+
+
+
+	public function getDetailArrayAttribute()
+	{
+		if ($this->detail == null) {
+			return [];
+		}
+
+		return json_decode($this->detail, true);
+	}
+
+
+
+	
+
+	public function admin()
+	{
+		return $this->belongsTo('Admin', 'admin_id');
+
+	}
+	
+
+
+
+
+	public function getAmountToPayAttribute()
+	{
+		$payable = $this->amount - $this->fee;
+		return $payable;
+	}
+
+	public function is_complete()
+	{
+		return $this->status == 'completed';
+	}
+	public function scopeCompleted($query)
+	{
+		return $query->where('status','completed');
+	}
+
+
+
+	public function mark_completed($verification=null)
+	{
+		$controller = new home;
+
+		$withdrawal->update([
+			'status'=> 'completed',
+			'admin_id'=> $controller->admin()->id,
+			'detail' =>  $verification
+		]);
+
+
+		return true;
+	}
+
+
+	public function scopePending($query)
+	{
+		return $query->where('status','pending');
+	}
+
+
+
+	public function scopeDeclined($query)
+	{
+		return $query->where('status','declined');
+	}
 
 
 	public function getDisplayStatusAttribute()
 	{
 
 		switch ($this->status) {
-			case 1:
-				$status = '<span class="badge badge-dark"> initialized</span>';
-				break;
-			
-			case 5:
-				$status = '<span class="badge badge-danger"> Declined</span>';
-				break;
-			
-			case 2:
-				$status = '<span class="badge badge-warning"> Pending</span>';
-				break;
-			
-			case 3:
-				$status = '<span class="badge badge-info"> Confirmed</span>';
-				break;
-			
-			case 4:
-				$status = '<span class="badge badge-success"> Completed</span>';
-				break;
+			case 'completed':
+			$return = "<span class='badge badge-success'>completed</span>";
+
+			break;
+			case 'pending':
+			$return = "<span class='badge badge-warning'>pending</span>";
+
+			break;
+			case 'declined':
+			$return = "<span class='badge badge-danger'>declined</span>";
+
+			break;
 			
 			default:
-				$status = '<span class="badge badge-warning"> Unknown</span>';
-				break;
+				# code...
+			break;
 		}
 
-		return $status;
+		return $return;
 	}
 
 
 
+	public function getwithdrawalDetailsAttribute()
+	{
+		$method =  UserWithdrawalMethod::$method_options[$this->withdrawal_method->method];
+		$detail = $method['display'];
+		$line = '';
+		$method_details = json_decode($this->MethodDetailsArray['details'], true);
+
+		
+
+		foreach ($detail as $key => $label) {
+			$value = $method_details[$key];
+			$line .= "<li>
+						$label:
+						$value
+					</li>";
+		}
+
+		return $line;
+	}
+
+
+	public function getMethodDetailsArrayAttribute()
+	{
+		if ($this->method_details == null) {
+			return [];
+		}
+
+		return json_decode($this->method_details, true);
+	}
+
+
+
+	
+	public function user()
+	{
+		return $this->belongsTo('User', 'user_id');
+
+	}
+
+
+	
+	public function withdrawal_method()
+	{
+		return $this->belongsTo('v2\Models\UserWithdrawalMethod', 'withdrawal_method_id');
+
+	}
+
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ?>

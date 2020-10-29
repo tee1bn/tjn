@@ -57,7 +57,7 @@ return $output;
 
 
 
-public static function inputError($field)
+public function inputError($field)
 {
 
 	$output = '  <span role="alert">';
@@ -139,7 +139,7 @@ public static function inputError($field)
 		{
 			if ( $fieldError != '') {
 				
-			return Session::get('inputs-errors')[$fieldError];
+				return Session::get('inputs-errors')[$fieldError];
 
 			}
 			return Session::get('inputs-errors');

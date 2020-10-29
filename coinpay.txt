@@ -1,0 +1,18 @@
+url => shop/callback 
+item_purchased => deposit 
+order_unique_id => 9 
+tx_id => 7b0ff2fcdfe02eed8169915ea99b3ceec7853f4ce267964039f3c62b6bb27537 
+amount_c => 0.00014848 
+amount_f => 1.01 
+currency_symbol => USD 
+coin_symbol => BTC 
+invoice => TC9D555 
+order_id => L3sQKOHKxjkZ 
+received_confirms => 4 
+status => 2 
+status_text => Completed 
+ipn_mode => hmac 
+
+
+HTTP_HMAC => 8401027ad296acad0f073a07ee7a5ae63d24591b445d9fc8e2273c9d7fef3b825b86ba0c03e6ca2e190e7ec5b3d503cbe59b2c3907682a3d1ce8ae41906cc7e3 
+

@@ -1,5 +1,6 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/foreugxh 
+    - export DEPLOYPATH=/home/millkocg/app.millionairesacademy.org  
     - /bin/cp -r * $DEPLOYPATH
+    

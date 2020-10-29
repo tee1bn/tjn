@@ -15,6 +15,18 @@ class UserFilter extends QueryFilter
 {
 	use RangeFilterable;
 
+	
+	
+
+		public function ref($ref=null)
+		{	
+
+			if ($ref == null) {
+				return ;
+			}
+	        $this->builder->where('id', 'like', "%$ref%");
+		}
+
 
 
 	public function firstname($firstname = null)
@@ -44,20 +56,40 @@ class UserFilter extends QueryFilter
 
 
 
-	public function name($name = null)
+	public function country($country = null)
 	{
-		if ($name == null) {
+		if ($country == null) {
 			return ;
 		}
-
-		$this->builder->WhereRaw("firstname like ? 
-                                      OR lastname like ? 
-                                      ",
-                                      array(
-                                          '%'.$name.'%',
-                                          '%'.$name.'%')
-                                  );
+		$this->builder->where('country', "like",  "%$country%");
 	}
+
+	
+		
+		public function name($name = null)
+		{
+			if ($name == null) {
+				return ;
+			}
+
+			$user_ids = User::WhereRaw("firstname like ? 
+	                                      OR lastname like ? 
+	                                      OR username like ? 
+	                                      OR email like ? 
+	                                      OR phone like ? 
+	                                      ",
+	                                      array(
+	                                          '%'.$name.'%',
+	                                          '%'.$name.'%',
+	                                          '%'.$name.'%',
+	                                          '%'.$name.'%',
+	                                          '%'.$name.'%')
+	                                  )->get()->pluck('id')->toArray();
+
+
+
+			$this->builder->whereIn('id', $user_ids);
+		}
 
 
 
@@ -70,7 +102,7 @@ class UserFilter extends QueryFilter
 		$this->builder->where('email', $email);
 	}
 
-	
+
 	public function active_status($active_status = null)
 	{
 		if ($active_status == null) {

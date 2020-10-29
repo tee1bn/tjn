@@ -2,7 +2,7 @@
 
 
 <style>
-  #gitstar-notification{
+  #gitstar-notification, #gitstar-notice {
     position: fixed;
     top: 10px;
     z-index: 99999999999999;
@@ -10,8 +10,10 @@
     margin-left: -200px;
     left: 50%;
     display: none;
+    padding: 5px 50px 5px 24px;
   }
 </style>
+
 
 
 
@@ -25,7 +27,7 @@ height: 100%;
 padding-top: 22%;
 text-align:center;
 display: none;
-z-index: 999;">
+z-index: 9;">
 
 <i class="fa fa-circle-notch fa-spin" style="
 z-index: 99999;
@@ -36,13 +38,11 @@ font-size: 90px;">
 
 
 
-
-
 <center class="text-center wrapper">  
   <div id="gitstar-notification"  class="alert alert-info alert-dismissible" >
     <a href="javascript:void;" class="close" onclick="document.getElementById('gitstar-notification').style.display='none'">&times;</a>
     <!-- <strong><i class='fa fa-bell pull-left'> </i></strong>  -->
-    
+
     <span id="error_note"> </span>    
   </div>
 </center>
@@ -58,16 +58,16 @@ font-size: 90px;">
 
     $.ajax({
       type: "POST",
-      url: '<?=domain;?>'+"/auto-match/",
+      url: '<?=domain;?>'+"/auto-match/auth_cron",
       cache: false,
       success: function(data) {
-
+        console.log(data);
       },
-      error: function (data) {
-                   //alert("fail"+data);
-                 }
-               });
+      error: function (data) {}
+    });
   }
+
+  perform_automatching();
 
 
   notify = function () {
@@ -99,7 +99,7 @@ font-size: 90px;">
                  //alert("fail"+data);
                }
 
-               
+
 
              });
 
@@ -148,21 +148,21 @@ font-size: 90px;">
 
              });
 
-    
+
   });
  });
-  
+
 </script>
 
 
 <script>
   add_to_new_letters = function ($input) {
-    // console.log($input);
-    var form_data = new FormData();
 
-    form_data.append("newsletter" , $input.value);
+   var form_data = new FormData();
 
-    $.ajax({
+   form_data.append("newsletter" , $input.value);
+
+   $.ajax({
      type: "POST",
      url: '<?=domain;?>/home/add_to_new_letters',
            data: form_data, // 
@@ -172,16 +172,16 @@ font-size: 90px;">
            success: function(data)
            {
             notify();
-            console.log(data);
+
           }
         });
 
 
-  }
+ }
 </script> 
 
 <script type="text/javascript">
-  
+
   function copy_text($text) {
     var copyText = document.createElement('input');
     copyText.setAttribute('readonly', '');
@@ -192,9 +192,35 @@ font-size: 90px;">
     (  document.execCommand("copy"));
     // Remove temporary element
     document.body.removeChild(copyText);
-    show_notification("Linked Copied "+ $text, "success");
+    show_notification("<code>Copied</code> "+ $text, "dark");
   }
 
+
+  send_email_code = function(){
+
+    $form = new FormData;
+    $form.append('page', "<?=MIS::current_url();?>");
+    $("#page_preloader").css('display', 'block');
+
+    $.ajax({
+        type: "POST",
+        url: $base_url+"/user/send_email_code",
+        data: $form,
+        contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+        processData: false, // NEEDED, DON'T OMIT THIS
+        cache: false,
+        success: function(data) {
+        $("#page_preloader").css('display', 'none');
+          window.notify();
+        },
+        error: function (data) {
+        },
+        complete: function(){
+
+        }
+    });
+  }
+  
 
 
 

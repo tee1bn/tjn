@@ -3,6 +3,9 @@
 use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
+use  v2\Models\Market;
+
+
 class Products extends Eloquent 
 {
 	
@@ -24,6 +27,133 @@ class Products extends Eloquent
 
 
     protected $hidden = ['downloadable_files'];
+
+    public static $category_in_market = 'product';
+
+
+
+
+
+
+    
+
+
+    public function getimageJsonAttribute()
+    {   
+        $value = $this->image;
+
+
+        if ((!is_dir($value))  && (file_exists($value))) {
+
+            return ($value);
+        }
+
+        return 'uploads/images/courses/course_image.jpeg';
+    }
+
+
+
+    public static function star_rating($rate,  $scale)
+    {
+        $stars = '';
+        for ($i=1; $i <= $scale ; $i++) { 
+                if ($i <= $rate) {
+                    $stars .= "<i class='fa fa-star'></i>";
+                }else{
+                    $stars .= "<i class='fa fa-star-o'></i>";
+                }
+        }
+
+        $point = number_format(($rate), 1);
+        $stars .= " (<b>$point</b>)";
+        $star_rating = compact('rate', 'scale', 'stars', 'point');
+
+        return $star_rating;
+    }
+
+
+
+    public function quickview()
+    {
+
+        $currency = Config::currency();
+        $price = MIS::money_format($this->price);
+        $by = ($this->instructor == null)? '' : "By {$this->instructor->fullname} ";
+
+
+        $last_updated = date("M j, Y h:iA" , strtotime($this->updated_at));
+        $quickview = "
+            <small>Last updated -{$last_updated}</small>
+            <h5><b>{$this->title}</b></h5>
+            <p> $this->primarily_taught | $this->category | $this->level</p>
+            <p>$by <span style='margin-left: 30px;    font-weight: bold;    font-size: 25px;'> $currency$price</span>
+            </p> 
+            <hr>
+
+            <p>$this->description</p>
+            <ul>
+
+            </ul>
+         
+          ";
+
+          return $quickview;
+    }
+
+    public function scopeFree($query)
+    {
+        return $query->where('price', 0);
+    }
+
+    
+    
+    public function is_free()
+    {
+        return $this->price == 0;
+    }
+
+
+
+    public function getViewLinkAttribute()
+    {
+        $domain = Config::domain();
+
+        $url_friendly = MIS::encode_for_url($this->title);
+        $category_in_market = self::$category_in_market;
+        $singlelink = "$domain/shop/full-view/$this->id/$category_in_market/$url_friendly";
+
+        return $singlelink;  
+    }
+
+
+    public function market_details()
+    {
+
+        $domain = Config::domain();
+        $thumbnail = "$this->mainimage";
+        $market_details = [
+            'id' => $this->id,
+            'model' => self::class,
+            'name' => $this->name,
+            'short_name' => substr($this->name, 0, 34),
+            'description' => $this->description,
+            'short_description' => substr($this->description, 0, 50).'...',
+            'quick_description' => substr($this->description, 0, 250).'...',
+            'price' => $this->price,
+            'old_price' => $this->old_price,
+            'by' => ($this->instructor == null)? '' : "By {$this->instructor->fullname}",
+            'star_rating' => self::star_rating(4, 5),
+            'quickview' =>  $this->quickview(),
+            'single_link' =>  $this->ViewLink,
+            'thumbnail' =>  $thumbnail,
+            'unique_name' =>  'product',  // this name is used to identify this item in cart and at delivery
+        ];
+
+        return $market_details;
+    }   
+
+
+
 
 
 
@@ -102,6 +232,11 @@ class Products extends Eloquent
 		return  (int) (($this->old_price - $this->price) * (100 / $this->old_price));
 	}
 
+
+	public function is_ready_for_review()
+	{
+		return true;
+	}
 
 	public function update_product($inputs, $files, $downloadable_files)
 	{
@@ -324,6 +459,73 @@ class Products extends Eloquent
 	{
 		return 'https://wrappixel.com/demos/admin-templates/monster-admin/assets/images/big/img1.jpg';
 	}
+
+
+
+
+	//market approval status
+	public function getApprovalStatusAttribute()
+	{
+
+	      $last_submission =  Market::where('category', $this::$category_in_market)
+	                        ->where('item_id', $this->id)
+	                        ->latest()
+	                        ->first();
+
+	        if ($last_submission == null) {
+	            return "<span class='badge badge-sm badge-dark'>Drafting</span>";
+	        }
+
+	        switch ($last_submission->approval_status) {
+	        case 2:
+	            $status = "<span class='badge badge-sm badge-success'>Approved</span>";
+	            break;
+	        
+	        case 1:
+	            $status = "<span class='badge badge-sm badge-warning'>In review</span>";
+	            break;
+	    
+	        case 0:
+	            $status = "<span class='badge badge-sm badge-danger'>Declined</span>";
+	            break;
+
+	        case null:
+	        $status = "<span class='badge badge-sm badge-info'>unknown</span>";
+	        break;
+	    
+	        
+	        default:
+	            # code...
+	            break;
+	    }
+
+	    return $status;
+
+	}
+
+
+	public static function approved()
+	{
+	    return self::where('status', 'Approved');
+	}
+
+	public static function in_review()
+	{
+	    return self::where('status', 'In review');
+	}
+
+
+	public  static function draft()
+	{
+	    return self::where('status', 'Draft');
+	}
+
+
+	public  static function denied()
+	{
+	    return self::where('status', 'Denied');
+	}
+
 
 
 	public function getmainimageAttribute()

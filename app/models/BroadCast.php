@@ -16,7 +16,10 @@ public function admin()
 		return $this->belongsTo('Admin', 'admin_id')	;
 }
 
-
+public function scopePublished($query)
+{
+	return $query->where('status', 1);
+}
 
 public static function live()
 {

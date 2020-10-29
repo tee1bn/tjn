@@ -13,6 +13,22 @@ class SiteSettings extends Eloquent
 
 
 
+	public static function binary_daterange()
+	{
+
+
+
+		$settings = SiteSettings::all()->keyBy('criteria');
+		$binary_bonus_settings = $settings['binary_bonus']->settingsArray;
+		$cuts_on = $binary_bonus_settings['cuts_on'];
+		$last_monday = date("Y-m-d", strtotime("last $cuts_on"));
+		$daterange = MIS::date_range($last_monday, 'weekly', true);
+		$daterange['start_date'] = "2020-01-01";
+
+		return $daterange;
+	}
+
+
 
 	public function getsettingsArrayAttribute()
     {
@@ -37,20 +53,13 @@ class SiteSettings extends Eloquent
 		return self::where('criteria', $criteria)->first();
 	}
 
-	public function tax_settings()
-	{
-		$settings = ['indian_tax', 'general_tax'];
-
-		return self::whereIn('criteria', $settings)->get();
-
-	}
-
 
 	public static function payment_gateway_settings()
 	{
-		$payments_settings_keys = [ 'paystack_keys', 'flutter_wave_keys','website_bonus_keys','bank_transfer'];
+		$payments_settings_keys = [/*'coinpay_keys', 'paypal_keys', 'livepay_keys'*/ 'website_bonus_keys'];
 
 		return self::whereIn('criteria', $payments_settings_keys)->get();
+
 	}
 
 
@@ -127,6 +136,9 @@ class SiteSettings extends Eloquent
 
 								$new_file[$i]['files'] = $file_path;
 								$new_file[$i]['label'] = $label;
+								$new_file[$i]['category'] = $file['category'];
+
+								
 
 								array_unshift($documents, $new_file[$i]);
 		                }else{

@@ -6,35 +6,13 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 class Admin extends Eloquent 
 {
 	
-	protected $fillable = [ 'username','firstname','lastname', 'phone','email', 'password', 'status'];
+	protected $fillable = [ 'username','firstname','lastname', 'phone','email', 'password', 'super_admin'];
 	
 	protected $table = 'administrators';
 
     protected $hidden = ['password'];
 
 
-	public function admin_access()
-	{
-		return $this->hasOne('AdminAccess', 'admin_id');
-	}
-
-	public function getactiveStatusAttribute()
-	{
-
-         $status = (($this->is_active()) )
-          ? "<span type='span' class='badge badge-xs badge-success'>Active</span>":
-           "<span type='span' class='badge badge-xs badge-danger'>Blocked</span>";
-
-           return $status;
-	}
-
-
-
-
-	public function is_active()
-	{
-		return $this->status ==1 ;
-	}
 
 
     public function getAdminViewUrlAttribute()

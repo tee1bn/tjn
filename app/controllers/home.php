@@ -1,222 +1,142 @@
 <?php
 
 
-use classes\Auth\Auth as Auth;
-use World\Country;
-use v2\Models\FinancialBank;
-use v2\Models\UserDocument;
 use Illuminate\Database\Capsule\Manager as DB;
+use v2\Models\Commission;
+use v2\Models\HotWallet;
+use v2\Models\InvestmentPackage;
+use v2\Models\Wallet;
+use v2\Models\Withdrawal;
+use v2\Models\Sales;
+
+
+// use v2\Shop\Payments\Paypal\Paypal as cPaypal;
+// use v2\Shop\Payments\Paypal\Subscription;
 
 
 /**
  * this class is the default controller of our application,
- * 
-*/
+ *
+ */
 class home extends controller
 {
 
 
-	public function __construct(){
+    public function __construct()
+    {
 
-	}
+    }
 
-	public function test2()
-	{
+    public function test2()
+    {
 
-		echo "<pre>";
-
-		$response = QuestionaireResponse::latest()->first();
-
-		print_r($response->performance());
-		print_r($response->Corrections);
+        echo "<pre>";
 
 
-		return;
-
-/*			$message = "Ilove";
-		    echo  $client_email_message = $this->buildView('emails/compile', compact('message'));
-*/
-
-		    echo MIS::compile_email("ok");
-
-		    return;
-
-	echo "<pre>";
-		    $users = User::find(1);
-		    // $documents = UserDocument::where
+        $setting = SiteSettings::all()->keyBy('criteria');
 
 
-		$users->has_verified_profile();
 
-	$response =  DB::select("SELECT m1.user_id, COUNT(*) as approved_docs
-            FROM users_documents m1 LEFT JOIN users_documents m2
-             ON (m1.document_type = m2.document_type AND m1.id < m2.id)
-            WHERE m2.id IS NULL 
-            AND m1.status = '2'
-            GROUP BY m1.user_id
-            Having  approved_docs = 2
-            ;
 
-            ")
-	;
-	// ->pluck('id')->toArray();
+        $ranks_and_gen = collect($setting['rank_and_generation']->settingsArray['ranks'])->toArray();
+        print_r($ranks_and_gen);
+
+        return;
+
+        $order = Orders::find(27);
+
+        $order->give_value_on_wordpress();
+
+
+        return;
 /*
-select `m1`.`user_id`, COUNT(*) as approved_docs
- from `users_documents` as `m1` left join `users_documents` 
-on `m1`.`document_type` = `m2`.`document_type` and `m1`.`id` < `m2`.`id` 
-where `m1`.`status` = 2 
-group by `m1`.`user_id` 
-having `approved_docs` > 1
-*/
-
-
-		print_r($response);
-
-		$users = User::query();
-
-		$eloquent = UserDocument::from("users_documents as user_doc")->select('user_doc.user_id', DB::raw("COUNT(*) as approved_docs"))
-		->where('user_doc.status', 2)
-		->groupBy('user_doc.user_id')
-		->having('approved_docs', '>',1)
-		  ->leftJoin('users_documents', function ($join) {
-            $join
-            ->on('user_doc.document_type', '=', 'users_documents.document_type')
-            ->on('user_doc.id', '<', 'users_documents.id')
-            ;
-        })
-		  ->where('users_documents.id', null)
-		;
+        $withdrawals = Withdrawal::select(DB::raw("COUNT(*) as count"), 
+                                            DB::raw("sum(amount) as amount"), 
+                                            DB::raw("sum(fee) as fee"), 
+                                            DB::raw("sum(amount) - sum(fee) as payable"), 
+                                            'status' )->groupBy('status')->get()->keyBy('status');
 
 
 
-		$userss = User::query()
-		        ->joinSub($eloquent, 'approved_documents', function ($join) {
-		            $join->on('users.id', '=', 'approved_documents.user_id');
-		        })->get();
+
+        $commissions = Commission::select(DB::raw("COUNT(*) as count"), 
+                                            DB::raw("sum(amount) as amount"), 
+                                            'type' )->groupBy('type')->get()->keyBy('type');
 
 
-		 print_r($userss->toArray());
 
 
-		// print_r($eloquent->toSql());
-		print_r($eloquent->get()->toArray());
-
-		// print_r($response->get()->toArray());
-
-	}
-
-	public function survey()
-	{
-		$questionaire = Questionaire::Published()->where('code', $_GET['survey_id'])->first();
-
-		if ($questionaire == null ) {
-		    die();
-		}
-
-		$this->view('guest/survey', compact('questionaire'));
-	}
-
-	public function survey_for_course($quiz_id)
-	{
-		$questionaire = Questionaire::Published()->where('id', $quiz_id)->first();
-
-		if ($questionaire == null ) {
-		    die();
-		}
-		
-		$this->view('guest/survey_for_course', compact('questionaire'));
-	}
-
-	public function close_ticket()
-	{
-	    $ticket	 = SupportTicket::where('code', $_REQUEST['ticket_code'])->first();
-	    $ticket->mark_as_closed();
-	    Redirect::back();
-	}
+        $generated_commissions = ($commissions['credit']['amount'] ?? 0) 
+                    - ($commissions['debit']['amount'] ?? 0);
 
 
-	public function support_message()
-	{
 
-	    $files = MIS::refine_multiple_files($_FILES['documents']);
+        $payout = $generated_commissions
+                    - ($withdrawals['completed']['payable'] ?? 0);*/
 
-	    $ticket = SupportTicket::where('code', $_POST['ticket_code'])->first();
-	    $ticket->update(['status' => '0']);
+        
 
-	    $message = SupportMessage::create([
-	        'ticket_id' => $ticket->id,
-	        'message' => $_POST['message'],
-	    ]);
+/*
+        $commissions = Commission::select(DB::raw("COUNT(*) as count"), 
+                                            DB::raw("sum(amount) as amount"), 
+                                            'type' )->groupBy('type')->get()*/;
 
 
+
+
+            print_r($withdrawals->toArray());
+            print_r($commissions->toArray());
+
+
+
+        return;
+
+        $method = v2\Models\UserWithdrawalMethod::first();
+
+        $r = $method->MethodDetails;
+
+        print_r($r);
+
+        return;
+        $sale = Sales::first();
+
+        $sale->update_amount_with_conversion();
+
+        // $sale->give_referral_commissions();
+
+
+
+        return;
+        $user = User::find(1);
+
+        $life_group_volume =  ($user->total_volumes('all', 'enrolment', [], 'volume', 'personal'));
+
+        echo $life_group_volume;
+
+    
+    }
+
+
+
+    public function contact_us()
+    {
+
+
+        // verify_google_captcha();
+
+        echo "<pre>";
+
+        print_r($_REQUEST);
+        extract($_REQUEST);
 
         $project_name = Config::project_name();
         $domain = Config::domain();
 
-		$settings = SiteSettings::site_settings();
-		$noreply_email = $settings['noreply_email'];
-		$support_email = $settings['support_email'];
+        $settings = SiteSettings::site_settings();
+        $noreply_email = $settings['noreply_email'];
+        $support_email = $settings['support_email'];
 
-
-
-	    $message->upload_documents($files);
-
-	    $_headers = "From: {$ticket->customer_email}";
-
-	    $client_email_message = "Dear Admin, Please respond to this support ticket on the forexfxprofit admin <br>
-	                            From:<br>
-	                            $ticket->customer_name,<br>
-	                            $ticket->customer_email,<br>
-	                            $ticket->customer_phone,<br>
-	                            Ticket ID: $ticket->code<br>
-	                            <br>
-	                             ";
-	    $client_email_message .= $message->message;
-
-	    $client_email_message = MIS::compile_email($client_email_message);
-
-
-	    $mailer = new Mailer();
-
-	    
-	    //for admin
-	    $mailer->sendMail(
-	        $support_email,
-	    	"$project_name Support - Ticket ID: $ticket->code",
-	        $client_email_message,
-	        "9gForex Support",
-	        "$ticket->customer_email",
-	        "9gForex.com"
-	    );
-
-
-
-
-
-	    Redirect::back();
-	}
-
-
-
-	    public function contact_us()
-	    {
-
-
-	        MIS::verify_google_captcha();
-
-		echo "<pre>";
-
-		print_r($_REQUEST);
-	        extract($_REQUEST);	
-
-	        $project_name = Config::project_name();
-	        $domain = Config::domain();
-
-			$settings = SiteSettings::site_settings();
-			$noreply_email = $settings['noreply_email'];
-			$support_email = $settings['support_email'];
-
-	        $admin_email_message = "
+        $email_message = "
 			       <p>Dear Admin, Please respond to this support ticket on the $project_name admin </p>
 
 
@@ -231,26 +151,26 @@ having `approved_docs` > 1
 			       ";
 
 
-	        $client = User::where('email', $_POST['email'])->first();
-	        $support_ticket = SupportTicket::create([
-	            'subject_of_ticket' => $_POST['comment'],
-	            'user_id' => $client->id,
-	            'customer_name' => $_POST['full_name'],
-	            'customer_phone' => $_POST['phone'],
-	            'customer_email' => $_POST['email'],
-	        ]);
+        $client = User::where('email', $_POST['email'])->first();
+        $support_ticket = SupportTicket::create([
+            'subject_of_ticket' => $_POST['comment'],
+            'user_id' => $client->id,
+            'customer_name' => $_POST['full_name'],
+            'customer_phone' => $_POST['phone'],
+            'customer_email' => $_POST['email'],
+        ]);
 
-	        $code = $support_ticket->id . MIS::random_string(7);
-	        $support_ticket->update(['code' => $code]);
-	        //log in the DB
+        $code = $support_ticket->id . MIS::random_string(7);
+        $support_ticket->update(['code' => $code]);
+        //log in the DB
 
-	        $client_email_message = "
+        $client_email_message = "
 			       Hello {$support_ticket->customer_name},
 
-			       <p>We have received your enquiry and a support ticket with Ticket ID: <b>{$support_ticket->code}</b>
-			        has been created for you. We will respond shortly.</p>
+			       <p>We have received your inquiry and a support ticket with the ID: <b>{$support_ticket->code}</b>
+			        has been generated for you. We would respond shortly.</p>
 
-			      <p>You can click the link below to update your enquiry.</p>
+			      <p>You can click the link below to update your inquiry.</p>
 
 			       <p><a href='{$support_ticket->link}'>{$support_ticket->link}</a></p>
 
@@ -263,148 +183,228 @@ having `approved_docs` > 1
 	               ";
 
 
-	        $support_email_address = $noreply_email;
+        $support_email_address = $noreply_email;
 
-	        $message = $admin_email_message;
-	        $admin_email_message = $this->buildView('emails/contact-message', compact('message'), true);
-
-	        $message = $client_email_message;
-	        $client_email_message = $this->buildView('emails/contact-message', compact('message'), true);
+        $client_email_message = MIS::compile_email($client_email_message);
+        $email_message = MIS::compile_email($email_message);
 
 
-	        $mailer = new Mailer();
+        $mailer = new Mailer();
 
-	        //for admin
-	        $mailer->sendMail(
-	            $support_email,
-	        	"$project_name Support - Ticket ID: $support_ticket->code",
-	            $admin_email_message,
-	            "9gForex Support",
-	            "$support_ticket->customer_email",
-	            "9gForex.com"
-	        );
+        $mailer->sendMail(
+            $support_email_address,
+            "$project_name Support - Ticket ID: $support_ticket->code",
+            $client_email_message,
+            "Support");
 
 
+        $response = $mailer->sendMail(
+            "$support_ticket->customer_email",
+            "$project_name Support - Ticket ID: $support_ticket->code",
+            $client_email_message,
+            $support_ticket->customer_name
+        );
+
+        Session::putFlash('success', "Message sent successfully.");
+
+        Redirect::back();
+
+        die();
 
 
-	        //for client
-	        $response = $mailer->sendMail(
-	        	  "$support_ticket->customer_email",
-	        	"$project_name Support - Ticket ID: $support_ticket->code", 
-	        	$client_email_message, 
-	        	 $support_ticket->customer_name,
-	        	 $support_email,
-	        	 "9gForex Support"
-	        	);
+    }
 
 
-	        print_r($response);
+    /**
+     * [flash_notification for application notifications]
+     * @return [type] [description]
+     */
+    public function flash_notification()
+    {
+        header("Content-type: application/json");
 
-	        Session::putFlash('primary', "Message sent successfully.");
-
-	        Redirect::back();
-
-	    
-
-	}
-
-
-
-
-	/**
-	 * [flash_notification for application notifications]
-	 * @return [type] [description]
-	 */
-	public function flash_notification()
-	{
-		header("Content-type: application/json");
-
-		if (isset($_SESSION['flash'])) {
-		echo json_encode($_SESSION['flash']);
-		}else{
-			echo "[]";
-		}
+        if (isset($_SESSION['flash'])) {
+            echo json_encode($_SESSION['flash']);
+        } else {
+            echo "[]";
+        }
 
 
-		unset($_SESSION['flash']);
+        unset($_SESSION['flash']);
 
-	}
-
-
-
-	public function index($page=null)
-	{			
-		switch ($page) {
-			case 'supportmessages':
-
-				$this->view('guest/support-messages');
-				break;
-
-			case 'about-us':
-				$this->view('guest/about-us');
-				break;
-
-			case 'fx-academy':
-				$this->view('guest/fx-academy');
-				break;
-			
-			case 'faqs':
-				$this->view('guest/faqs');
-				break;
-			
-			case 'event-calendar':
-				$this->view('guest/event-calendar');
-				break;
-			
-			case 'contact-us':
-				$this->view('guest/contact-us');
-				break;
-
-			case 'fx-signals':
-				$this->view('guest/signals');
-				break;
-
-			case 'fx-signals-terms':
-				$this->view('guest/fx-signals-terms');
-				break;
-			
-			case null:
-				$this->view('guest/index');
-				break;
-			
-			default:
-				$this->view('guest/error-404');
-				break;
-		}
+    }
 
 
+    public function close_ticket()
+    {
+        $ticket = SupportTicket::where('code', $_REQUEST['ticket_code'])->first();
+        $ticket->mark_as_closed();
+        Redirect::back();
+    }
 
-	}
 
+    public function support_message()
+    {
+
+        $project_name = Config::project_name();
+        $domain = Config::domain();
+
+        $settings = SiteSettings::site_settings();
+        $noreply_email = $settings['noreply_email'];
+        $support_email = $settings['support_email'];
+
+
+        $files = MIS::refine_multiple_files($_FILES['documents']);
+
+        $ticket = SupportTicket::where('code', $_POST['ticket_code'])->first();
+        $ticket->update(['status' => '0']);
+
+        $message = SupportMessage::create([
+            'ticket_id' => $ticket->id,
+            'message' => $_POST['message'],
+        ]);
+
+
+        $message->upload_documents($files);
+
+        $support_email_address = "$support_email";
+        $_headers = "From: {$ticket->customer_email}";
+
+        $client_email_message = "Dear Admin, Please respond to this support ticket on the admin <br>
+	                            From:<br>
+	                            $ticket->customer_name,<br>
+	                            $ticket->customer_email,<br>
+	                            $ticket->customer_phone,<br>
+	                            Ticket ID: $ticket->code<br>
+	                            <br>
+	                             ";
+        $client_email_message .= $message->message;
+
+        $client_email_message = $ticket->compile_email($client_email_message);
+
+        $mailer = new Mailer();
+
+        $mailer->sendMail(
+            "$support_email_address",
+            "$project_name Support - Ticket ID: $ticket->code",
+            $client_email_message,
+            "Support"
+        );
+
+        Redirect::back();
+    }
+
+
+    public function index($page = null)
+    {
+
+        Redirect::to('login');
+
+        switch ($page) {
+            case 'supportmessages':
+
+                $this->view('guest/support-messages');
+
+                break;
+
+            case 'about':
+
+                $this->view('guest/about');
+                break;
+
+            case 'packages':
+
+                $this->view('guest/packages');
+                break;
+
+            case 'services':
+                $this->view('guest/services');
+                break;
+
+            case 'products':
+                $this->view('guest/products');
+                break;
+
+            case 'payment-method':
+                $this->view('guest/payment-method');
+                break;
+
+
+            case 'referral':
+                $this->view('guest/referral');
+                break;
+
+            case 'leadership-program':
+                $this->view('guest/leadership-program');
+                break;
+
+            case 'how-to-be-part':
+                $this->view('guest/how-to-be-part');
+                break;
+
+            case 'trucash':
+                $this->view('guest/trucash');
+                break;
+
+            case 'faqs':
+                $this->view('guest/faqs');
+                break;
+
+            case 'contact':
+                $this->view('guest/contact');
+                break;
+
+            case 'terms':
+                $this->view('guest/terms');
+                break;
+
+            case 'privacy':
+                $this->view('guest/privacy');
+                break;
+
+            case 'user-agreement':
+                $this->view('guest/user-agreement');
+                break;
+
+            case null:
+
+                $this->view('guest/index');
+                // Redirect::to('w');
+                break;
+
+            default:
+
+                $this->view('guest/404');
+                break;
+        }
+
+
+    }
+
+
+    public function about_us()
+    {
+        $this->view('guest/about_us');
+    }
+
+
+    public function how_it_works()
+    {
+        $this->view('guest/how-it-works');
+    }
+
+    public function contact()
+    {
+        $this->view('guest/contact');
+    }
+
+    public function faqs()
+    {
+        $this->view('guest/faq');
+    }
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ?>

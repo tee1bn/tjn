@@ -1,0 +1,174 @@
+[04-03-2020 16:58:44] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic QVlSMnJubjc5cXRYeHRCUXNSTFBJNzR5TFJFVlVndDZJN3pJbHM2ZGZoZVdxcGZnSFBrNjRnSVFNMlB3SDYwLWtZVWtGRHctNFptNXFkTG46RUZwZXdsLXZ1VlBUQWplN2FPMVRrMG40VnZBaGQ0Um10ck1SeFdNelh6OWE1Yzk2TUdOSmUwQ1Q3dzR5ckMwYlFqZE9sTXhjVzJGS2JrZjA=, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 200
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 918, Content-Type: application/json, Date: Wed, 04 Mar 2020 15:58:46 GMT, Paypal-Debug-Id: 6060c36c23c02, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"scope":"https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks","access_token":"A21AAHCXp1_jhfDav9gE_p4n4DN3UH-bZYrVtVWIlWlIMen2EuFFzqhgbm9vgtWSooPz3W-tkS-e0jW-vaAftutgf4tElHyVg","token_type":"Bearer","app_id":"APP-80W284485P519543T","expires_in":31518,"nonce":"2020-03-04T15:44:04Z17JbL3xGMfeI8Ha94zeDZlciHCN14Nl_FSOO_YTweeY"}
+
+================================================================================================================================
+
+[04-03-2020 16:58:45] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/payments/payment
+[04-03-2020 16:58:48] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/payments/payment HTTP/1.1, Host: api.sandbox.paypal.com, Accept: */*, Content-Type: application/json, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Bearer A21AAHCXp1_jhfDav9gE_p4n4DN3UH-bZYrVtVWIlWlIMen2EuFFzqhgbm9vgtWSooPz3W-tkS-e0jW-vaAftutgf4tElHyVg, Content-Length: 514, , 
+[04-03-2020 16:58:48] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: {"intent":"sale","payer":{"payment_method":"paypal"},"redirect_urls":{"return_url":"http://localhost/taurus/shop/callback?order_unique_id=59","cancel_url":"http://localhost/taurus/shop/callback?order_unique_id=59"},"transactions":[{"amount":{"currency":"EUR","total":"100.00","details":{"tax":"0","subtotal":"100.00"}},"item_list":{"items":[{"name":"Payment for Order#NSW59P524","currency":"EUR","quantity":1,"sku":"1","price":"100.00"}]},"description":"Payment for Order#NSW59P524","invoice_number":"NSW59P524"}]}
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 16:58:48] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 201
+[04-03-2020 16:58:48] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Language: *, Content-Length: 882, Content-Type: application/json, Date: Wed, 04 Mar 2020 15:58:49 GMT, Paypal-Debug-Id: 6d4a6661fa0fb, 
+[04-03-2020 16:58:48] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"id":"PAYID-LZP5AOI219523819C776880G","intent":"sale","state":"created","payer":{"payment_method":"paypal"},"transactions":[{"amount":{"total":"100.00","currency":"EUR","details":{"subtotal":"100.00","tax":"0.00"}},"description":"Payment for Order#NSW59P524","invoice_number":"NSW59P524","item_list":{"items":[{"name":"Payment for Order#NSW59P524","sku":"1","price":"100.00","currency":"EUR","quantity":1}]},"related_resources":[]}],"create_time":"2020-03-04T15:58:48Z","links":[{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-LZP5AOI219523819C776880G","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-3G3373022E535800B","rel":"approval_url","method":"REDIRECT"},{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-LZP5AOI219523819C776880G/execute","rel":"execute","method":"POST"}]}
+
+================================================================================================================================
+
+[04-03-2020 17:04:12] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:04:15 GMT, Paypal-Debug-Id: f07b2d352f423, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:04:14] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:04:35] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:04:38 GMT, Paypal-Debug-Id: 867b8839bbdab, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:04:37] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:05:08] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:05:10 GMT, Paypal-Debug-Id: f554d4f1c2aca, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:05:10] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:05:51] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:05:53 GMT, Paypal-Debug-Id: f28249c7e30d8, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:05:52] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:06:01] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:06:03 GMT, Paypal-Debug-Id: 1696ae6be030d, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:06:02] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:07:16] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:07:19 GMT, Paypal-Debug-Id: 494663e517026, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:07:18] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:07:30] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:07:31 GMT, Paypal-Debug-Id: 2f73f4e7a6a64, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:07:31] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:08:50] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:08:52 GMT, Paypal-Debug-Id: dfa9e762a9eb0, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:08:52] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:09:21] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic WVIycm5uNzlxdFh4dEJRc1JMUEk3NHlMUkVWVWd0Nkk3eklsczZkZmhlV3FwZmdIUGs2NGdJUU0yUHdINjAta1lVa0ZEdy00Wm01cWRMbjpFRnBld2wtdnVWUFRBamU3YU8xVGswbjRWdkFoZDRSbXRyTVJ4V016WHo5YTVjOTZNR05KZTBDVDd3NHlyQzBiUWpkT2xNeGNXMkZLYmtmMA==, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 401
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 77, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:09:23 GMT, Paypal-Debug-Id: 40706ab4fd1c3, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : ERROR: Got Http response code 401 when accessing https://api.sandbox.paypal.com/v1/oauth2/token. {"error":"invalid_client","error_description":"Client Authentication failed"}
+[04-03-2020 17:09:23] PayPal\Core\PayPalHttpConnection : DEBUG: 
+
+================================================================================================================================
+
+[04-03-2020 17:09:41] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic QVlSMnJubjc5cXRYeHRCUXNSTFBJNzR5TFJFVlVndDZJN3pJbHM2ZGZoZVdxcGZnSFBrNjRnSVFNMlB3SDYwLWtZVWtGRHctNFptNXFkTG46RUZwZXdsLXZ1VlBUQWplN2FPMVRrMG40VnZBaGQ0Um10ck1SeFdNelh6OWE1Yzk2TUdOSmUwQ1Q3dzR5ckMwYlFqZE9sTXhjVzJGS2JrZjA=, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 200
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 918, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:09:44 GMT, Paypal-Debug-Id: 7755473c850fb, X-Paypal-Token-Service: IAAS, 
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"scope":"https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks","access_token":"A21AAH_WYN9l1sZFtVudqqnWM-Y027eaPktl-9cafp5lTxErMx6-Y71ZrAwP408QT1gd2iW_4s725yrsRl2aVJgBiut1gO-QQ","token_type":"Bearer","app_id":"APP-80W284485P519543T","expires_in":32400,"nonce":"2020-03-04T16:09:44ZuGfe3Eod-ngWSr1xEVKJY8njZ0wIyeXYf7kCaTSB0Aw"}
+
+================================================================================================================================
+
+[04-03-2020 17:09:43] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/payments/payment
+[04-03-2020 17:09:46] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/payments/payment HTTP/1.1, Host: api.sandbox.paypal.com, Accept: */*, Content-Type: application/json, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Bearer A21AAH_WYN9l1sZFtVudqqnWM-Y027eaPktl-9cafp5lTxErMx6-Y71ZrAwP408QT1gd2iW_4s725yrsRl2aVJgBiut1gO-QQ, Content-Length: 514, , 
+[04-03-2020 17:09:46] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: {"intent":"sale","payer":{"payment_method":"paypal"},"redirect_urls":{"return_url":"http://localhost/taurus/shop/callback?order_unique_id=84","cancel_url":"http://localhost/taurus/shop/callback?order_unique_id=84"},"transactions":[{"amount":{"currency":"EUR","total":"100.00","details":{"tax":"0","subtotal":"100.00"}},"item_list":{"items":[{"name":"Payment for Order#NSW84P181","currency":"EUR","quantity":1,"sku":"1","price":"100.00"}]},"description":"Payment for Order#NSW84P181","invoice_number":"NSW84P181"}]}
+--------------------------------------------------------------------------------------------------------------------------------
+
+[04-03-2020 17:09:46] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 201
+[04-03-2020 17:09:46] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Language: *, Content-Length: 882, Content-Type: application/json, Date: Wed, 04 Mar 2020 16:09:47 GMT, Paypal-Debug-Id: 173f6333dc2bf, 
+[04-03-2020 17:09:46] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"id":"PAYID-LZP5FSY8TN83761PE654072P","intent":"sale","state":"created","payer":{"payment_method":"paypal"},"transactions":[{"amount":{"total":"100.00","currency":"EUR","details":{"subtotal":"100.00","tax":"0.00"}},"description":"Payment for Order#NSW84P181","invoice_number":"NSW84P181","item_list":{"items":[{"name":"Payment for Order#NSW84P181","sku":"1","price":"100.00","currency":"EUR","quantity":1}]},"related_resources":[]}],"create_time":"2020-03-04T16:09:46Z","links":[{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-LZP5FSY8TN83761PE654072P","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-3CF26700J0798711P","rel":"approval_url","method":"REDIRECT"},{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-LZP5FSY8TN83761PE654072P/execute","rel":"execute","method":"POST"}]}
+
+================================================================================================================================
+
+[07-04-2020 14:03:35] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/oauth2/token
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/oauth2/token HTTP/1.1, Host: api.sandbox.paypal.com, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Basic QVlSMnJubjc5cXRYeHRCUXNSTFBJNzR5TFJFVlVndDZJN3pJbHM2ZGZoZVdxcGZnSFBrNjRnSVFNMlB3SDYwLWtZVWtGRHctNFptNXFkTG46RUZwZXdsLXZ1VlBUQWplN2FPMVRrMG40VnZBaGQ0Um10ck1SeFdNelh6OWE1Yzk2TUdOSmUwQ1Q3dzR5ckMwYlFqZE9sTXhjVzJGS2JrZjA=, Accept: */*, Content-Length: 29, Content-Type: application/x-www-form-urlencoded, , 
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: grant_type=client_credentials
+--------------------------------------------------------------------------------------------------------------------------------
+
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 200
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Length: 918, Content-Type: application/json, Date: Tue, 07 Apr 2020 13:04:33 GMT, Paypal-Debug-Id: cba4f0ac4d18b, X-Paypal-Token-Service: IAAS, 
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"scope":"https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks","access_token":"A21AAFppEf1juwSU7IBrL7UKfFUpGykTe5VBZLMXp3pip1HC8YmxNkpYFNdlNe8sJT-wL-VqHf2Z6gSwPuPFJ55P9Fr4x1SPQ","token_type":"Bearer","app_id":"APP-80W284485P519543T","expires_in":32400,"nonce":"2020-04-07T13:04:33ZoTCDUunW6BrUSpZ7F3VGG2ApfcXzNibCVxRHdYHjxTo"}
+
+================================================================================================================================
+
+[07-04-2020 14:03:38] PayPal\Core\PayPalHttpConnection : INFO: POST https://api.sandbox.paypal.com/v1/payments/payment
+[07-04-2020 14:03:41] PayPal\Core\PayPalHttpConnection : DEBUG: Request Headers 	: POST /v1/payments/payment HTTP/1.1, Host: api.sandbox.paypal.com, Accept: */*, Content-Type: application/json, User-Agent: PayPalSDK/PayPal-PHP-SDK 1.14.0 (platform-ver=7.3.3; bit=64; os=Windows_NT_10.0; machine=AMD64; crypto-lib-ver=1.1.1a; curl=7.64.0), Authorization: Bearer A21AAFppEf1juwSU7IBrL7UKfFUpGykTe5VBZLMXp3pip1HC8YmxNkpYFNdlNe8sJT-wL-VqHf2Z6gSwPuPFJ55P9Fr4x1SPQ, Content-Length: 517, , 
+[07-04-2020 14:03:41] PayPal\Core\PayPalHttpConnection : DEBUG: Request Data		: {"intent":"sale","payer":{"payment_method":"paypal"},"redirect_urls":{"return_url":"http://localhost/taurus/shop/callback?order_unique_id=33","cancel_url":"http://localhost/taurus/shop/callback?order_unique_id=33"},"transactions":[{"amount":{"currency":"EUR","total":"1000.00","details":{"tax":"0","subtotal":"1000.00"}},"item_list":{"items":[{"name":"Payment for Order#NSW33P614","currency":"EUR","quantity":1,"sku":"1","price":"1000.00"}]},"description":"Payment for Order#NSW33P614","invoice_number":"NSW33P614"}]}
+--------------------------------------------------------------------------------------------------------------------------------
+
+[07-04-2020 14:03:41] PayPal\Core\PayPalHttpConnection : INFO: Response Status 	: 201
+[07-04-2020 14:03:41] PayPal\Core\PayPalHttpConnection : DEBUG: Response Headers	: Cache-Control: max-age=0, no-cache, no-store, must-revalidate, Content-Language: *, Content-Length: 885, Content-Type: application/json, Date: Tue, 07 Apr 2020 13:04:35 GMT, Paypal-Debug-Id: 6bd52e8120345, 
+[07-04-2020 14:03:41] PayPal\Core\PayPalHttpConnection : DEBUG: Response Data 	: {"id":"PAYID-L2GHUYY37014350KH758591P","intent":"sale","state":"created","payer":{"payment_method":"paypal"},"transactions":[{"amount":{"total":"1000.00","currency":"EUR","details":{"subtotal":"1000.00","tax":"0.00"}},"description":"Payment for Order#NSW33P614","invoice_number":"NSW33P614","item_list":{"items":[{"name":"Payment for Order#NSW33P614","sku":"1","price":"1000.00","currency":"EUR","quantity":1}]},"related_resources":[]}],"create_time":"2020-04-07T13:04:35Z","links":[{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-L2GHUYY37014350KH758591P","rel":"self","method":"GET"},{"href":"https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-36K60613KH6234509","rel":"approval_url","method":"REDIRECT"},{"href":"https://api.sandbox.paypal.com/v1/payments/payment/PAYID-L2GHUYY37014350KH758591P/execute","rel":"execute","method":"POST"}]}
+
+================================================================================================================================
+

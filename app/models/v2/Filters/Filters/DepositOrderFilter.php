@@ -110,21 +110,6 @@ class DepositOrderFilter extends QueryFilter
 	}
 
 
-
-	public function payment_status($payment_status = null)
-	{
-		if ($payment_status == null) {
-			return ;
-		}
-
-		$operations = [ 'paid' => '!=',  'unpaid' => '='];
-		$operation = $operations[$payment_status];
-		
-		$this->builder->where('paid_at', $operation , null);
-	}
-
-
-
 	public function email($email = null)
 	{
 		if ($email == null) {

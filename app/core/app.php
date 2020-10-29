@@ -1,5 +1,6 @@
 <?php
 
+
 	ob_start();
 	class app
 	{
@@ -13,10 +14,10 @@
 		{
 
 
-
 		 	$url =  ($this->parse_url());
 		 
 			require_once 'router.php';
+
 
 
 
@@ -28,22 +29,43 @@
 
 
 
-			 $controller_filename = $router["$url[0]"] ?? '';
-			if(! file_exists('../app/controllers/'. $controller_filename .'.php')){
+			  $controller_filename = @$router["$url[0]"];
+			if(! file_exists('app/controllers/'. $controller_filename .'.php')){
 
-				// echo "This controller does not exist: $controller_filename";
 				$controller_filename = 'home';
 
+				// echo "This controller does not exist: $controller_filename";
+				// Redirect::to('error');
+				// return;
 			}else{
 
+
+
+
+
 			    $controller_class_name = @end(explode('/', $router["$url[0]"]));
+
 			 	$this->controller = $controller_class_name;
 			 	unset($url[0]);
 
 			}
 
-		 	require_once '../app/controllers/'.$controller_filename.'.php';
 
+
+
+
+
+			if (@$_GET['url'] == Config::admin_url())
+			{
+
+				$controller_filename = $this->controller = 'LoginController';
+				$this->method = 'adminLogindfghjkioiuy3hj8';
+			}
+
+
+
+
+		 	require_once 'app/controllers/'.$controller_filename.'.php';
 
 
 		 	$this->controller = new $this->controller($this->user);
@@ -65,14 +87,6 @@
 		 	
 
 
-
-				//perform access control here		
-			 	if ($this->controller->admin()) {
-
-			 		$administrator = $this->controller->admin();
-					Access::access_check_on($administrator);
-
-			 	}
 
 		 	$this->params = $url ? array_values($url): [];
 		 	call_user_func_array([$this->controller , $this->method] , $this->params);

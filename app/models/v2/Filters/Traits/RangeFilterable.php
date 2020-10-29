@@ -20,21 +20,21 @@ trait RangeFilterable
             switch ($date) {
                 
                 case 'this_week':
-                    $date = date_range($today, 'week', true);
+                    $date = MIS::date_range($today, 'week', true);
                     break;
                 
                 case 'last_week':
                     $last_week = date("Y-m-d",strtotime("$today -1 week"));
-                    $date = date_range($last_week, 'week', true);
+                    $date = MIS::date_range($last_week, 'week', true);
                     break;
                 
                 case 'this_month':
-                    $date = date_range($today, 'month', true);
+                    $date = MIS::date_range($today, 'month', true);
                     break;
                 
                 case 'last_month':
                     $last_month = date("Y-m-d",strtotime("$today -1 month"));
-                    $date = date_range($last_month, 'month', true);
+                    $date = MIS::date_range($last_month, 'month', true);
                     break;  
 
                 case 'today':

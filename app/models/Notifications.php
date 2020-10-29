@@ -13,9 +13,11 @@ class Notifications extends Eloquent
 				'heading',
 				'message',
 				'short_message',
+				'broadcast_id',
 				'admin_id',
 				'type',
-				'seen_at'	
+				'seen_at',	
+				'created_at',	
 			];
 	
 	protected $table = 'notifications';
@@ -23,9 +25,10 @@ class Notifications extends Eloquent
 
 
 
-	public static function create_notification($user_id, $url, $heading, $message, $short_message,$admin_id=null )
+	public static function create_notification($user_id, $url, $heading, $message, $short_message,$admin_id=null, $broadcast_id=null, $created_at=null )
 	{
 
+		$created_at = $created_at ?? date("Y-m-d H:i:s");
 			self::create([
 						'user_id'	=> $user_id,
 						'url'		=> $url,
@@ -33,11 +36,30 @@ class Notifications extends Eloquent
 						'message'	=> $message,
 						'short_message'	=> $short_message,
 						'admin_id'	=> $admin_id,
+						'broadcast_id'	=> $broadcast_id,
+						'created_at'	=> $created_at,
 					]);
 
 
 	}
 
+
+
+
+	public function getIntroAttribute()
+	{
+		$message = substr($this->message, 0, 300 );
+		$message = str_replace('src', "scr", $message);
+		return $message;
+	}
+
+
+	public function getSmallIntroAttribute()
+	{
+		$message = substr($this->message, 0, 30 );
+		$message = str_replace('src', "scr", $message);
+		return $message;
+	}
 
 
 	public static function mark_as_seen($ids)
@@ -65,11 +87,11 @@ class Notifications extends Eloquent
 	{
 		if ($this->is_seen()) {
 
-			return "<span class='label  label-success'>Read</span>";
+			return "<span class='badge  badge-success'>Read</span>";
 		}
 
 
-			return "<span class='label  label-danger'>Unread</span>";
+			return "<span class='badge  badge-danger'>Unread</span>";
 	}
 
 	public function is_seen()
@@ -86,8 +108,8 @@ class Notifications extends Eloquent
 				if ($per_page!= null) {
 				 	$skip = ($page - 1)* $per_page;
 
-							$query->take($per_page)
-							->offset($skip);
+					$query->take($per_page)
+					->offset($skip);
 				}
 
 		return $query->get();

@@ -39,17 +39,23 @@ class current_user extends controller
 
 	}
 	
+	public function connect_wp_account()
+	{
+
+		if ($this->auth()->wp_user_id == null) {
+
+			Redirect::to('connect/wp');
+		}
+
+		return $this;
+	}
+	
 	
 
 	public function must_have_verified_company()
 	{	
+
 		$company = $this->auth()->company;
-		if ($company == null) {
-			$company =  Company::create(['user_id'=>$this->auth()->id]);
-		}
-
-
-
 
 		if (($this->setting['company_verification'] == 1) && (! $company->is_approved())) {
 
@@ -81,26 +87,6 @@ class current_user extends controller
 	
 	
 
-		
-	public function mustbe_instructor()
-	{
-		if ($this->auth()->is_instructor()) {
-
-				return  $this;
-
-
-		}else{
-
-			Session::putFlash('danger',  'Only Instructors can access this area. Ask admin For Access');
-
-			Redirect::to('login');
-
-
-		}
-
-	}
-	
-
 
 	public function mustbe_loggedin(){
 
@@ -109,7 +95,6 @@ class current_user extends controller
 		return $this;
 
 		}else{
-			Session::putFlash("danger","Please login or sign up to continue.");
 			$intended_url= $_GET['url'];
 			Redirect::to("login?intended_url=$intended_url");
 		}

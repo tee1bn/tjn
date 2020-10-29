@@ -2,14 +2,30 @@
 
 use Illuminate\Database\Capsule\Manager as DB;
 
-use v2\Tax\Tax;
-use v2\Models\Offer;
+// use v2\Tax\Tax;
 use v2\Shop\Contracts\OrderInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use  Filters\Traits\Filterable;
-use v2\Shop\Shop;
 
-require_once "../app/controllers/home.php";
+
+
+use wp\Models\User as WpUser;
+use wp\Models\Post;
+use wp\Models\PostMeta;
+use wp\Models\LearnPressOrderItem;
+use wp\Models\LearnPressOrderItemMeta;
+use wp\Models\LearnPressUserItem;
+use wp\Models\LearnPressUserItemMeta;
+
+
+use v2\Models\Sales;
+use wp\Models\Terms;
+
+
+
+require_once "app/controllers/home.php";
+
+
 
 
 class Orders extends Eloquent  implements OrderInterface
@@ -26,33 +42,336 @@ class Orders extends Eloquent  implements OrderInterface
 								'payment_method',
 								'payment_details',
 								'additional_note',
+								'payment_proof',
 								'buyer_order',
+								'extra_detail',
 								'status',
 								'paid_at',
 							];
 	
 	protected $table = 'orders';
-	public $name_in_shop = 'courses';
+	public $name_in_shop = 'product';
 
 	//during purchase
 	public static $available_payment_methods =  [
-													'paytm'=>[
-																'method'=>'PayTm',
-																'word'=>'Pay Now (Paytm)',
+													'coinpay'=>[
+																'method'=>'CoinPay',
+																'word'=>'Pay Now (CoinPay)',
 															],
 													'paypal'=>[
 																'method'=>'PayPal',
 																'word'=>'Pay Now (PayPal)',
-															],
-
-													'website'=>[
-																'method'=>'Website',
-																'word'=>'Pay Now (Website)',
-															],
+															]
 												];
 
 
 
+
+
+	public function give_value_on_wordpress()
+	{
+
+		 if ($this->status == 'completed') {
+		 	echo "compact(varname)";
+		 	return;
+ 		 }
+
+		 //find user in school
+		$extra_detail = $this->ExtraDetailArray;
+
+		$course_email = $extra_detail['course_email'];
+
+		$user = WpUser::where('user_email', $course_email)->first();
+
+		 // print_r($course_email);
+		 // print_r($this->total_price());
+		 // print_r($this->order_detail());
+
+		 //create Post Order
+
+
+
+		  $line_items = $this->order_detail();
+
+		  // print_r($line_items);
+
+		  // return;
+		 DB::beginTransaction();
+
+
+		 try {
+		     
+
+		 $now = date("Y-m-d H:i:s");
+		 $main_domain = Config::main_domain();
+
+		 $parent_post = Post::create([
+		      'post_author' =>  1 ,
+		      'post_date'   =>  $now,
+		      'post_date_gmt'   =>  $now,
+		      'post_content'    =>  '',
+		      'post_title'  =>  'Auto Draft',
+		      'post_excerpt'    =>  '',
+		      'post_status' =>  'lp-completed',
+		      'comment_status'  =>  'closed',
+		      'ping_status' =>  'closed',
+		      'post_password'   =>  '',
+		      'post_name'   =>  '',
+		      'to_ping' =>  '',
+		      'pinged'  =>  '',
+		      'post_modified'   =>  $now ,
+		      'post_modified_gmt'   =>  $now,
+		      'post_content_filtered'   => '' ,
+		      'post_parent' =>  '0',
+		      'guid'    =>  '',
+		      'menu_order'  =>  '0',
+		      'post_type'   =>  'lp_order',
+		      'post_mime_type'  =>  '',
+		      'comment_count'    =>  '0',
+		 ]);
+
+		 $guid = "$main_domain?post_type=lp_order&p={$parent_post->ID}";
+
+		 // echo  $parent_post;
+
+		 $parent_post->update([
+		     'guid' => $guid
+		 ]);
+
+
+
+		$fine_date = date("l jS F Y h:i:s A");
+		  $post_title = "Order on $fine_date";
+		 $child_post = Post::create([
+		      'post_author' =>  1 ,
+		      'post_date'   =>  $now,
+		      'post_date_gmt'   =>  $now,
+		      'post_content'    =>  '',
+		      'post_title'  =>  $post_title,
+		      'post_excerpt'    =>  '',
+		      'post_status' =>  'lp-completed',
+		      'comment_status'  =>  'closed',
+		      'ping_status' =>  'closed',
+		      'post_password'   =>  '',
+		      'post_name'   =>  '',
+		      'to_ping' =>  '',
+		      'pinged'  =>  '',
+		      'post_modified'   =>  $now ,
+		      'post_modified_gmt'   =>  $now,
+		      'post_content_filtered'   => '' ,
+		      'post_parent' =>  $parent_post->ID,
+		      'guid'    =>  '',
+		      'menu_order'  =>  '0',
+		      'post_type'   =>  'lp_order',
+		      'post_mime_type'  =>  '',
+		      'comment_count'    =>  '0',
+		 ]);
+
+		 $guid = "$main_domain?post_type=lp_order&p={$child_post->ID}";
+
+		 $child_post->update([
+		     'guid' => $guid
+		 ]);
+
+
+		 $total =$this->total_price();
+
+		 //create post meta: parent post
+		 // $parent_post          
+		     $parent_meta_keys = [
+		         '_lp_cert_thumbnail' => NULL,
+		         '_order_currency' => 'NGN',
+		         '_prices_include_tax' => 'no',
+		         '_user_id' => 'a:1:{i:0;s:1:"1";}',
+		         '_order_subtotal' => $total ,
+		         '_order_total' => $total,
+		         '_order_key' => "ORDER5EFB4D81733D6{$parent_post->ID}",
+		         '_payment_method' => '',
+		         '_payment_method_title' => '',
+		         '_user_ip_address' => '',
+		         '_user_agent' => '',
+		         '_order_version' => '',
+		         '_created_via' => '' ,
+		         '_edit_lock' => '',
+		         '_edit_last' => '',
+		         'slide_template' => '',
+		         'rs_page_bg_color' => '',
+		 ];
+
+		 foreach ($parent_meta_keys as $key => $value) {
+		     PostMeta::create([
+		         'post_id' => $parent_post->ID,
+		         'meta_key' => $key,
+		         'meta_value' => $value,
+		     ]);
+
+		 }
+
+		 //create post meta: child post
+		 $child_meta_keys = [
+		         '_lp_cert_thumbnail' => NULL,
+		         '_order_currency' => 'NGN',
+		         '_prices_include_tax' => 'no',
+		         '_user_id' => 1,
+		         '_order_subtotal' => $total ,
+		         '_order_total' => $total,
+		         '_order_key' => "ORDER5EFB4D81733D6{$parent_post->ID}",
+		         '_payment_method' => '',
+		         '_payment_method_title' => '',
+		         '_user_ip_address' => '',
+		         '_user_agent' => '',
+		         '_order_version' => '',
+		         '_created_via' => '' ,
+		         '_edit_lock' => '',
+		 ];
+
+
+
+		 foreach ($child_meta_keys as $key => $value) {
+		     PostMeta::create([
+		         'post_id' => $child_post->ID,
+		         'meta_key' => $key,
+		         'meta_value' => $value,
+		     ]);
+
+		 }
+
+
+
+		 //create learnpressorderItem
+
+		 foreach ($line_items as $key => $line_item) {
+		
+
+
+		     $parent_line_item_object =    LearnPressOrderItem::create([
+		                             'order_item_name' => $line_item['market_details']['name'],
+		                             'order_id' => $parent_post->ID
+		                         ]);
+
+
+		     $parent_learnpress_meta_keys = [
+		         '_quantity' => 1,
+		         'course_id' => $line_item['market_details']['id'],
+		         '_subtotal' => $line_item['market_details']['price'],
+		         '_total'  => $line_item['market_details']['price'],            
+		     ];
+
+		     //do meta for parent
+		     foreach ($parent_learnpress_meta_keys as $key => $value) {
+		         LearnPressOrderItemMeta::create([
+		             'learnpress_order_item_id' => $parent_line_item_object->order_item_id ,
+		             'meta_key' =>  $key,
+		             'meta_value'=> $value,
+		         ]);
+		     }
+
+
+		     $child_line_item_object =
+		             LearnPressOrderItem::create([
+		             'order_item_name' => $line_item['market_details']['name'],
+		             'order_id' => $child_post->ID
+		         ]);
+
+		         $child_learnpress_meta_keys = [
+		             '_quantity' => 1,
+		             'course_id' => $line_item['market_details']['id'],
+		             '_subtotal' => $line_item['market_details']['price'],
+		             '_total'  => $line_item['market_details']['price'],            
+		         ];
+
+
+		     //do meta for parent
+		     foreach ($child_learnpress_meta_keys as $key => $value) {
+		         LearnPressOrderItemMeta::create([
+		             'learnpress_order_item_id' => $child_line_item_object->order_item_id ,
+		             'meta_key' =>  $key,
+		             'meta_value'=> $value,
+		         ]);
+		     }
+
+
+		     //user items
+		      $lp_user_item =   LearnPressUserItem::create([
+		                                 'user_id' => $user->ID,
+		                                 'item_id'  => $line_item['market_details']['id'],
+		                                 'start_time' => $now,
+		                                 'start_time_gmt' => $now,
+		                                 'end_time' => '0000-00-00 00:00:00',
+		                                 'end_time_gmt' => '0000-00-00 00:00:00',
+		                                 'item_type' => 'lp_course',
+		                                 'status' => 'enrolled',
+		                                 'ref_id' => $child_post->ID ,
+		                                 'ref_type' => 'lp_order',
+		                                 'parent_id' => 0,
+		                         ]);
+
+
+		     //user itemsmeta
+		         $user_item_meta_keys = [
+		             '_last_status' => '', 
+		             '_current_status' => 'enrolled', 
+		             'course_results_evaluate_lesson' => '', 
+		             'grade' => 'in-progress'
+		         ];
+
+		         foreach ($user_item_meta_keys as $key => $value) {
+		             LearnPressUserItemMeta::create([
+		                 'learnpress_user_item_id' => $lp_user_item->user_item_id,
+		                 'meta_key' => $key,
+		                 'meta_value' => $value,
+		             ]);
+
+		         }
+		 }
+
+
+		 $this->update(['status' => 'completed']);
+
+
+
+
+		     DB::commit();
+		 } catch (Exception $e) {
+		     print_r($e->getMessage());
+		     DB::rollback();
+		     
+		 }
+		 return;
+		 
+		 // $this->view('auth/courses');
+		
+	}												
+
+
+	public function getExtraDetailArrayAttribute()
+	{
+		if ($this->extra_detail == null) {
+			return [];
+		}
+
+
+		return json_decode($this->extra_detail, true);
+	}												
+
+
+	public function upload_payment_proof($file)
+	{
+
+		$directory 	= 'uploads/images/payment_proof';
+		$handle  	= new Upload($file);
+
+		if (explode('/', $handle->file_src_mime)[0] == 'image') {
+
+			$handle->Process($directory);
+	 		$original_file  = $directory.'/'.$handle->file_dst_name;
+
+			(new Upload($this->payment_proof))->clean();
+			$this->update(['payment_proof' => $original_file]);
+		}
+
+	}
+												
 
 	public function after_payment_url()
 	{
@@ -60,19 +379,6 @@ class Orders extends Eloquent  implements OrderInterface
 		$url = "$domain/user/courses";
 		return $url;
 	}												
-
-
-	public function tax_breakdown()
-	{
-	    $tax = new Tax;
-	    $tax_payable  = $tax->setTaxSystem('general_tax');
-	     return $tax->setProduct($this)->setTaxStyleOnPrice('tax_exclusive')
-	     ->calculateApplicableTax()->amount_taxable
-	     ;
-
-	}
-
-
 	
 	public function invoice()
 	{
@@ -81,173 +387,14 @@ class Orders extends Eloquent  implements OrderInterface
 
 		foreach ($this->order_detail() as $key => $line) {
 
-
-			$tax = new Tax;
-			$tax_payable  = $tax->setTaxSystem('general_tax');
-			 $tax_breakdown = $tax->setAmount($line['deal_price'])->setTaxStyleOnPrice('tax_exclusive')
-							 ->calculateApplicableTax()->amount_taxable
-							 ;
-
-			
-			$rate = $tax_breakdown['breakdown']['set_price'];
-			$amount = $line['qty'] *  $rate;
-
-			$tax = $tax_breakdown;
-
-			$unit_tax = $tax['breakdown']['tax_payable'];
-			$line_tax = $unit_tax * $line['qty'];
-			$print_tax = "$line_tax 
-			<br><small> {$tax['breakdown']['total_percent_tax']}% {$tax['pricing']} </small>";
-
-			$before_tax = $tax['breakdown']['before_tax'] * $line['qty'];
-
-			
-			if (isset($line['offer_id'] )) {
-				$offer_data = $line['market_details']['offers_available'][$line['offer_id']];
-				$offer = new Offer;
-
-				foreach ($offer_data as $key => $value) {
-					$offer[$key] = $value;
-				}
-			}
-
-		
-
+			$amount = $line['qty'] *  $line['market_details']['price'];
 			$summary[] = [
 
 				'item' => $line['market_details']['name'],
-				'description' => $offer->name ?? '',
-				'rate' => $rate,
-				'print_tax' => $print_tax,
-				'line_tax' => $line_tax,
-				'before_tax' => $before_tax,
-				'tax' => $tax,
+				'description' => "",
+				'rate' => $line['market_details']['price'],
 				'qty' => $line['qty'],
 				'amount' => $amount,
-			];
-		}
-
-
-
-		$subtotal = collect($summary)->sum('amount');
-		$total_tax = collect($summary)->sum('line_tax');
-
-		$total_before_tax = collect($summary)->sum('before_tax');
-		$total_after_tax = $subtotal;
-
-
-		$stamp_duty_consideration = $total_before_tax ;
-		$payment_method = $_POST['payment_method'] ?? $this->payment_method;
-
-		$shop = new Shop;
-		$shop->setOrder($this)
-		->setPaymentMethod($payment_method);
-
-		$stamp_duty = $shop->stampDutyBreakdown($stamp_duty_consideration);
-
-
-		$subtotal_payable = $total_before_tax + $total_tax + $stamp_duty['stamp_duty'];
-
-		$gateway_fee = $shop->payment_method->gatewayChargeOn($subtotal_payable);
-		$total_payable = $subtotal_payable + $gateway_fee;
-		$gateway_name = $shop->payment_method->name;
-
-
-// die();
-
-
-		$grand_total = $total_before_tax + $total_tax + $stamp_duty['stamp_duty'];
-
-		$total_payable = $grand_total + $gateway_fee;
-
-
-		$lines =  [
-				'subtotal' =>[
-						'name'=> 'Sub Total ',
-						'value'=> $total_before_tax,
-					],
-				'tax' =>[
-						'name'=> 'VAT',
-						'value'=> $total_tax,
-					],
-
-				'stamp_duty' => [
-								'value'=> $stamp_duty['stamp_duty'],
-								'name' => 'Stamp Duty',
-								],
-
-				'grand_total' =>[
-						'name'=> 'Grand Total',
-						'value'=> $grand_total,
-					],
-
-
-				'gateway_fee' => [
-								'value'=> $gateway_fee,
-								'name' => ucfirst($gateway_name)." gateway fee",
-								],
-
-				'total_payable' =>[
-						'name'=> 'Total Payable',
-						'value'=> $total_payable,
-					],
-			];
-
-		$extra_lines = [
-
-			'total_before_tax' =>[
-					'name'=> 'Sub Total Before Tax',
-					'value'=> $total_before_tax,
-				],
-
-			'total_after_tax' =>[
-					'name'=> 'Sub Total Before Tax',
-					'value'=> $total_after_tax,
-				],
-		];
-
-		$full_lines = array_merge($lines, $extra_lines);
-
-		$subtotal = [
-			'subtotal'=> null,
-			'lines'=> $lines,
-			// 'lines' => $this->PaymentBreakdownArray,
-			'total'=> null,
-			'full_lines'=> $full_lines,
-		];
-		
-
-		$invoice = [
-			'order_id' => $this->TransactionID,
-			'invoice_id' => $this->TransactionID,
-			'order_date' => $this->created_at,
-			'payment_status' => $this->PaidStatus,
-			'summary' => $summary,
-			'subtotal' => $subtotal,
-		];
-
-		return $invoice;
-
-		
-	}
-
-
-
-	public function invoice_()
-	{
-
-		$summary = [];
-
-		foreach ($this->order_detail() as $key => $line) {
-
-
-			$summary[] = [
-
-				'item' => $line['market_details']['name'],
-				'description' => "Course Order",
-				'rate' => $line['deal_price'],
-				'qty' => 1,
-				'amount' => $line['deal_price'],
 			];
 		}
 
@@ -281,10 +428,9 @@ class Orders extends Eloquent  implements OrderInterface
 
 		$controller = new \home;
 		$order = $this;
-		// echo $view  =	$controller->buildView('auth/order_detail', compact('order'));
-
-		 $view  =	$controller->buildView('composed/invoice', compact('order'));
+		$view  =	$controller->buildView('composed/invoice', compact('order'));
 		
+
 		$mpdf = new \Mpdf\Mpdf([
 			'margin_left' => 5,
 			'margin_right' => 5,
@@ -293,6 +439,8 @@ class Orders extends Eloquent  implements OrderInterface
 			'margin_header' => 10,
 			'margin_footer' => 10
 		]);
+		
+		$src = Config::logo();
 
 		$company_name = \Config::project_name();
 		$logo = \Config::domain()."/".\Config::logo();
@@ -331,12 +479,18 @@ class Orders extends Eloquent  implements OrderInterface
 
 
 
+	public function getpaymentstatusAttribute(){
+
+		return $this->PaidStatus;
+	}
+
+
 
 	public function payment_links()
 	{
 
 		$domain = Config::domain();
-
+		$link = '';
 		foreach (self::$available_payment_methods as $key => $method) {
 
 			$checkout_param = http_build_query([
@@ -370,7 +524,7 @@ class Orders extends Eloquent  implements OrderInterface
 	{
 
 		$setting = \SiteSettings::find_criteria('site_settings')->settingsArray;
-		$vat_percent =  $setting['vat_percent'];
+		$vat_percent =  $setting['vat_percent'] ??0;
 		
 		$subtotal = $this->total_price();		
 		$vat = $vat_percent * 0.01 * $subtotal;
@@ -379,6 +533,11 @@ class Orders extends Eloquent  implements OrderInterface
 		$result =[
 			'value' => $vat,
 			'percent' => $vat_percent,
+		];
+
+		$result =[
+			'value' => 0,
+			'percent' => 0,
 		];
 
 
@@ -391,7 +550,8 @@ class Orders extends Eloquent  implements OrderInterface
 	public function getTransactionIDAttribute()
 	{
 		$payment_details = json_decode($this->payment_details,true);
-		$method = "{$payment_details['ref']}<br><span class='badge badge-sm badge-primary'>{$payment_details['gateway']}</span>";
+		$gateway = str_replace("coinpay", "coinwaypay", $payment_details['gateway']);
+		$method = "{$payment_details['ref']}<br><span class='badge badge-sm badge-primary'>{$gateway}</span>";
 					
 		return $method;
 	}
@@ -604,6 +764,9 @@ class Orders extends Eloquent  implements OrderInterface
 			$this->update(['paid_at'=> date("Y-m-d H:i:s")]);
 			// $this->give_upline_sale_commission();
 
+			$this->give_value_on_wordpress();
+			$this->create_sale();
+
 			DB::commit();
 			Session::putFlash("success","Payments Recieved Successfully");
 			return true;
@@ -613,6 +776,62 @@ class Orders extends Eloquent  implements OrderInterface
 		}
 	}
 
+
+	public function create_sale()
+	{
+
+		$line_items = $this->order_detail();
+
+        $settings = SiteSettings::all()->keyBy('criteria');
+
+        $priced_currency = $settings['currency_pricing']->settingsArray['priced_currency'];
+		foreach ($line_items as $key => $line_item) {
+
+
+			    	$tags = Terms::Levels()->get();
+					$item_tags = Post::find($line_item['market_details']['id'])->terms_relationships->KeyBy('term_id');
+
+
+			    	$terms_ids_array = $item_tags->pluck('term_id')->toArray();
+
+			    	$level_tags_array = $tags->pluck('term_id')->toArray();
+
+
+			    	$intersecting_level = array_intersect($terms_ids_array, $level_tags_array);
+			    	$first_key = array_values($intersecting_level)[0];
+
+			    	$level_array = $tags->keyBy('term_id')->toArray() [$first_key];
+
+			    	$setting_array = collect($settings['points_value']->settingsArray['courses'])->keyBy('tag')->toArray();
+
+			    	$level_key = $level_array['name'];
+			    	$level = $setting_array[$level_key]['level'];
+			    	$points = $setting_array[$level_key]['points'];
+
+
+			$sale =    Sales::create([
+			            'user_id' => $this->user_id,
+			            'username' => $this->user->username,
+			            'buyer_id'  => $this->user_id,
+			            'level'  => $level,
+			            'points' => $points,
+			            'priced_amount' => $this->total_price(),
+			            'priced_currency' => $priced_currency,
+			            'order_id' => $this->id,
+			            'item_id' => $line_item['market_details']['id'],
+			            'is_paid'=> 1,
+			            'comment'=> "internal order<br> {$line_item['market_details']['name']}",
+			            'details'=> json_encode($line_item),
+			            
+			        ]);
+
+			$currency_pricing = $settings['currency_pricing']->settingsArray;
+
+			$sale->update_amount_with_conversion($currency_pricing);            
+		}
+
+
+	}
 
 
 	private function give_upline_sale_commission()
@@ -686,7 +905,7 @@ class Orders extends Eloquent  implements OrderInterface
 	{
 
 		$substr = substr(strval(time()), 7 );
-		$order_id = "9G{$this->id}FA{$substr}";
+		$order_id = "MA{$this->id}C{$this->user->id}";
 
 		return $order_id;
 	}
@@ -763,7 +982,7 @@ class Orders extends Eloquent  implements OrderInterface
 		$orders =  $this->order_detail();
 		foreach ($orders as $order) {
 
-			$total_price[] = $order['deal_price'] *$order['qty'];
+			$total_price[] = $order['market_details']['price'] *$order['qty'];
 
 		}
 
@@ -771,12 +990,67 @@ class Orders extends Eloquent  implements OrderInterface
 		return $total;
 	}
 
+public function scopePaid($query)
+{
+	return $query->where('paid_at', '!=', null);
+}
 
-	public function total_tax_inclusive()
+	public function total_tax_inclusive($style = 'tax_exclusive')
 	{
-		$tax = new Tax;
+
+		$setting = \SiteSettings::find_criteria('site_settings')->settingsArray;
+		$vat_percent = $setting['vat_percent'];
+
+		$vat_percent = 0;
+		
+		$total_sum_tax = $vat_percent * 0.01 * $this->total_price();
+		$total_tax_inclusive = $total_sum_tax + $this->total_price();
+
+		switch ($style) {
+			case 'tax_exclusive':
+
+
+
+
+				$tax = [
+
+							'price_inclusive_of_tax' => $total_tax_inclusive,
+							'price_exclusive_of_tax' => $this->total_price(),
+							'total_sum_tax' => $total_sum_tax,
+						];
+
+				break;
+
+			case 'tax_inclusive':
+
+
+				$before_tax = $this->total_price() * (100/$vat_percent);
+
+				$total_sum_tax = $vat_percent * $before_tax * 0.01;
+
+				$tax = [
+
+							'price_inclusive_of_tax' => $this->total_price(),
+							'price_exclusive_of_tax' => $before_tax,
+							'total_sum_tax' => $total_sum_tax,
+						];
+
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+
+
+
+
+
+		return $tax;
+
+		/*$tax = new Tax;
 		$tax_payable  =	$tax->setTaxSystem('indian_tax');
-		return $tax->setOrder($this)->calculateApplicableTax()->amount_taxable;
+		return $tax->setOrder($this)->calculateApplicableTax()->amount_taxable;*/
 	}
 
 

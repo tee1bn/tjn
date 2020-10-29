@@ -1,1617 +1,1440 @@
 <?php
 
-use  v2\Shop\Shop;
-use v2\Models\UserBank;
-use v2\Models\Withdrawal;
-use v2\Models\UserDocument;
-use v2\Models\Campaign;
-use v2\Models\Offer;
-use v2\Models\Market;
-use v2\Models\DepositOrder;
-use v2\Models\Signals;
-use v2\Models\TradingAccount;
-use  Filters\Filters\UserFilter;
-use  Filters\Filters\PostFilter;
-use  Filters\Filters\UserBankFilter;
-use  Filters\Filters\MarketFilter;
-use  Filters\Filters\WithdrawalFilter;
-use  Filters\Filters\UserDocumentFilter;
-use  Filters\Filters\TestimonialsFilter;
-use  Filters\Filters\DepositOrderFilter;
-use  Filters\Filters\OrderFilter;
-use  Filters\Filters\SupportTicketFilter;
-use  Filters\Filters\TradingAccountFilter;
-use  Filters\Filters\CampaignCategoryFilter;
-use  Filters\Filters\CampaignFilter;
+use Filters\Filters\SubscriptionOrderFilter;
+use Filters\Filters\SupportTicketFilter;
+use Filters\Filters\UserDocumentFilter;
+use Filters\Filters\UserFilter;
+use Filters\Filters\WalletFilter;
+use Filters\Filters\WithdrawalFilter;
+use Filters\Filters\SalesFilter;
+use Filters\Filters\OrderFilter;
+use Filters\Filters\TestimonialsFilter;
 use Illuminate\Database\Capsule\Manager as DB;
-
-
-
-require_once "../app/controllers/crud/CategorySpoof.php";
+use v2\Models\Commission;
+use v2\Models\Document;
+use v2\Models\HotWallet;
+use v2\Models\InvestmentPackage;
+use v2\Models\UserDocument;
+use v2\Models\Withdrawal;
+use v2\Models\Sales;
+use  v2\Shop\Shop;
 
 
 /**
  * this class is the default controller of our application,
- * 
-*/
+ *
+ */
 class AdminController extends controller
 {
 
 
-	public function __construct(){
+    public function __construct()
+    {
 
 
-		$this->middleware('administrator')->mustbe_loggedin();
-	}
+        $this->middleware('administrator')->mustbe_loggedin();
+    }
 
 
+    public function user_verification()
+    {
 
 
-	public function approve_testimonial($testimonial_id)
-	{
+        $sieve = $_REQUEST;
+        $query = UserDocument::latest();
+        // ->where('status', 1);  //in review
 
-	    $testimony = Testimonials::find($testimonial_id);
-	    if ($testimony->approval_status) {
 
-	        $update = $testimony->update(['approval_status' => 0]);
-	        Session::putFlash('success', 'Testimonial disapproved succesfully');
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
+        $filter = new  UserDocumentFilter($sieve);
 
-	    } else {
+        $data = $query->Filter($filter)->count();
 
-	        $update = $testimony->update(['approval_status' => 1]);
+        $documents = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-	        Session::putFlash('success', 'Testimonial approved succesfully');
 
-	    }
+        $this->view('admin/user_verification', compact('documents', 'sieve', 'data', 'per_page'));
+    }
 
 
-	    Redirect::back();
+    public function search($query = null)
+    {
 
+        $compact = $this->users_matters(['name' => $query]);
+        $users = $compact['users'];
+        $line = "";
+        foreach ($users as $key => $user) {
+            $username = $user->username;
+            $fullname = $user->fullname;
+            $line .= "<option value='$username'> $fullname ($username)</option>";
+        }
 
-	}
+        header("content-type:application/json");
+        echo json_encode(compact('line'));
+    }
 
-	public function delete_testimonial($testimonial_id)
-	{
 
-	    $testimony = Testimonials::find($testimonial_id);
-	    if ($testimony != null) {
+    public function submit_manual_credit()
+    {
 
-	        $testimony->delete();
-	        Session::putFlash('success', 'Testimonial deleted succesfully');
 
+        $this->validator()->check(Input::all(), array(
+            'amount' => [
+                'required' => true,
+            ],
 
-	    }
+            'category' => [
+                'required' => true,
+            ],
+            'comment' => [
+                'required' => true,
+            ],
 
+            'paid_at' => [
+                'date' => "Y-m-d",
+            ],
 
-	    Redirect::back();
-	}
+            'username' => [
+                'required' => true,
+                'exist' => 'User|username',
+            ],
 
+        ));
 
 
-	public function upload_testimonial_pic()
-	{
-	    $order_id = $_POST['order_id'];
-	    $order = Testimonials::find($order_id);
-	    $order->upload_pic($_FILES['payment_proof']);
-	    Session::putFlash('success', "#$order_id Testimonial Uploaded Successfully!");
-	    Redirect::back();
+        if (!$this->validator()->passed()) {
 
-	}
+            Session::putFlash("danger", Input::inputErrors());
+            Redirect::back();
+        }
 
 
+        $receiver = User::where('username', $_POST['username'])->first();
 
+        DB::beginTransaction();
+        try {
 
-	public function update_testimonial()
-	{
 
-	    echo "<pre>";
-	    $testimony_id = Input::get('testimony_id');
-	    $testimony = Testimonials::find($testimony_id);
+            $direct_bonus_commission = Commission::createTransaction(
+                'credit',
+                $receiver['id'],
+                null,
+                $amount,
+                'completed',
+                $_POST['category'],
+                $_POST['comment'],
+                null,
+                null,
+                null,
+                null,
+                $_POST['paid_at']
+            );
 
-	    $testimony->update([
-	        'attester' => Input::get('attester'),
-	        'content' => Input::get('testimony'),
-	        'bio' => Input::get('bio'),
-	    ]);
+            DB::commit();
+            Session::putFlash("success", "$amount successfully credited");
 
+        } catch (Exception $e) {
+            DB::rollback();
+            Session::putFlash("danger", "Something went wrong.");
 
-	    Session::putFlash('success', 'Testimonial updated successfully. Awaiting approval');
+        }
 
-	    Redirect::back();
-	}
 
-	public function create_testimonial()
-	{
+        Redirect::back();
 
-	    if (Input::exists() || true) {
+    }
 
-	        $testimony = Testimonials::create([
-	            'attester' => Input::get('attester'),
-	            'content' => Input::get('testimony')]);
+    public function faqs()
+    {
+        $this->view("admin/faqs");
+    }
 
-	    }
-	    Redirect::to("admin/edit_testimony/{$testimony->id}");
-	}
 
+    public function manual_credit()
+    {
+        $this->view("admin/manual_credit");
+    }
 
 
-	public function order_invoice($order_id=null)
-	{
+    public function support_messages()
+    {
 
-		$order  =  Orders::where('id', $order_id)->first();
-		
-		if ($order == null) {
-			Redirect::back();
-		}
+        $this->view('admin/support-messages');
+    }
 
-		$order->getInvoice();
-	}
 
+    public function download_invoice($order_id = null)
+    {
+        $order = HotWallet::where('id', $order_id)->first();
+        if ($order == null) {
+            Session::putFlash("danger", "Invalid Request.");
+            Redirect::back();
+        }
 
+        $order->getInvoice();
+    }
 
 
+    public function invoices()
+    {
 
-	public function edit_offer($id)
-	{
-		$offer = Offer::find($id);
-		if ($offer == null) {
-			Redirect::back();
-		}
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
 
-		$this->view('admin/edit_offer', compact('offer'));
-	}
+        $query = HotWallet::Category('investment')->Completed()->Credit()->latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-	public function create_offer()
-	{
-		$offer = Offer::create([]);
-		Redirect::to("admin/edit_offer/$offer->id");
-	}
+        $filter = new  WithdrawalFilter($sieve);
 
+        $data = $query->Filter($filter)->count();
 
-	public function offers()
-	{
-		$offers = Offer::all();
-		$this->view('admin/offers', compact('offers'));
-	}
+        $packs = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
+        $this->view('admin/invoices', compact('packs', 'sieve', 'data', 'per_page'));
 
+    }
 
-	public function suspending_account($id){
 
+    public function sales()
+    {
 
-		if (TradingAccount::find($id)->is_active()) {
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
+        $special_sieve = ['type'=>'course'];
 
-		$update = TradingAccount::find($id)->update(['active_status' => null ]);
-		Session::putFlash('success', 'Ban lifted succesfully');
+        $sieve = array_merge($sieve, $special_sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
+        $query = Sales::latest();
 
-		}else{
+        $filter = new  SalesFilter($sieve);
 
-		$update = TradingAccount::find($id)->update(['active_status' => 1]);
+        $data = $query->Filter($filter)->count();
 
-		Session::putFlash('success', 'Trading Account Blocked succesfully');
+        $query = Sales::latest();
+        $sfilter = new  SalesFilter($special_sieve);
 
-		}
+        $total_set = $query->Filter($sfilter)->count();
 
 
-		if ($update) {	
-		}else{
-		Session::putFlash('flash', 'Could not Block this Trading Account');
-		}
+        $sales = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
+        $note = MIS::filter_note($sales->count(), ($data), ($total_set),  $sieve, 1);
 
-		Redirect::back();
-	}
+        $this->view('admin/sales', compact('sales', 'sieve', 'data', 'per_page','note'));
+    }
 
-	
 
-	public function suspending_user($user_id){
+    public function points()
+    {
 
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
+        $special_sieve = ['type'=>'testimonial'];
 
-		if (User::find($user_id)->blocked_on) {
+        $sieve = array_merge($sieve, $special_sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$update = User::find($user_id)->update(['blocked_on' => null ]);
-		Session::putFlash('success', 'Ban lifted succesfully');
+        $query = Sales::latest();
 
+        $filter = new  SalesFilter($sieve);
 
-		}else{
+        $data = $query->Filter($filter)->count();
 
-		$update = User::find($user_id)->update(['blocked_on' => date("Y-m-d")]);
+        $query = Sales::latest();
+        $sfilter = new  SalesFilter($special_sieve);
 
-		Session::putFlash('success', 'User Blocked succesfully');
+        $total_set = $query->Filter($sfilter)->count();
 
-		}
 
+        $sales = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-		if ($update) {	
-		}else{
-		Session::putFlash('flash', 'Could not Block this User');
-		}
+        $note = MIS::filter_note($sales->count(), ($data), ($total_set),  $sieve, 1);
 
+        $this->view('admin/points', compact('sales', 'sieve', 'data', 'per_page','note'));
+    }
 
-		Redirect::back();
-	}
 
+    public function investment_purchases()
+    {
 
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
 
-	public function edit_signal($signal_id)
-	{
-		$signal = Signals::find($signal_id);
+        $query = HotWallet::Category('investment')->Completed()->Credit()->latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		if ($signal == null) {
-			Redirect::back();
-		}
+        $filter = new  WithdrawalFilter($sieve);
 
-		
-		$this->view('admin/edit_signal', compact('signal'));
-	}
-	
+        $data = $query->Filter($filter)->count();
 
+        $packs = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-	public function signals()
-	{
+        $this->view('admin/investment_purchases', compact('packs', 'sieve', 'data', 'per_page'));
+    }
 
-		$this->view('admin/signals');
-	}
 
+    private function wallet_matters($extra_sieve, $class)
+    {
 
-	private function access_course($course_id)
-	{
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve, $extra_sieve);
 
+        $query = $class::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$course = Course::find($course_id);
+        $filter = new  WalletFilter($sieve);
 
+        $data = $query->Filter($filter)->count();
 
-		$item_on_sale =	Market::where('category', 'course')
-									->where('item_id', $course_id)
-									->latest()
-									->OnSale()
-									->first();
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-		if ($item_on_sale == null) {
+        return compact('records', 'sieve', 'data', 'per_page');
 
-			Session::putFlash("danger", "Denied Access! More attempts will lead to blockage of account");
-			Redirect::back();
-		}
+    }
 
 
-		$course = $item_on_sale->good();
+    public function withdrawals()
+    {
 
-	 $this->view('admin/single-course', ['course' => $course, 'access' => 'granted']);
-	}
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
 
+        $query = Withdrawal::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
+        $filter = new  WithdrawalFilter($sieve);
 
-	public function read($course_id=null, $chapter= 1)
-	{
-		// return;
-		$course = Course::find($course_id);
-	
-			$item_on_sale =	Market::where('category', 'course')
-									->where('item_id', $course_id)
-									->latest()
-									->OnSale()
-									->first();
+        $data = $query->Filter($filter)->count();
 
+        $withdrawals = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
 
-		if ($item_on_sale == null) {
-			Session::putFlash("danger", "Denied Access More attempts will lead to blockage of account");
-			Redirect::back();
-		}
+        $note = MIS::filter_note($withdrawals->count(), ($data), (Withdrawal::count()),  $sieve, 1);
 
+        $this->view('admin/withdrawal-history', compact('withdrawals', 'sieve', 'data', 'per_page', 'note'));
+    }
 
-		$course = $item_on_sale->good();
 
-		
-		$this->view('admin/read-course', compact('course', 'chapter'));
-	}
+    public function payout_wallets()
+    {
+        $compact = $this->wallet_matters([
+        ], 'v2\Models\PayoutWallet');
 
+        extract($compact);
+        $page_title = 'Payout Wallet';
+        $wallet= 'payout';
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title' ,'wallet'));
+    }
 
-	public function courses($course_id=null, $action=null )
-	{
 
-		if ($course_id !== null) {
-			$course = Course::find($course_id);
+    public function commissions()
+    {
+        $compact = $this->wallet_matters([
+        ], 'v2\Models\Commission');
 
+        extract($compact);
+        $page_title = 'Commissions';
+        $wallet= 'commission';
 
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title','wallet'));
+    }
 
-			switch ($action) {
-				case 'goal':
-				$this->view('admin/course-goal', compact('course'));
-				return;
-				break;
-				
-				case 'access':
 
-				$this->access_course($course_id);
+    public function ranks()
+    {
+        $compact = $this->wallet_matters([
+            'earning_category' => 'rank'
+        ], 'v2\Models\HotWallet');
 
-				return;
-				break;
+        extract($compact);
+        $page_title = 'Ranks Earning';
 
-				case 'structure':
-				$this->view('auth/course-structure', ['course' => $course]);
-				return;
-				break;
-				
-				case 'curriculum':
-				$this->view('auth/course-curriculum', ['course' => $course]);
+        $wallet= 'hotwallet';
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title', 'wallet'));
+    }
 
-				return;
-				break;
-				
-				case 'publish':
-				$this->view('auth/publish-course', ['course' => $course]);
-				return;
-				break;
-				
-				case 'view':
-				$this->view('guest/single-course',['course' => $course]);
-				return;
-				break;
-				
-				default:
-					# code...
-					break;
-			}
 
-		}
+    public function held_coin()
+    {
+        $compact = $this->wallet_matters([
+        ], 'v2\Models\HeldCoin');
 
-		$this->view('auth/courses');
-	}
+        extract($compact);
+        $page_title = 'HeldCoin';
+        $wallet= 'heldcoin';
 
-	public function client_detail($client_id)
-	{
-		$client_id = MIS::dec_enc('decrypt', $client_id);
-		$user = User::find($client_id);
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title' , 'wallet'));
+    }
 
-		if ($user==null) {
-			Session::putFlash("danger","Client not found");
-			Redirect::back();
-		}
 
+    public function hot_wallet()
+    {
+        $compact = $this->wallet_matters([
+            'earning_category' => 'hot_wallet'
+        ], 'v2\Models\HotWallet');
 
-		$this->view('admin/client_detail', compact('user'));
-	}
+        extract($compact);
+        $page_title = 'Hot Wallet';
+        $wallet= 'hotwallet';
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title','wallet'));
+    }
 
-	public function edit_client_detail($client_id)
-	{
-		$client_id = MIS::dec_enc('decrypt', $client_id);
-		$user = User::find($client_id);
 
-		if ($user==null) {
-			Session::putFlash("danger","Client not found");
-			Redirect::back();
-		}
+    public function deposits()
+    {
+        $compact = $this->wallet_matters([
+            'earning_category' => 'deposit'
+        ], 'v2\Models\Wallet');
 
+        extract($compact);
+        $page_title = 'Deposits';
 
-		$this->view('admin/edit_client_profile', compact('user'));
-	}
+        $wallet= 'deposit';
+        $this->view('admin/deposits', compact('records', 'sieve', 'data', 'per_page', 'page_title','wallet'));
+    }
 
 
-	public function client_comment($client_id)
-	{
-		$client_id = MIS::dec_enc('decrypt', $client_id);
-		$user = User::find($client_id);
+    private function users_matters($extra_sieve)
+    {
 
-		if ($user==null) {
-			Session::putFlash("danger","Client not found");
-			Redirect::back();
-		}
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve, $extra_sieve);
 
+        $query = User::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$this->view('admin/client_comment', compact('user'));
-	}
+        $filter = new  UserFilter($sieve);
 
+        $data = $query->Filter($filter)->count();
 
-	
+        $sql = $query->Filter($filter);
 
+        $users = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-	public function all_courses()
-	{
-		$this->course_verification();
-	}
 
+        $note = MIS::filter_note($users->count() , $data, User::count(),  $sieve , 1);
 
-	public function mark_course_order($value , $order_id)
-	{
 
+        return compact('users', 'sieve', 'data', 'per_page', 'note');
 
-		$order  =  Orders::where('id', $order_id)->where('paid_at', null)->first();
-		if ($order == null) {
+    }
 
-			Session::putFlash('danger','invalid request');
-			Redirect::back();
-		}
 
-			$order->mark_paid();
-			Session::putFlash('success','Marked as paid ');
-			Redirect::back();
-	}
+    public function users()
+    {
 
 
-	private function course_orders_matters($extra_sieve=[])
-	{
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, $extra_sieve);
+        $compact = $this->users_matters([]);
+        extract($compact);
+        $page_title = 'Users';
 
-		$query = Orders::latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        $this->view('admin/users', compact('users', 'sieve', 'data', 'per_page', 'page_title','note'));
+    }
 
-		$filter =  new  OrderFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+    private function ticket_matters($extra_sieve)
+    {
 
-		CategorySpoof::register_query($query);
 
-		$orders =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve, $extra_sieve);
 
+        $query = SupportTicket::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-		$shop = new Shop;
+        $filter = new  SupportTicketFilter($sieve);
 
-		return compact('orders', 'sieve', 'data','per_page','shop');
-	}
+        $data = $query->Filter($filter)->count();
 
+        $tickets = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-	public function courses_orders()
-	{
+        return compact('tickets', 'sieve', 'data', 'per_page');
 
-		$sieve = [];
-		$compact =  $this->course_orders_matters($sieve);
-		extract($compact);
-		$page_title = 'Course Orders';
+    }
 
-		$this->view('admin/courses_orders', compact('orders', 'sieve', 'data','per_page','shop', 'page_title'));
 
-	}
+    public function open_tickets()
+    {
+        $sieve = ['status' => 0];
+        $compact = $this->ticket_matters($sieve);
+        extract($compact);
+        $page_title = 'Open Tickets';
 
+        $this->view('admin/all_tickets', compact('tickets', 'sieve', 'data', 'per_page', 'page_title'));
+    }
 
-	public function index($value='')
-	{
-		# code...
-	}
 
-	public function toggle_course($course_id)
-	{
+    public function closed_tickets()
+    {
+        $sieve = ['status' => 1];
+        $compact = $this->ticket_matters($sieve);
+        extract($compact);
+        $page_title = 'Closed Tickets';
 
+        $this->view('admin/all_tickets', compact('tickets', 'sieve', 'data', 'per_page', 'page_title'));
+    }
 
-		 $last_submission =  Market::where('category', 'course')
-		                  ->where('item_id', $course_id)
-		                  ->latest()
-		                  ->first();
 
-			if ($last_submission == null) {
-				Session::putFlash("danger", "Invalid Request");
-				Redirect::back();
-			}
+    public function update_cms()
+    {
 
+        DB::beginTransaction();
 
-			if($last_submission->approval_status_is('approved')){
+        try {
 
-				$last_submission->decline();
+            CMS::updateOrCreate([
+                'criteria' => $_POST['criteria']
+            ], [
+                'settings' => $_POST['settings'],
+            ]);
 
-				Session::putFlash("success", "Declined");
 
-			}else{
+            DB::commit();
+            Session::putFlash("success", "Changes Saved");
+        } catch (Exception $e) {
+            DB::rollback();
+            print_r($e->getMessage());
+        }
 
+        Redirect::back();
+    }
 
-				$last_submission->approve();
-				Session::putFlash("success", "Approved");
-			}
 
+    public function cms()
+    {
+        $this->view('admin/cms');
+    }
 
 
-			Redirect::back();
-	}
+    public function simulate_packages()
+    {
+        $this->view('admin/simulate_packages');
+    }
 
 
-	public function toggle_blogpost($post_id)
-	{
-		$last_submission =  Market::where('category', 'post')
-		                  ->where('item_id', $post_id)
-		                  ->latest()
-		                  ->first();
+    public function package_invoice($order_id = null)
+    {
 
-			if ($last_submission == null) {
-				Redirect::back();
-			}
+        $order = SubscriptionOrder::where('id', $order_id)->first();
 
+        if ($order == null) {
+            Redirect::back();
+        }
 
-			if($last_submission->approval_status_is('approved')){
+        $order->invoice();
 
-				$last_submission->decline();
 
-				Session::putFlash("success", "Declined");
+    }
 
-			}else{
-				$last_submission->approve();
-				Session::putFlash("success", "Approved");
-			}
 
 
+    private function course_orders_matters($extra_sieve=[])
+    {
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve, $extra_sieve);
 
-			Redirect::back();
-	}
+        $query = Orders::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
+        $per_page = 50;
+        $skip = (($page -1 ) * $per_page) ;
 
+        $filter =  new  OrderFilter($sieve);
 
-	public function faqs()
-	{
-		$this->view("admin/faqs");
-	}
+        $data =  $query->Filter($filter)->count();
 
 
+        $orders =  $query->Filter($filter)
+                        ->offset($skip)
+                        ->take($per_page)
+                        ->get();  //filtered
 
-	public function cms()
-	{
-		$this->view("admin/cms");
-	}
 
+        $shop = new Shop;
 
+        return compact('orders', 'sieve', 'data','per_page','shop');
+    }
 
-	public function access_control($admin_id)
-	{	
 
-		$admn = Admin::find($admin_id);
-		if ($admn == null) {
-			Redirect::back();
-		}
 
-		if ($admn->is_owner()) {
-			// Session::putFlash('danger', "Invalid Request");
-			// Redirect::back();
-		}
+    public function products_orders()
+    {
 
+        $sieve = [];
+        $compact =  $this->course_orders_matters($sieve);
+        extract($compact);
+        $page_title = 'Product Orders';
 
-		$this->view('admin/access_control', compact('admn'));
-	}
+        $this->view('admin/products_orders', compact('orders', 'sieve', 'data','per_page','shop', 'page_title'));
 
+    }
 
-	public function accesses()
-	{
-		$accesses = Access::all();
-		$this->view('admin/accesses', compact('accesses'));
-	}
 
-	public function edit_access($access_id)
-	{
-		$db_access = Access::find($access_id);
-		if ($db_access == null) {
-			Redirect::back();
-		}
+    public function fetch_subscription()
+    {
 
+        header("content-type:application/json");
+        echo SubscriptionPlan::all();
+    }
 
-		$this->view('admin/edit_access', compact('db_access'));
-	}
+    public function order($order_id=null)
+    {
 
+        $order  =  Orders::where('id', $order_id)->first();
 
-	public function add_admin()
-	{
-		$this->view('admin/add_admin');
-	}
 
+        if ($order== null) {
+            Redirect::back();
+        }
 
 
-	public function all_admins()
-	{
-		$admins = Admin::all();
-		$this->view('admin/all_admins', compact('admins'));
-	}
+        $this->view('admin/order_detail', compact('order'));
+    }
 
-	public function users()
-	{
-		$this->all_users();
-	}
+    
 
-	private function users_matters($extra_sieve)
-	{
+    public function update_subscription_plans()
+    {
 
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, $extra_sieve);
+        foreach ($_POST['plan'] as $plan_id => $plan) {
 
-		$query = User::latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+            $subscription_plan = SubscriptionPlan::find($plan_id);
+            $subscription_plan->update(['availability' => '']);
+            print_r($subscription_plan->toArray());
+            $subscription_plan->update($plan);
 
-		$filter =  new  UserFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+        }
 
-		$sql = $query->Filter($filter);
-		CategorySpoof::register_query($sql);
+        Session::putFlash("success", "Updated Succesfully.");
 
-		$users =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        Redirect::back();
 
+    }
 
-		return compact('users', 'sieve', 'data','per_page');
-		
-	}
 
+    public function edit_book($ebook_id)
+    {
 
-	public function all_users()
-	{
+        $ebook = Ebooks::find($ebook_id);
 
-		$compact =  $this->users_matters([]);
-		extract($compact);
-		$page_title = 'All users';
+        $this->view('admin/edit_book', compact('ebook'));
 
-		$this->view('admin/all_users', compact('users', 'sieve', 'data','per_page', 'page_title'));
-	}
+    }
 
 
-	public function verified_users()
-	{
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve);
+    public function products()
+    {
 
-		$query = User::latest()->Verified();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        $this->view('admin/products');
 
-		$filter =  new  UserFilter($sieve);
+    }
 
-		$data =  $query->Filter($filter)->count();
 
-		$users =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+    public function licensing()
+    {
 
+        $this->view('admin/licensing');
 
+    }
 
-		$page_title = 'Verified users';
 
-		$this->view('admin/all_users', compact('users', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+    public function account_plans()
+    {
 
-	public function all_trading_accounts()
-	{
+        $this->view('admin/account_plans');
 
+    }
 
-		$sieve = $_REQUEST;
-		$query = TradingAccount::latest();
-		$sieve = array_merge($sieve);
-		
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
 
-		$filter =  new  TradingAccountFilter($sieve);
+    public function investment_ranges()
+    {
 
-		$data =  $query->Filter($filter)->count();
+        $this->view('admin/investment_ranges');
 
-		$trading_accounts =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
-	
-		$this->view('admin/all_trading_accounts', compact('trading_accounts', 'sieve', 'data','per_page'));
-	}
+    }
 
+    public function update_account_plans()
+    {
 
-	
-	public function all_leads()
-	{
 
+        print_r($_POST);
 
-		/*$sieve = $_REQUEST;
-		$query = TradingAccount::latest();
-		$sieve = array_merge($sieve);
-		
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        // return;
+        $this->validator()->check(Input::all(), array(
+            'name' => [
+                'required' => true,
+            ],
 
-		$filter =  new  TradingAccountFilter($sieve);
+            'id' => [
+                'required' => true,
+            ],
 
-		$data =  $query->Filter($filter)->count();
+            'price' => [
+                // 'required'=> true,
+            ],
 
-		$users =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        ));
 
-		$users = $query->get();
-*/
-		$this->view('admin/all_leads', compact('users', 'sieve', 'data','per_page'));
-		
-	}
 
+        if (!$this->validator->passed()) {
 
-	public function user_verification()
-	{
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
 
 
-		$sieve = $_REQUEST;
-		$query = UserDocument::latest();
-		// ->where('status', 1);  //in review
+        $plan = Input::all();
 
-					
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        $account_plan = SubscriptionPlan::find($_POST['id']);
 
-		$filter =  new  UserDocumentFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+        if ($account_plan == null) {
+            Session::putFlash('danger', "Invalid Request");
+            Redirect::back();
+        }
 
-		$documents =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
 
+        $account_plan->update(['availability' => null]);
+        print_r($account_plan->toArray());
+        $account_plan->update([
+            'name' => $_POST['name'],
+            'price' => $_POST['price'],
+            'hierarchy' => $_POST['hierarchy'],
+            'details' => json_encode($_POST['details']),
+            'features' => $_POST['features'],
+            'availability' => $_POST['availability'],
+        ]);
 
-		$this->view('admin/user_verification', compact('documents', 'sieve', 'data','per_page'));
-	}
+        Session::putFlash('success', "$account_plan->name updated successfully ");
 
-	public function bank_verification()
-	{
+        Redirect::back();
+    }
 
-		$sieve = $_REQUEST;
-		$query = UserBank::latest();
-					
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
 
-		$filter =  new  UserBankFilter($sieve);
+    public function update_investment_package()
+    {
 
-		$data =  $query->Filter($filter)->count();
 
-		$banks =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        $this->validator()->check(Input::all(), array(
+            'name' => [
+                'required' => true,
+            ],
 
+            'id' => [
+                'required' => true,
+            ],
 
-		$this->view('admin/bank_verification', compact('banks', 'sieve', 'data','per_page'));
-		
-	}
+            'category' => [
+                'required' => true,
+            ],
 
-	public function course_verification()
-	{	
-		$response = DB::select("SELECT m1.*
-		FROM market m1 LEFT JOIN market m2
-		 ON (m1.item_id = m2.item_id AND m1.id < m2.id)
-		WHERE m2.id IS NULL 
-		AND m1.category = 'course'
-		;
-		");
+        ));
 
-		$market_ids = collect($response)->pluck('id')->toArray();
 
+        if (!$this->validator->passed()) {
 
-				$sieve = $_REQUEST;
-				$query = Market::whereIn('id', $market_ids);
-				$sieve = array_merge($sieve, ['category' => 'course']);
-				// print_r($sieve);
-							
-				$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-				$per_page = 50;
-				$skip = (($page -1 ) * $per_page) ;
+            Session::putFlash('danger', Input::inputErrors());
+            Redirect::back();
+        }
 
-				$filter =  new  MarketFilter($sieve);
 
-				$data =  $query->Filter($filter)->count();
+        $plan = Input::all();
+        $category = InvestmentPackage::$categories[$plan['category']]['name'];
 
-				$posts =  $query->Filter($filter)
-								->offset($skip)
-								->take($per_page)
-								->get();  //filtered
+        $investment = InvestmentPackage::find($_POST['id']);
 
-		$this->view('admin/course_verification', compact('posts', 'sieve', 'data','per_page'));
-	}
 
+        if ($investment == null) {
+            Session::putFlash('danger', "Invalid Request");
+            Redirect::back();
+        }
 
 
-	public function preview_post($post_id)
-	{
-			try {
-				 $post = Post::find($post_id);
-				
-			} catch (Exception $e) {
-				
-				Session::putFlash('warning','Could Not Find Post. Please try again');
-				// Redirect::back();
-			}
+        $investment->update(['availability' => '']);
+        print_r($investment->toArray());
+        $investment->update([
+            'name' => $_POST['name'],
+            'details' => json_encode($_POST['details']),
+            'features' => $_POST['features'],
+            'availablity' => $_POST['availablity'],
+            'category' => $category
+        ]);
 
-		$this->view('guest/single-post', compact('post'));  //note this is
-	}
+        Session::putFlash('success', "$investment->name updated successfully ");
 
+        Redirect::back();
+    }
 
-	public function create_post()
-	{
 
-			$post = Post::create([
-				'user_id'=> $this->admin()->id,
-				'author_type' =>'admin'
-				]);
+    public function add_book()
+    {
 
-			Redirect::to("admin/edit_post/{$post->id}");
-	}
+        $ebook = Ebooks::create([]);
 
-	public function edit_post($post_id)
-	{
-			try {
-				 $post = Post::find($post_id);
-				
-			} catch (Exception $e) {
-				
-				Session::putFlash('warning','Could Not Find Post. Please try again');
-				Redirect::back();
-			}
+        Redirect::to("admin/edit_book/{$ebook->id}");
 
-			$this->view('admin/edit_post', compact('post')); 
+    }
 
-	}
 
-	public function blogs()
-	{
+    public function download_request($product_id)
+    {
 
+        $product = Products::find($product_id);
+        $product->download();
+        Redirect::back();
+    }
 
 
-		$sieve = $_REQUEST;
-		$query = Post::query();
-		$sieve = array_merge($sieve);
-					
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+    public function download_book($ebook_id)
+    {
 
-		$filter =  new  PostFilter($sieve);
+        $ebook = Ebooks::find($ebook_id);
+        $ebook->download();
 
-		$data =  $query->Filter($filter)->count();
+    }
 
-		$records =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
 
+    public function update_ebook($ebook_id = null)
+    {
+        echo "<pre>";
+        print_r($_POST);
+        print_r($_FILES);
 
-		$note = MIS::filter_note($records->count(), ($data), (Post::count()),  $sieve, 1);
-		$this->view('admin/blogs', compact('records', 'sieve', 'data', 'per_page','note')); 
-	}
+        DB::beginTransaction();
 
+        try {
 
-	public function blog_verification()
-	{
+            $ebook = Ebooks::find($_POST['ebook_id']);
+            $ebook->update([
+                'title' => $_POST['title'],
+                'description' => $_POST['description'],
+                'subscription_access' => $_POST['subscription_access'],
+            ]);
 
-		$response = DB::select("SELECT m1.*
-		FROM market m1 LEFT JOIN market m2
-		 ON (m1.item_id = m2.item_id AND m1.id < m2.id)
-		WHERE m2.id IS NULL 
-		AND m1.category = 'post'
-		;
-		");
+            $ebook->upload_coverpic($_FILES['cover_image']);
+            $ebook->upload_ebook($_FILES['ebook']);
 
-		$market_ids = collect($response)->pluck('id')->toArray();
+            DB::commit();
 
+            Session::putFlash('success', 'Ebook Updated Succesfully.');
+        } catch (Exception $e) {
+            DB::rollback();
+            Session::putFlash('danger', 'Ebook could not update succesfully.');
 
-		$sieve = $_REQUEST;
-		$query = Market::whereIn('id', $market_ids);
-		$sieve = array_merge($sieve, ['category' => 'post']);
-		// print_r($sieve);
-					
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        }
+        Redirect::back();
 
-		$filter =  new  MarketFilter($sieve);
+    }
 
-		$data =  $query->Filter($filter)->count();
 
-		$posts =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+    public function export_payout_to_pdf($month)
+    {
 
+        $mpdf = new \Mpdf\Mpdf([
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 10,
+            'margin_bottom' => 20,
+            'margin_header' => 10,
+            'margin_footer' => 10
+        ]);
 
-/*
-		print_r($posts->toArray());
-		return;
-*/
-		$this->view('admin/blog_verification', compact('posts', 'sieve', 'data','per_page'));
-	}
+        $project_name = Config::project_name();
+        $domain = Config::domain();
 
+        $mpdf->SetProtection(array('print'));
+        $mpdf->SetTitle("$domain");
+        $mpdf->SetAuthor("$project_name");
+        $mpdf->SetWatermarkText("$project_name");
+        $mpdf->showWatermarkText = true;
+        $mpdf->watermark_font = 'DejaVuSansCondensed';
+        $mpdf->watermarkTextAlpha = 0.1;
+        $mpdf->SetDisplayMode('fullpage');
 
-	public function testimonial_verification()
-	{
-		$this->view('admin/testimonial_verification');
-	}
+        $date_now = (date('Y-m-d H:i:s'));
 
+        $mpdf->SetFooter("Date Generated: " . $date_now . " - {PAGENO} of {nbpg}");
 
-	public function request_reverse_calculation($deposit_id, $amount_confirmed)
-	{
-		$deposit_id = MIS::dec_enc('decrypt', $deposit_id);
-		$deposit = DepositOrder::find($deposit_id);
+        $html = $this->payouts_html($month, true);
 
-		$reverse_calculation = $deposit->doReverseCalculation($amount_confirmed);
-		$view = $this->buildView('composed/deposit_reverse_calculation', compact('reverse_calculation') );
+        $mpdf->WriteHTML($html);
 
-		header("content-type:application/json");
-		echo json_encode(compact('view'));
+        $mpdf->Output("$month-Payouts.pdf", \Mpdf\Output\Destination::DOWNLOAD);
+    }
 
-	}
+    public function payouts_view($month)
+    {
 
+        $view = $this->payouts_html($month);
 
+        header("content-type:application/json");
 
-	public function process_deposit($deposit_id)
-	{	
+        echo json_encode(compact('view'));
+    }
 
-		$prev_location = $_SERVER['HTTP_REFERER'];
-		$main_url = explode("/", $prev_location);
-		$end_point = end($main_url);
 
+    public function payouts()
+    {
 
-		$actions = [
-			'all_deposits' => [
-			/*	'pending',
-				'declined',*/
 
-			],
-			'deposit_initiated' => [
+        $this->view('admin/payouts');
+    }
 
-			],
 
-			'deposit_pending' => [
-				'pending',
-				'declined',
-				'confirmed',
-			],
+    public function fetch_documents_list()
+    {
 
-			'deposit_confirmed' => [
-				'pending',
-				'completed',
-				'declined',
-			],
-			'deposit_completed' => [
 
-			],
+        $documents_settings = SiteSettings::documents_settings();
 
-			'deposit_declined' => [
-				'pending',
-				'declined',
-				'confirmed',
-			],	
-		];
+        header("content-type:application/json");
 
-		$admin_action =  $actions[$end_point];
-		$filtered_admin_action = array_filter(v2\Models\DepositOrder::$statuses , function($action) use ($admin_action){
-			return in_array($action, $admin_action);
-		});
+        $documents = ($documents_settings);
 
 
-		$enc_deposit_id = $deposit_id;
-		$deposit_id = MIS::dec_enc('decrypt', $deposit_id);
-		$deposit = DepositOrder::find($deposit_id);
+        echo json_encode(compact('documents'));
+    }
 
-		if ($deposit ==null) {
-			Session::putFlash("danger", "Deposit not found");
-			Redirect::back();
-		}
 
+    public function upload_supporting_document()
+    {
 
-		$this->view('admin/process_deposit', compact('deposit','filtered_admin_action','enc_deposit_id'));
 
-	}
+        $documents_settings = SiteSettings::where('criteria', 'documents_settings')->first();
 
-	public function process_withdrawal($withdrawal_id)
-	{	
+        $files = MIS::refine_multiple_files($_FILES['files']);
 
 
+        foreach ($files as $key => $value) {
+            $value['category'] = $_POST['category'][$key];
+            $files[$key] = $value;
+        }
 
-		$prev_location = $_SERVER['HTTP_REFERER'];
-		$main_url = explode("/", $prev_location);
-		$end_point = end($main_url);
+        $combined_files = array_combine($_POST['label'], $files);
 
-		$actions = [
-			'all_withdrawals' => [
+        Document::upload_documents($combined_files);
+        // $response = $documents_settings->upload_documents($combined_files);
+        Redirect::back();
 
-			],
-			'withdrawal_initiated' => [
-				
-				'pending',
-				'declined',
-				'confirmed',
-					
-			],
 
-			'withdrawal_pending' => [
-				'pending',
-				'declined',
-				'confirmed',
-			],
+    }
 
-			'withdrawal_confirmed' => [
-				'pending',
-				'completed',
-				'declined',
-			],
-			'withdrawal_completed' => [
 
-			],
+    public function delete_doc($id)
+    {
+        $document = Document::find($id);
+        if ($document == null) {
+            Session::putFlash("danger", "Document not found");
+            Redirect::back();
+        }
 
-			'withdrawal_declined' => [
+        DB::beginTransaction();
+        try {
 
-			],	
+            $document->delete();
+            DB::commit();
+            Session::putFlash("success", "Document deleted succesfully");
 
+        } catch (Exception $e) {
+            Session::putFlash("danger", "Something went wrong");
 
-		];
+        }
 
-		$admin_action =  $actions[$end_point];
-		$filtered_admin_action = array_filter(v2\Models\Withdrawal::$statuses , function($action) use ($admin_action){
-			return in_array($action, $admin_action);
-		});
+        Redirect::back();
+    }
 
 
+    public function delete_document($key)
+    {
 
+        $documents_settings = SiteSettings::where('criteria', 'documents_settings')->first();
+        $response = $documents_settings->delete_document($key);
+        header("content-type:application/json");
 
-		$withdrawal_id = MIS::dec_enc('decrypt', $withdrawal_id);
-		$withdrawal = Withdrawal::find($withdrawal_id);
+        echo json_encode(compact('response'));
+    }
 
-		if ($withdrawal ==null) {
-			Session::putFlash("danger", "withdrawal not found");
-			Redirect::back();
-		}
 
+    public function confirm_payment($order_id)
+    {
 
-		$this->view('admin/process_withdrawal', compact('withdrawal','filtered_admin_action'));
+        $order = SubscriptionOrder::find($order_id);
+        $status = $order->mark_paid();
+        Redirect::back();
+    }
 
-	}
 
+    public function testimony()
+    {
 
-	public function all_deposits()
-	{
+        $this->view('admin/testimony');
+    }
 
+    public function documents()
+    {
 
-		$compact =  $this->deposit_matters();
-		extract($compact);
-		$page_title = 'All Deposits';
+        $all_documents = Document::all();
+        // $documents_categories = Document::groupBy('category')->get()->pluck('category')->toArray();
+        $documents_categories = Document::$categories;
 
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+        $show = true;
+        $this->view('admin/documents', compact('show', 'all_documents', 'documents_categories'));
+    }
 
+    public function edit_testimony($testimony_id = null)
+    {
+        if (($testimony_id != null)) {
+            $testimony = Testimonials::find($testimony_id);
+            if (($testimony != null)) {
 
-	private function deposit_matters($extra_sieve=[])
-	{
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, $extra_sieve);
+                $this->view('admin/edit_testimony', ['testimony' => $testimony]);
+                return;
+            } else {
+                Redirect::to();
+            }
 
-		$query = DepositOrder::latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        }
 
-		$filter =  new  DepositOrderFilter($sieve);
+    }
 
-		$data =  $query->Filter($filter)->count();
 
-		$deposits =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+    public function suspending_admin($admin_id = null)
+    {
 
+        $admin = Admin::find($admin_id);
+        if ($admin == null) {
+            Redirect::back();
+        }
 
-		$shop = new Shop;
 
-		return compact('deposits', 'sieve', 'data','per_page','shop');
-	}
+        if ($admin->is_owner()) {
+            Session::putFlash('danger', "Invalid Request");
+            Redirect::back();
+        } else {
 
+            $admin->delete();
+            Session::putFlash('success', "Deleted Succesfully");
+        }
+        Redirect::back();
+    }
 
-	private function withdrawal_matters($extra_sieve=[])
-	{
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, $extra_sieve);
 
-		$query = Withdrawal::latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+    public function create_admin()
+    {
 
-		$filter =  new  WithdrawalFilter($sieve);
+        if (Input::exists()) {
 
-		$data =  $query->Filter($filter)->count();
+        }
 
-		$withdrawals =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
+        $this->validator()->check(Input::all(), array(
 
+            'firstname' => [
 
-		$shop = new Shop;
+                'required' => true,
+                'min' => 2,
+                'max' => 20,
+            ],
+            'lastname' => [
 
-		return compact('withdrawals', 'sieve', 'data','per_page','shop');
-	}
+                'required' => true,
+                'min' => 2,
+                'max' => 20,
+            ],
 
+            'email' => [
 
-	public function deposit_initiated()
-	{
+                'required' => true,
+                'email' => true,
+                'unique' => 'Admin'
+            ],
 
-		$sieve = ['status' => 'initialized'];
-		$compact =  $this->deposit_matters($sieve);
-		extract($compact);
-		$page_title = 'Initiated Deposits';
+            'username' => [
 
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+                'required' => true,
 
-	public function deposit_pending()
-	{
+                'min' => 3,
+                // 'one_word'=> true,
+                'no_special_character' => true,
+                'unique' => 'Admin',
+            ],
 
-		$sieve = ['status' => 'pending'];
-		$compact =  $this->deposit_matters($sieve);
-		extract($compact);
-		$page_title = 'Pending Deposits';
-		
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+            'phone' => [
 
+                'required' => true,
+                'min' => 9,
+                'max' => 14,
+                'unique' => 'Admin'
 
+            ],
 
-	public function deposit_confirmed()
-	{
-		$sieve = ['status' => 'confirmed'];
-		$compact =  $this->deposit_matters($sieve);
-		extract($compact);
-		$page_title = 'Confirmed Deposits';
-		
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+        ));
 
-	
+        if ($this->validator->passed()) {
+            $admin = Admin::create([
+                'firstname' => Input::get('firstname'),
+                'lastname' => Input::get('lastname'),
+                'email' => Input::get('email'),
+                'phone' => Input::get('phone'),
+                'username' => Input::get('username'),
 
+            ]);
+            if ($admin) {
 
 
-	public function deposit_completed()
-	{
+                Session::putFlash('success', "Admin Created Succesfully.");
+            }
+        } else {
 
-		$sieve = ['status' => 'completed'];
-		$compact =  $this->deposit_matters($sieve);
-		extract($compact);
-		$page_title = 'Completed Deposits';
-		
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
 
+            Session::putFlash('info', Input::inputErrors());
+        }
 
-	public function deposit_declined()
-	{
 
-		$sieve = ['status' => 'declined'];
-		$compact =  $this->deposit_matters($sieve);
-		extract($compact);
-		$page_title = 'Declined Deposits';
-		
-		$this->view('admin/all_deposits', compact('deposits', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+    }
 
 
 
-	public function all_withdrawals()
-	{
 
-		$sieve = [];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'All Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+    public function administrators()
+    {
 
-	public function withdrawal_initiated()
-	{
+        $this->view('admin/administrators');
+    }
 
-		$sieve = ['status'=> 1];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'Initiated Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
 
-	public function withdrawal_pending()
-	{
+    public function accounts()
+    {
+        $this->view('admin/accounts');
+    }
 
-		$sieve = ['status'=> 2];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'Pending Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
 
-	public function withdrawal_confirmed()
-	{
+    public function profile($admin_id = null)
+    {
 
-		$sieve = ['status'=> 3];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'Confirmed Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+        $admin = Admin::where('id', $admin_id)->first();
+        if (($admin == null) || (($admin->is_owner()) && (!$this->admin()->is_owner()))) {
 
-	public function withdrawal_completed()
-	{
+            // Session::putFlash('danger','unauthorised access');
+            Redirect::back();
+        }
 
-		$sieve = ['status'=> 4];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'Completed Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+        $this->view('admin/profile', compact('admin'));
+    }
 
 
-	public function withdrawal_declined()
-	{
+    public function toggle_news($new_id)
+    {
 
-		$sieve = ['status'=> 5];
-		$compact =  $this->withdrawal_matters($sieve);
-		extract($compact);
-		$page_title = 'Declined Withdrawals';
-		
-		$this->view('admin/all_withdrawals', compact('withdrawals', 'sieve', 'data','per_page','shop', 'page_title'));
-	}
+        $news = BroadCast::find($new_id);
+        if ($news->status) {
 
-	public function all_bonuses()
-	{
-		$this->view('admin/all_bonuses');
-	}
+            $update = $news->update(['status' => 0]);
+            Session::putFlash('success', 'News unpublished succesfully');
 
 
+        } else {
 
-	
+            $update = $news->update(['status' => 1]);
 
-	public function survey()
-	{
-		$this->view('admin/survey');
-	}
+            Session::putFlash('success', 'News published succesfully');
 
+        }
 
+        Redirect::back();
+    }
 
-	public function support_messages()
-	{
 
-		$this->view('admin/support-messages');
-	}
+    public function delete_news($new_id)
+    {
 
-	private function ticket_matters($extra_sieve)
-	{
+        $news = BroadCast::find($new_id);
+        if ($news != null) {
 
+            $update = $news->delete();
+            Session::putFlash('success', 'Deleted succesfully');
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, $extra_sieve);
 
-		$query = SupportTicket::latest();
-		// ->where('status', 1);  //in review
-		$sieve = array_merge($sieve);
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+        }
 
-		$filter =  new  SupportTicketFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+        Redirect::back("admin/news");
 
-		$tickets =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filtered
 
-		return compact('tickets', 'sieve', 'data','per_page');
-		
-	}
+    }
 
 
-	public function open_tickets()
-	{
-		$sieve = ['status' => 0];
-		$compact =  $this->ticket_matters($sieve);
-		extract($compact);
-		$page_title = 'Open Tickets';
+    public function create_news()
+    {
 
-		$this->view('admin/all_tickets', compact('tickets', 'sieve', 'data','per_page', 'page_title'));
-	}
+        print_r(Input::all());
+        BroadCast::create([
+            'broadcast_message' => Input::get('news'),
+            'admin_id' => $this->admin()->id
+        ]);
+        Session::putFlash('success', 'News Created succesfully');
 
+        Redirect::back();
 
-	public function closed_tickets()
-	{
-		$sieve = ['status' => 1];
-		$compact =  $this->ticket_matters($sieve);
-		extract($compact);
-		$page_title = 'Closed Tickets';
 
-		$this->view('admin/all_tickets', compact('tickets', 'sieve', 'data','per_page', 'page_title'));
-	}
+    }
 
 
-	public function all_campaigns()
-	{	
+    public function broadcast()
+    {
+        $this->view('admin/broadcast');
+    }
 
 
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, []);
+    public function viewSupportTicket($ticket_id)
+    {
 
+        $support_ticket_messages = SupportTicket::find($ticket_id)->messages;
+        $support_ticket = SupportTicket::find($ticket_id);
 
-		$query = Campaign::query();
+        $this->view('admin/support-ticket-messages', [
+            'support_ticket_messages' => $support_ticket_messages,
+            'support_ticket' => $support_ticket
+        ]);
 
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+    }
 
-		$filter =  new  CampaignFilter($sieve);
 
-		$data =  $query->Filter($filter)->count();
+    public function create_testimonial()
+    {
 
+        if (Input::exists() || true) {
 
-		$campaigns =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filt
+            $testimony = Testimonials::create([
+                'attester' => Input::get('attester'),
+                'content' => Input::get('testimony')]);
 
+        }
+        Redirect::to("admin/edit_testimony/{$testimony->id}");
+    }
 
-		$this->view('admin/all_campaigns', compact('sieve', 'data','per_page','campaigns'));
 
-	}
+    public function testimonials()
+    {
 
 
-	public function view_category($category_id)
-	{
-		$campaign_category = CampaignCategory::find($category_id);
-		if ($campaign_category==null) {
-			Session::putFlash('danger',"Invalid request");
-			Redirect::back();
-		}
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
 
-		$this->view('admin/campaign_category_view',  compact('rows','campaign_category'));
-	}
+        $query = Testimonials::latest()->where('video_link', '!=', null);
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
 
-	public function campaigns_categories()
-	{
-		$sieve = $_REQUEST;
-		$sieve = array_merge($sieve, []);
+        $filter = new  TestimonialsFilter($sieve);
 
+        $data = $query->Filter($filter)->count();
 
-		$query = CampaignCategory::query();
+        $testimonials = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
 
-		$page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
-		$per_page = 50;
-		$skip = (($page -1 ) * $per_page) ;
+            $note = MIS::filter_note($testimonials->count(), ($data), (Testimonials::count()),  $sieve, 1);
 
-		$filter =  new  CampaignCategoryFilter($sieve);
+        $this->view('admin/testimonials', compact('testimonials', 'sieve', 'data', 'per_page','note'));
+    }
 
-		$data =  $query->Filter($filter)->count();
+    public function approve_testimonial($testimonial_id)
+    {
 
+        $testimony = Testimonials::find($testimonial_id);
+        if ($testimony->approval_status) {
 
-		$campaigns_categories =  $query->Filter($filter)
-						->offset($skip)
-						->take($per_page)
-						->get();  //filt
+            $update = $testimony->update(['approval_status' => 0]);
 
+            Session::putFlash('success', 'Testimonial disapproved succesfully');
 
-		$this->view('admin/campaigns_categories', compact('sieve', 'data','per_page','campaigns_categories'));
-	}
 
-	public function create_campaign()
-	{
-		$campaign =  Campaign::create([
-			'admin_id'=> $this->admin()->id,
-		]);
+        } else {
 
+            $update = $testimony->update(['approval_status' => 1]);
+            $testimony->give_commisssion();
 
-		Redirect::to($campaign->editLink);
-	}
+            Session::putFlash('success', 'Testimonial approved succesfully');
 
+        }
 
-	public function edit_campaign($campaign_id)
-	{
-		$campaign =  Campaign::find($campaign_id);
-		if ($campaign == null) {
-			Session::putFlash('danger','Invalid request');
-			Redirect::back();
-		}
 
+        Redirect::back();
 
-		$this->view('admin/edit_campaign', compact('campaign'));
-	}
 
-	public function news()
-	{
-		$this->view('admin/news');
-	}
+    }
 
+    public function publish_testimonial($testimonial_id)
+    {
 
+        $testimony = Testimonials::find($testimonial_id);
+        if ($testimony->published_status) {
 
-	public function testimony()
-	{
-		$this->view('admin/testimony');
-	}
+            $update = $testimony->update(['published_status' => 0]);
+            Session::putFlash('success', 'Testimonial unpublished succesfully');
 
 
+        } else {
 
 
+            //check that this is approved
+            if ($testimony->approval_status != 1) {
 
+                Session::putFlash('danger', 'Testimonial must be approved before published. Please approve.');
+                Redirect::back();
+            }
 
-	public function edit_testimony($testimony_id =null)
-	{
-		if (($testimony_id != null)  ) {
-		$testimony = Testimonials::find($testimony_id);
-			if (($testimony != null) ) {
 
-						$this->view('admin/edit_testimony', ['testimony'=>$testimony ]);
-						return;
-			}else{
-				Redirect::to();
-			}
+            $update = $testimony->update(['published_status' => 1]);
+            Session::putFlash('success', 'Testimonial published succesfully');
 
-		}
+        }
 
-	}
 
+        Redirect::back();
 
 
+    }
 
+    public function delete_testimonial($testimonial_id)
+    {
 
+        $testimony = Testimonials::find($testimonial_id);
+        if ($testimony != null) {
 
-	public function mark_withdrawal_paid($withdrawal_id)
-	{
+            $testimony->delete();
+            Session::putFlash('success', 'Testimonial deleted succesfully');
 
-		$withdrawal = LevelIncomeReport::find($withdrawal_id);
-		$withdrawal->mark_withdrawal_paid();
-	
-			Redirect::back();
-	}
 
+        }
 
 
-	public function administrators()
-	{
+        Redirect::back();
+    }
 
-		$this->view('admin/administrators');
-	}
-	
 
+    public function update_testimonial()
+    {
 
-	public function accounts()
-	{
-		$this->view('admin/accounts');
-	}
+        echo "<pre>";
 
 
-	public function profile($admin_id=null)
-	{
+        $testimony_id = Input::get('testimony_id');
+        $testimony = Testimonials::find($testimony_id);
 
-		$admn  =  Admin::where('id', $admin_id)->first();
-		if (($admn == null) || (($admn->is_owner() )  && (!$this->admin()->is_owner()))) {
+        $testimony->update([
+            'attester' => Input::get('attester'),
+            'video_link' => Input::get('video_link'),
+            'type' => Input::get('type'),
+            'content' => Input::get('testimony'),
+            'approval_status' => 0
+        ]);
 
-			Session::putFlash('danger','unauthorised access');
-			Redirect::back();
-		}
 
-		$this->view('admin/profile', compact('admn'));
+        Session::putFlash('success', 'Testimonial updated successfully. Awaiting approval');
 
-	}
+        Redirect::back();
+    }
 
 
+    public function support()
+    {
 
+        $support_tickets = SupportTicket::all();
+        $this->view('admin/support', ['support_tickets' => $support_tickets]);
+    }
 
-	public function broadcast()
-	{
-		$this->view('admin/broadcast');
-	}
 
+    public function companies()
+    {
+        $this->view('admin/companies');
+    }
 
 
-	public function viewSupportTicket($ticket_id){
+    public function settings()
+    {
+        $this->view('admin/settings');
+    }
 
-		$support_ticket_messages = SupportTicket::find($ticket_id)->messages; 
-		$support_ticket 		 = SupportTicket::find($ticket_id); 
 
-		$this->view('admin/support-ticket-messages', [
-					'support_ticket_messages'	=> $support_ticket_messages ,
-					'support_ticket'			=> $support_ticket 
-									]);  
+    public function user_profile($user_id = null)
+    {
 
-	}
-	
+        if ($user_id == null) {
+            Redirect::back();
+        }
 
 
+        $_SESSION[$this->auth_user()] = $user_id;
 
-	public function testimonials()
-	{
-
-
-	    $sieve = $_REQUEST;
-	    // $sieve = array_merge($sieve, $extra_sieve);
-
-	    $query = Testimonials::latest();
-	    // ->where('status', 1);  //in review
-	    $sieve = array_merge($sieve);
-	    $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
-	    $per_page = 50;
-	    $skip = (($page - 1) * $per_page);
-
-	    $filter = new  TestimonialsFilter($sieve);
-
-	    $data = $query->Filter($filter)->count();
-
-	    $testimonials = $query->Filter($filter)
-	        ->offset($skip)
-	        ->take($per_page)
-	        ->get();  //filtered
-
-	        $note = MIS::filter_note($testimonials->count(), ($data), (Testimonials::count()),  $sieve, 1);
-
-	    $this->view('admin/testimonials', compact('testimonials', 'sieve', 'data', 'per_page','note'));
-	}
-
-
-
-	public function support()
-	{
-
-		$support_tickets = SupportTicket::all();
-			$this->view('admin/support', ['support_tickets' => $support_tickets]);  
-	}
-
-
-
-	public function companies(){
-		$this->view('admin/companies');
-	}
-
-
-
-	public function testing()
-	{
-		$this->view('admin/sales');
-	}	
-
-
-
-
-
-
-	public function settings(){
-		$this->view('admin/settings');
-	}
-
-
-	public function user_profile($user_id = null){
-
-		if ($user_id==null) {
-			Redirect::back();
-		}
-
-
-		$_SESSION[$this->auth_user()] = $user_id;
-
-		$domain = Config::domain();
-		$e = <<<EOL
+        $domain = Config::domain();
+        $e = <<<EOL
 
 
 				<style type="text/css">
@@ -1632,44 +1455,85 @@ class AdminController extends controller
 	 		<iframe  id="iframe1" src="$domain/user/dashboard"></iframe>
 EOL;
 
-		echo "$e";
-		// $this->view('admin/accessing_user_profile');
-	}
+        echo "$e";
+        // $this->view('admin/accessing_user_profile');
+    }
+
+
+    public function suspending_user($user_id)
+    {
+
+
+        if (User::find($user_id)->blocked_on) {
+
+            $update = User::find($user_id)->update(['blocked_on' => null]);
+            Session::putFlash('success', 'Ban lifted succesfully');
+
+
+        } else {
+
+            $update = User::find($user_id)->update(['blocked_on' => date("Y-m-d")]);
+
+            Session::putFlash('success', 'User Blocked succesfully');
+
+        }
+
+
+        if ($update) {
+        } else {
+            Session::putFlash('flash', 'Could not Block this User');
+        }
+
+
+        Redirect::back();
+    }
+
+
+    public function dashboard()
+    {
+        $this->view('admin/dashboard');
+
+    }
 
 
 
-	public function dashboard()
-	{	
-		$this->view('admin/dashboard');
+    public function library()
+    {
+        $this->view('admin/library');
 
-	}
+    }
+
+  
+    public function membership_orders()
+    {
 
 
+        $sieve = $_REQUEST;
+        // $sieve = array_merge($sieve, $extra_sieve);
 
+        $query = SubscriptionOrder::latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new  SubscriptionOrderFilter($sieve);
+
+        $data = $query->Filter($filter)->count();
+
+        $subscription_orders = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
+
+        $this->view('admin/subscription_orders', compact('subscription_orders', 'sieve', 'data', 'per_page'));
+
+
+    }
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ?>

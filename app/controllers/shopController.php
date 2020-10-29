@@ -3,6 +3,8 @@
 use Illuminate\Database\Capsule\Manager as DB;
 use  v2\Shop\Shop;
 use  v2\Models\Market;
+use wp\Models\Post;
+use wp\Models\User as WpUser;
 
 
 /**
@@ -13,491 +15,604 @@ class shopController extends controller
 {
 
 
-	public function __construct(){		
-	/*	if (! $this->admin()) {
-			$this->middleware('current_user')
-				 ->mustbe_loggedin();
-				 // ->must_have_verified_email();
-				}		*/
-			}
+    public function __construct(){      
+    /*  if (! $this->admin()) {
+            $this->middleware('current_user')
+                 ->mustbe_loggedin();
+                 // ->must_have_verified_email();
+                }       */
+            }
 
 
-			public function re_confirm_order()
-			{
-				$shop = new Shop();
-				$item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
-				$full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];
-				$order = $full_class_name::where('id' ,$_REQUEST['order_unique_id'])->where('paid_at', null)->first();
+            public function re_confirm_order()
+            {
+                $shop = new Shop();
+                $item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
+                $full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];
+                $order = $full_class_name::where('id' ,$_REQUEST['order_unique_id'])->where('paid_at', null)->first();
 
-				$shop->setOrder($order)->reVerifyPayment();
+                $shop->setOrder($order)->reVerifyPayment();
 
-				Redirect::back();
-			}
+                Redirect::back();
+            }
 
 
-			public function callback()
-			{
-				$auth = $this->auth();
-				$shop = new Shop();
-				$item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
-				$full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];		 	
-				$order_id = $_REQUEST['order_unique_id'];
-				$order = $full_class_name::where('id' ,$order_id)->where('user_id', $auth->id)->where('paid_at', null)->first();
+            //for subscription payment
+            public function execute_agreement()
+            {       
 
-				if ($order==null) {
-					Redirect::back();
-				}
+                $auth = $this->auth();
+                $shop = new Shop();
+                $item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
+                $full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];          
+                $order_id = $_REQUEST['order_unique_id'];
+                $order = $full_class_name::where('id' ,$order_id)->where('user_id', $auth->id)->where('paid_at', null)->first();
 
-				$shop->setOrder($order)->verifyPayment();
 
 
-				$url = $order->after_payment_url();
+                switch ($_REQUEST['item_purchased']) {
+                    case 'packages':
+                        $redirect = 'user/package';
+                        break;
+                    case 'product':
+                        $redirect = 'user/online_shop';
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
 
 
-				header("content-type:application/json");
-				echo json_encode(compact('url','order'));
+                if ($order==null) {
+                    Redirect::to($redirect);
+                }
 
-			}
 
 
-			public function checkout()
-			{
-				$shop = new Shop();
+                DB::beginTransaction();
+                try {
+                    
+                    $shop->setOrder($order)->executeAgreement();
 
-				$item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
+                DB::commit();
+                } catch (Exception $e) {
+                    
+                }
 
-				$full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];
-				$order_id = $_REQUEST['order_unique_id'];
-				$order = $full_class_name::where('id' ,$order_id)->where('user_id', $this->auth()->id)->where('paid_at', null)->first();
 
-				if ($order == null) {
-					Session::putFlash("info","Invalid Request");
-					return;
-				}
+                    Redirect::to($redirect);
+            }
 
-				$shop = new Shop();
-				$attempt =	$shop
-				->setOrder($order)
-				->setPaymentMethod($_REQUEST['payment_method'])
-				->initializePayment()
-				->attemptPayment();
-				if ($attempt ==false) {
-					Redirect::back();
-				}
 
-				$shop->goToGateway();
+            public function callback()
+            {
+                $auth = $this->auth();
+                $shop = new Shop();
+                $item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
+                $full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];          
+                $order_id = $_REQUEST['order_unique_id'];
+                $order = $full_class_name::where('id' ,$order_id)->where('user_id', $auth->id)->where('paid_at', null)->first();
 
-			}
 
+                switch ($_REQUEST['item_purchased']) {
+                    case 'packages':
+                        $redirect = 'user/package';
+                        break;
+                    case 'product':
+                        $redirect = 'user/online_shop';
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
+                    
 
-			public function complete_order($action='breakdown')
-			{
+                if ($order==null) {
+                    Redirect::to($redirect);
+                }
 
-				$cart = json_decode($_POST['cart'],  true);
 
-				DB::beginTransaction();
+                $shop->setOrder($order)->verifyPayment();
+                
+                Redirect::to($redirect);
+                
 
+                $url = $order->after_payment_url();
 
 
-				$model = $cart['$config']['order_storage'];
+                header("content-type:application/json");
+                echo json_encode(compact('url','order'));
 
+            }
 
-				try {
 
-					$auth = $this->auth();
+            public function checkout()
+            {
+                $shop = new Shop();
 
-					$new_order = $model::create(
-						// ['id' => $_SESSION['shop_checkout_id']],
-						[
-							'user_id'		 => $auth->id,
-							'buyer_order'	 => json_encode($cart['$items']),
-							'percent_off' 	 => $percent_off ?? 0,
-						]);
+                $item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
 
-					$shop = new Shop();
-					$payment_details =	$shop
-										// ->setOrderType('order') //what is being bought
-					->setOrder($new_order)
-					->setPaymentMethod($_POST['payment_method'])
-					->initializePayment()
-					->attemptPayment()
-					;
+                $full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];
+                $order_id = $_REQUEST['order_unique_id'];
+                $order = $full_class_name::where('id' ,$order_id)->where('user_id', $this->auth()->id)->where('paid_at', null)->first();
 
-					DB::commit();
-					$_SESSION['shop_checkout_id'] = $new_order->id;
-					header("content-type:application/json");
+                if ($order == null) {
+                    Session::putFlash("info","Invalid Request");
+                    return;
+                }
 
-					switch ($action) {
-						case 'get_breakdown':
+                $payment_type = $order->PaymentDetailsArray['payment_type'] ?? 'one_time';
 
+                $shop = new Shop();
+                $attempt =  $shop
+                ->setOrder($order)
+                ->setPaymentMethod($_REQUEST['payment_method'])
+                ->setPaymentType($payment_type)
+                ->initializePayment()
+                ->attemptPayment();
+                if ($attempt ==false) {
+                    Redirect::back();
+                }
 
-						$breakdown = $shop->fetchPaymentBreakdown();
-						echo json_encode(compact('breakdown')) ;
-						break;
+                $shop->goToGateway();
 
-						case 'make_payment':
+            }
 
-						Session::putFlash('success', "Order Created Successfully. ");
-						echo json_encode($payment_details);
-						break;
 
-						default:
-					# code...
-						break;
-					}
+            public function complete_order($action='breakdown')
+            {
 
+                $cart = json_decode($_POST['cart'],  true);
 
+                DB::beginTransaction();
 
-				} catch (Exception $e) {
-					print_r($e->getMessage());
 
-					DB::rollback();
-					Session::putFlash('danger', "We could not create your order.");
-			// Redirect::back();
-				}
-			}
 
+                $model = $cart['$config']['order_storage'];
 
 
-	/**
-	 * this is the default landing point for all request to our application base domain
-	 * @return a view from the current active template use: Config::views_template()
-	 * to find out current template
-	 */
-	public function index($category=null)
-	{
-		$model = 'course';
-		$this->view('guest/shop', compact('model'));
-	}
+                try {
 
+                    $auth = $this->auth();
 
-	public function retrieve_cart_in_session()
-	{
+                    $new_order = $model::updateOrcreate(
+                        ['id' => $_SESSION['shop_checkout_id'] ??null ],
+                        [
+                            'user_id'        => $auth->id,
+                            'buyer_order'    => json_encode($cart['$items']),
+                            'extra_detail'    => json_encode($cart['$extra_detail']),
+                            'percent_off'    => $percent_off ?? 0,
+                        ]);
 
-		// echo "<pre>";
-		header("content-type:application/json");
+                    $shop = new Shop();
+                    $shop
+                                        // ->setOrderType('order') //what is being bought
+                    ->setOrder($new_order)
+                    ->setPaymentMethod($_POST['payment_method'])
+                    ->setPaymentType();
 
-		$cart = json_decode($_SESSION['cart'], true);
 
-		foreach ($cart['$items'] as $key =>  $item) {
+                    DB::commit();
+                    $_SESSION['shop_checkout_id'] = $new_order->id;
 
-				 // $item_array =  json_decode($item, true);
-			unset($cart['$items'][$key]['$$hashKey']);
-			$items[] = $item;
-		}
+                    //check that course email is valid
+                    $extra_detail = $new_order->ExtraDetailArray;
+                    $course_email = $extra_detail['course_email'];
+                    $wp_user = WpUser::where('user_email', $course_email)->first();
 
-		if (! isset($_SESSION['cart'])) {
-			$cart = [];
-		}
+                    if ($wp_user == null) {
+                        Session::putFlash("danger","Course Email does not exist. Please enter a valid email");
+                        $action='get_breakdown';
+                    }
 
-		print_r(json_encode($cart));
-	}
 
+                    header("content-type:application/json");
 
-	public function update_cart()
-	{		
-		
-		$_SESSION['cart'] = ($_POST['cart']);
-	}
+                    switch ($action) {
+                        case 'get_breakdown':
 
 
-	public function empty_cart_in_session()
-	{
-		unset($_SESSION['cart']);
-		unset($_SESSION['shop_checkout_id'] );
-	}
+                        $breakdown = $shop->fetchPaymentBreakdown();
+                        echo json_encode(compact('breakdown')) ;
+                        break;
 
+                        case 'make_payment':
 
+                        $payment_details = $shop->initializePayment()
+                        ->attemptPayment();
 
 
-	public function send_order_notification_email($order_id)
-	{
-		$order =  Orders::find($order_id);
+                        Session::putFlash('success', "Order Created Successfully. ");
+                        echo json_encode($payment_details->order);
+                        break;
 
-		$notification_email=  	CmsPages::where('page_unique_name', 'notification' )->first()->page_content;
-		$notification_email = json_decode($notification_email , true);
+                        default:
+                    # code...
+                        break;
+                    }
 
 
-		$subject = Config::project_name().' NEW ORDER NOTIFICATION';
-		$email_body = $this->buildView('emails/order_notification', ['order'=>$order]);
 
-		$mailer = 	new Mailer();
-		$mailer->sendMail($notification_email['notification_email'], $subject, $email_body );
-		ob_end_clean();
-	}
+                } catch (Exception $e) {
+                    print_r($e->getMessage());
 
+                    DB::rollback();
+                    Session::putFlash('danger', "We could not create your order.");
+            // Redirect::back();
+                }
+            }
 
-	public function send_order_confirmation_email($order_id)
-	{
-		$order =  Orders::find($order_id);
-		$to = $order->billing_email;
-		$subject = Config::project_name().' ORDER CONFIRMATION';
-		$email_body = $this->buildView('emails/order_confirmation', ['order'=>$order]);
 
-		$mailer = 	new Mailer();
-		$mailer->sendMail($to, $subject, $email_body );
-		ob_end_clean();
-	}
 
+    /**
+     * this is the default landing point for all request to our application base domain
+     * @return a view from the current active template use: Config::views_template()
+     * to find out current template
+     */
+    public function index($category=null)
+    {
+        $model = 'course';
+        $this->view('guest/shop', compact('model'));
+    }
 
 
-	public function fetch_items($page=1, $model=null)
-	{
+    public function retrieve_cart_in_session()
+    {
 
-		if (($model== null) || ($model== '') ) {
-			$model='course';
-		}
+        // echo "<pre>";
+        header("content-type:application/json");
 
-		$domain = Config::domain();
-		$shop_link = "$domain/shop";
+        $cart = json_decode($_SESSION['cart'], true);
 
-		$register = [
-			'course' => [
-				'per_page' => 30,
-				'model' => 'Course',
-				'currency' => '&#8358;',
-				'shop_link' => $shop_link,
-			],
+        foreach ($cart['$items'] as $key =>  $item) {
 
-		];
+                 // $item_array =  json_decode($item, true);
+            unset($cart['$items'][$key]['$$hashKey']);
+            $items[] = $item;
+        }
 
+        if (! isset($_SESSION['cart'])) {
+            $cart = [];
+        }
 
-		$per_page = 30;
-		$products = $register[$model]['model']::approved()->orderBy('updated_at', 'DESC');
+        print_r(json_encode($cart));
+    }
 
-		if (Category::find($category_id) != null) {
 
-			$products->where('category_id', $category_id);
-		}
+    public function update_cart()
+    {       
+        
+        $_SESSION['cart'] = ($_POST['cart']);
+    }
 
-			//pagination
-		$products = $products->get()->forPage($page, $per_page);
-		foreach ($products as $course) {
-			$course->market_details = $course->market_details(); 
-		}
 
-		header("Content-type: application/json");
+    public function empty_cart_in_session()
+    {
+        unset($_SESSION['cart']);
+        unset($_SESSION['shop_checkout_id'] );
+    }
 
-		$config = $register[$model];
 
-		$items = $products;
 
 
-		$shop = compact('items', 'config');
-		echo json_encode($shop);	
-	}
+    public function send_order_notification_email($order_id)
+    {
+        $order =  Orders::find($order_id);
 
+        $notification_email=    CmsPages::where('page_unique_name', 'notification' )->first()->page_content;
+        $notification_email = json_decode($notification_email , true);
 
 
+        $subject = Config::project_name().' NEW ORDER NOTIFICATION';
+        $email_body = $this->buildView('emails/order_notification', ['order'=>$order]);
 
-	public function submit_for_review($item_id, $model_key='course')
-	{
+        $mailer =   new Mailer();
+        $mailer->sendMail($notification_email['notification_email'], $subject, $email_body );
+        ob_end_clean();
+    }
 
-		// $this->middleware('current_user')->mustbe_loggedin();
 
-		$register = [
-			'course' => [
-				'model' => 'Course',
-			],
+    public function send_order_confirmation_email($order_id)
+    {
+        $order =  Orders::find($order_id);
+        $to = $order->billing_email;
+        $subject = Config::project_name().' ORDER CONFIRMATION';
+        $email_body = $this->buildView('emails/order_confirmation', ['order'=>$order]);
 
-			'post' => [
-				'model' => 'Post',
-			],
+        $mailer =   new Mailer();
+        $mailer->sendMail($to, $subject, $email_body );
+        ob_end_clean();
+    }
 
-		];
 
-		$model = $register[$model_key]['model'];
 
+    public function fetch_items($page=1, $model=null)
+    {
 
-		//$this->middleware('current_user')->mustbe_loggedin();
-		$item = $model::find($item_id);
-		$auth = $this->auth();
+        if (($model== null) || ($model== '') ) {
+            $model='course';
+        }
 
-		// do some checks
-		if  (! $item->is_ready_for_review()){
-			Session::putFlash('danger' ,' Pls check to see all required fields have been field then try again');
-			Redirect::back();
-		}
+        $domain = Config::domain();
+        $shop_link = "$domain/shop";
 
-		//ensure this is not in review already
-		$last_submission =	Market::/*where('seller_id', $auth->id)
-		->*/where('category', $item::$category_in_market)
-		->where('item_id', $item->id)
-		->latest()
-		->first();
+        $register = [
+            'course' => [
+                'per_page' => 30,
+                'model' => 'Course',
+                'currency' => '&#8358;',
+                'shop_link' => $shop_link,
+            ],
+
+        ];
+
+
+        $per_page = 30;
+        $products = $register[$model]['model']::approved()->orderBy('updated_at', 'DESC');
+
+        if (Category::find($category_id) != null) {
+
+            $products->where('category_id', $category_id);
+        }
+
+        //pagination
+        $products = $products->get()->forPage($page, $per_page);
+        foreach ($products as $course) {
+            $course->market_details = $course->market_details(); 
+        }
+
+        header("Content-type: application/json");
+
+        $config = $register[$model];
+
+        $items = $products;
+
+
+        $shop = compact('items', 'config');
+        echo json_encode($shop);    
+    }
+
+
+
+
+    public function submit_for_review($item_id, $model_key='product')
+    {
+        $this->middleware('current_user')->mustbe_loggedin();
+
+        $register = Market::$register;
+
+        $model = $register[$model_key]['model'];
+
+
+        //$this->middleware('current_user')->mustbe_loggedin();
+        $item = $model::find($item_id);
+        $auth = $this->auth();
+
+        // do some checks
+        if  (! $item->is_ready_for_review()){
+            Session::putFlash('danger' ,' Pls check to see all required fields have been field then try again');
+            Redirect::back();
+        }
+
+        //ensure this is not in review already
+        $last_submission =  Market::where('seller_id', $auth->id)
+        ->where('category', $item::$category_in_market)
+        ->where('item_id', $item->id)
+        ->latest()
+        ->first();
 
 /*
-		if ($last_submission != null) {
-			if ($last_submission->approval_status_is('in_review')) {
-				Session::putFlash('info' ,'Already in review. Admin will decline or approve before you can re-submit.');
-				Redirect::back();
-			}
-		}*/
+        if ($last_submission != null) {
+            if ($last_submission->approval_status_is('in_review')) {
+                Session::putFlash('info' ,'Already in review. Admin will decline or approve before you can re-submit.');
+                Redirect::back();
+            }
+        }*/
 
 
-		DB::beginTransaction();
-		
-		try {
+        DB::beginTransaction();
+        
+        try {
 
-			$submission = Market::create([
-				'item_id' => $item->id,
-				// 'seller_id' => $auth->id,
-				'category' => $item::$category_in_market,
-				'item' => $item->toJson(),
-								'approval_status' => 1, //in review
-							]);
-
-
-			DB::commit();
-			Session::putFlash('success' ,'Submitted for review successfully! This will be Live after approval');
-		} catch (Exception $e) {
-			Session::putFlash('danger' ,'Something went wrong');
-
-			print_r($e->getMessage());
-			DB::rollback();
-			
-		}
-				$submission->approve();
-
-		Redirect::back();
-	}
+            $submission = Market::create([
+                'item_id' => $item->id,
+                'seller_id' => $auth->id,
+                'category' => $item::$category_in_market,
+                'item' => $item->toJson(),
+                                'approval_status' => 1, //in review
+                            ]);
 
 
+            DB::commit();
+            Session::putFlash('success' ,'Put on sale successfully.');
+        } catch (Exception $e) {
+            Session::putFlash('danger' ,'Something went wrong');
 
-	public function get_single_item_on_market($model_key, $item_id)
-	{
-		$register = [
-			'course' => [
-				'model' => 'Course',
-			],
-		];
+            print_r($e->getMessage());
+            DB::rollback();
+            
+        }
+        
+        $submission->approve();
 
-		$model = $register[$model_key]['model'];
-
-
-		$item =  new $model;
-
-		$item_on_sale =	Market::where('category', $item::$category_in_market)
-		->where('item_id', $item_id)
-		->latest()
-		->OnSale()
-		->first();
-
-
-		$good  = $item_on_sale->good()->market_details();
-		$single_good = [
-			'market_details' => $good
-		];
+        Redirect::back();
+    }
 
 
 
-		header("content-type:application/json");
+    public function get_single_item_on_market($model_key, $item_id)
+    {
+        $register = Market::$register;
 
-		echo json_encode(compact('single_good'));
-
-
-	}
-
-	public function full_view($item_id, $model_key)
-	{
-
-		$register = [
-			'course' => [
-				'model' => 'Course',
-			],
-
-		];
-
-		$model = $register[$model_key]['model'];
-		$item =  new $model;
+        $model = $register[$model_key]['model'];
 
 
+        $item =  new $model;
 
-		$item_on_sale =	Market::where('category', $item::$category_in_market)
-		->where('item_id', $item_id)
-		->latest()
-		->OnSale()
-		->first();
+        $item_on_sale = Market::where('category', $item::$category_in_market)
+        ->where('item_id', $item_id)
+        ->latest()
+        ->OnSale()
+        ->first();
+
+
+        $good  = $item_on_sale->good()->market_details();
+        $single_good = [
+            'market_details' => $good
+        ];
 
 
 
+        header("content-type:application/json");
 
-		$good = $item_on_sale->preview();
+        echo json_encode(compact('single_good'));
 
 
-		switch ($model_key) {
-			case 'course':
-			$course = $good;
+    }
 
-			$model = 'course';
-			$access = '';
-			// return;
-			$this->view('guest/single-course',compact('course','model','access'));
-			break;
-			
-			default:
-				# code...
-			break;
-		}
+    public function full_view($item_id, $model_key)
+    {
+        $register = Market::$register;
+
+
+        $model = $register[$model_key]['model'];
+        $item =  new $model;
 
 
 
+        $item_on_sale = Market::where('category', $item::$category_in_market)
+        ->where('item_id', $item_id)
+        ->latest()
+        ->OnSale()
+        ->first();
 
-	}
 
-	
-	public function market($page=1 , $type = 'course')
-	{	
-		
+        if ($item_on_sale == null) {
 
-		$domain = Config::domain();
-		$shop_link = "$domain/shop";
+            Session::putFlash("danger","Item not found");
+            Redirect::back();
+        }
 
-		$register = [
-			'course' => [
-				'per_page' => 5,
-				'currency' => '&#8358;',
-				'shop_link' => $shop_link,
-				'order_storage' => 'Orders',
-			],
 
-		];
+        $good = $item_on_sale->preview();
 
-		$market_category = $register[$type];
-		$per_page = $market_category['per_page'];
-		$skip = (($page -1 ) * $per_page) ;
+
+        switch ($model_key) {
+            case 'course':
+            $course = $good;
+
+            $model = 'course';
+            $access = '';
+            // return;
+            $this->view('guest/single-course',compact('course','model','access'));
+            break;
+
+            case 'product':
+            $product = $good;
+
+            $model = 'product';
+            $access = '';
+            // return;
+            $this->view('auth/online_shop',compact('product','model','access'));
+            break;
+            
+            default:
+                # code...
+            break;
+        }
 
 
 
 
-		$items_on_sale = Market::latest()
-		->GoodsBelongingTo($type)
-		->OnSale()
-		->skip($skip)
-		->take($per_page)
-		->get()
-		;
+    }
+
+    
+    public function market($page=1 , $type = 'product')
+    {   
+        
+
+        $domain = Config::domain();
+        $shop_link = "$domain/user/shop";
+
+        $register = [
+            'course' => [
+                'per_page' => 25,
+                'currency' => '&#8358;',
+                'shop_link' => $shop_link,
+                'order_storage' => 'Orders',
+            ],
+
+            'product' => [
+                'per_page' => 25,
+                'currency' => Config::currency(),
+                'shop_link' => $shop_link,
+                'order_storage' => 'Orders',
+            ],
+
+        ];
+
+        $market_category = $register[$type];
+        $per_page = $market_category['per_page'];
+        $skip = (($page -1 ) * $per_page) ;
+
+/*
 
 
-		$shaded=[];
-		foreach ($items_on_sale as $key => $item_on_sale) {
-			$market_content = $item_on_sale->item;
+        $items_on_sale = Market::latest()
+        ->GoodsBelongingTo($type)
+        ->OnSale()
+        ->skip($skip)
+        ->take($per_page)
+        ->get()
+        ;
+*/
 
-			if ($market_content == null) {
-				continue;
-			}
-			$shaded_market[]['market_details'] = $item_on_sale->good()->market_details();
-		}
+        $courses = Post::Courses()->get();
 
-		header("Content-type: application/json");
-		
-		$config = $market_category;
-		$items = $shaded_market;
+        // echo $courses->count();
+
+        $course = $courses->first();
+
+        // print_r($course->post_meta->toArray());
+
+        $published_courses = $courses->filter(function($course){
+            $post_meta = $course->post_meta->keyBy('meta_key');
+
+            if (! isset($post_meta['_lp_course_status'])) {
+                           return false;
+                       }
+            if ($post_meta['_lp_course_status']['meta_value'] == 'publish') {
+                return true;
+            }
+        });
 
 
-		$shop = compact('items', 'config');
-		echo json_encode($shop);	
-	}
+        $items_on_sale = $published_courses->forPage($page, $per_page);
+
+        // print_r($items_on_sale->toArray());
+
+        $shaded=[];
+        foreach ($items_on_sale as $key => $item_on_sale) {
+           /* $market_content = $item_on_sale->item;
+
+            if ($market_content == null) {
+                continue;
+            }*/
+
+            $shaded_market[]['market_details'] = $item_on_sale->market_details();
+        }
+
+        header("Content-type: application/json");
+        
+        $config = $market_category;
+        $items = $shaded_market ?? [];
+
+
+        $shop = compact('items', 'config');
+        echo json_encode($shop);    
+    }
 }
 
 

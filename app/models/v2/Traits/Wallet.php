@@ -16,61 +16,13 @@ use  v2\Models\Wallet as WalletMap;
  */
 trait Wallet 
 {
-
-
-	public function getgetOrderIdAttribute()
-	{
-
-		if ($this->order_id == null) {
-			return false;
-		}	
-
-		return $this->order_id;
-	}
-
-
-
-
-	public function order()
-	{
-
-		if ($this->order_id == null) {
-			return false;
-		}
-
-		$domain = Config::domain();
-
-		$detail = $this->ExtraDetailArray;
-
-		$item_purchased = $detail['item_purchased'] ?? 'default';
-
-		$pages = [
-			'default' => "investment-purchases"
-		];
-
-		// $item = ""
-
-		$page_link = $pages[$item_purchased];
-		$admin_link = "$domain/admin/$page_link?ref={$this->order_id}";
-
-
-
-		$user_link = "";
-
-		return $admin_link;
-
-	}
-
-
-	
+		
 	public function upon()
 	{
 		return $this->belongsTo('User', 'upon_user_id');
 
 	}
-	
-
-	
+		
 	public function user()
 	{
 		return $this->belongsTo('User', 'user_id');
@@ -82,13 +34,6 @@ trait Wallet
 	{
 		return $this->status == 'completed';
 	}
-
-	public function is_pending()
-	{
-		return $this->status == 'pending';
-	}
-	
-
 
 	public function getExtraDetailArrayAttribute()
 	{
@@ -236,18 +181,6 @@ trait Wallet
 		$min_transfer = $rules_settings->settingsArray['min_transfer_usd'];
 
 
-		$users_involved = "$from&$to";
-		$unique_journal_id = uniqid($users_involved);
-		$extra_detail = json_encode([
-			"from" => $from,
-			"to" => $to,
-			"from_wallet" => $earning_category,
-			"to_wallet" => $recipient_wallet,
-			'unique_journal_id'=>$unique_journal_id
-
-		]);
-
-
 		try {
 
 
@@ -261,14 +194,12 @@ trait Wallet
 				$from,
 				null,
 				$amount,
-				'pending',
+				'completed',
 				$earning_category,
 				$comment,
 				null, 
 				null, 
-				null,
-				$extra_detail
-			);
+				null);
 
 
 			if ($debit == false) {
@@ -290,14 +221,12 @@ trait Wallet
 				$from,
 				null,
 				$transfer_fee,
-				'pending',
+				'completed',
 				$earning_category,
 				$transfer_fee_comment,
 				null, 
 				null, 
-				null,
-				$extra_detail
-			);
+				null);
 
 			$fee->update([
 				'payment_method' => 'transfer',
@@ -320,14 +249,12 @@ trait Wallet
 				$to,
 				null,
 				$amount,
-				'pending',
+				'completed',
 				$wallet_category,
 				$comment,
 				null, 
 				null, 
-				null,
-				$extra_detail
-			);
+				null);
 
 			$credit->update([
 				'paid_at' => date("Y-m-d H:i:s"),
@@ -337,30 +264,30 @@ trait Wallet
 			DB::commit();
 
 
-			$sender_subject = "Transfer of $amount$ [DEBIT]";
-			$receiver_subject = "Transfer of $amount$ [CREDIT]";
-			$mailer = new Mailer;
-			$controller = new home;
+        $sender_subject = "Transfer of $amount$ [DEBIT]";
+        $receiver_subject = "Transfer of $amount$ [CREDIT]";
+        $mailer = new Mailer;
+        $controller = new home;
 
-			$sender_content =  $controller->buildView('emails/user_transfer_sender', compact('debit','credit','fee'), true);
-			$receiver_content =  $controller->buildView('emails/user_transfer_receiver', compact('debit','credit','fee'), true);
+        $sender_content =  $controller->buildView('emails/user_transfer_sender', compact('debit','credit','fee'), true);
+        $receiver_content =  $controller->buildView('emails/user_transfer_receiver', compact('debit','credit','fee'), true);
 
 
         //sender email
-			$mailer->sendMail(
-				"{$debit->user->email}",
-				"$sender_subject",
-				$sender_content,
-				"{$debit->user->firstname}"
-			);
+        $mailer->sendMail(
+            "{$debit->user->email}",
+            "$sender_subject",
+            $sender_content,
+            "{$debit->user->firstname}"
+        );
 
         //receiver email
-			$mailer->sendMail(
-				"{$credit->user->email}",
-				"$receiver_subject",
-				$receiver_content,
-				"{$credit->user->firstname}"
-			);
+        $mailer->sendMail(
+            "{$credit->user->email}",
+            "$receiver_subject",
+            $receiver_content,
+            "{$credit->user->firstname}"
+        );
 
 
 
@@ -378,16 +305,12 @@ trait Wallet
 
 	public function scopeCategory($query, $category)
 	{
-		if ($category==null) {
-			return $query;
-		}
-
 		if (is_array($category)) {
 
 			$up = array_map(function($item){
-				$string = "earning_category='$item'";
-				return $string;
-			}, $category);
+					$string = "earning_category='$item'";
+					return $string;
+				}, $category);
 
 			$clause = implode(" OR ", $up);
 
@@ -764,29 +687,36 @@ trait Wallet
 			if ($type=='debit') {
 				//confirm available balance
 				if ($earning_category!=null) {
-			//confirm available balance
 
-					if ($earning_category!=null) {
-						$book_balance = self::bookBalanceOnUser($user_id, $earning_category);
+					$wallet_map  =  WalletMap::$wallets[$earning_category];
 
-						$amount = round($amount, 2);
-						$book_balance = round($book_balance, 2);
+					if ($wallet_map['group'] == 'all') {
+						$book_balance = self::availableBalanceOnUser($user_id);
+
+					}else{
+
+						$book_balance = self::availableBalanceOnUser($user_id, $earning_category);
+					}
+					
+					 $amount = round($amount, 2);
+					 $book_balance = round($book_balance, 2);
 
 
-						
-						if ($amount > $book_balance) {
-							Session::putFlash("danger", "Insufficient Balance: $book_balance <code>$earning_category</code>");
-							return false;
-						}
+
+
+					if ($amount > $book_balance) {
+						Session::putFlash("danger", "Insufficient Balance: $book_balance <code>$earning_category</code>");
+						return false;
 					}
 				}
 			}
 		}
 
+
+
 		if ($paid_at==null) {
 			$paid_at = date("Y-m-d H:i:s");
 		}
-
 
 		try{
 
@@ -814,6 +744,7 @@ trait Wallet
 
 		return false;
 	}
+
 
 
 	public function scopeCompleted($query)

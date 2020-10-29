@@ -13,70 +13,18 @@ class TradingAccountFilter extends QueryFilter
 {
 	use RangeFilterable;
 
-
-
-
-
-
-	public function is_active($is_active = null)
+	public function firstname($firstname = null)
 	{
-		if ($is_active == null) {
+		if ($firstname == null) {
 			return ;
 		}
+		$user_ids = User::where('firstname', "like",  "%$firstname%")->get()->pluck('id')->toArray();
 
+		$this->builder->whereIn('user_id', $user_ids);
 
-		switch ($is_lpr) {
-			case  0:
-				$this->builder->where('active_status', null)->orWhere('active_status', 0);
-				break;
-			
-			case  1:
-
-				$this->builder->where('active_status', 1);
-				break;
-			
-			default:
-				# code...
-				break;
-		}
 
 	}
 
-
-
-	public function is_lpr($is_lpr = null)
-	{
-		if ($is_lpr == null) {
-			return ;
-		}
-
-		switch ($is_lpr) {
-			case  0:
-				$this->builder->where('is_through_us', null)->orWhere('is_through_us', 0);
-				break;
-			
-			case  1:
-
-				$this->builder->where('is_through_us', 1);
-				break;
-			
-			default:
-				# code...
-				break;
-		}
-
-	}
-
-
-
-	public function broker($broker = null)
-	{
-		if ($broker == null) {
-			return ;
-		}
-
-		$this->builder->where('broker_id', $broker);
-	}
 
 
 	public function account_number($account_number = null)
@@ -86,6 +34,33 @@ class TradingAccountFilter extends QueryFilter
 		}
 
 		$this->builder->where('account_number', $account_number);
+	}
+
+
+
+
+	public function lastname($lastname = null)
+	{
+		if ($lastname == null) {
+			return ;
+		}
+
+		$user_ids = User::where('lastname', "like",  "%$lastname%")->get()->pluck('id')->toArray();
+
+		$this->builder->whereIn('user_id', $user_ids);
+
+	}
+
+
+	public function email($email = null)
+	{
+		if ($email == null) {
+			return ;
+		}
+
+		$user_ids = User::where('email', $email)->get()->pluck('id')->toArray();
+
+		$this->builder->whereIn('user_id', $user_ids);
 	}
 
 	public function name($name = null)
@@ -115,6 +90,26 @@ class TradingAccountFilter extends QueryFilter
 		$this->builder->whereIn('user_id', $user_ids);
 	}
 
+
+
+	public function phone($phone = null)
+	{
+		if ($phone == null) {
+			return ;
+		}
+
+		$user_ids = User::where('phone', $phone)->get()->pluck('id')->toArray();
+
+		$this->builder->whereIn('user_id', $user_ids);
+	}
+
+	public function username($username = null)
+	{
+		if ($username == null) {
+			return ;
+		}
+		$this->builder->where('username', $username);
+	}
 
 
 	public function registration($start_date=null , $end_date=null )

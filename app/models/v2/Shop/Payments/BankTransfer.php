@@ -10,13 +10,14 @@ use Exception, SiteSettings, Session;
 class BankTransfer implements PaymentMethodInterface
 {
 	private $name = 'bank_transfer';
+	public $payment_type = 'one_time';
 	private $mode;
 	private $shop;
 
-	function __construct($shop)
+	function __construct()
 	{
 
-		$this->shop = $shop;
+		$this->shop = null;
 		$settings = SiteSettings::find_criteria('bank_transfer')->settingsArray;
 
 		$this->mode = $settings['mode']['mode'];
@@ -33,7 +34,22 @@ class BankTransfer implements PaymentMethodInterface
 	}
 	
 
+	public function setShop($shop)
+	{
+		$this->shop = $shop;
+		return $this;
 
+	}
+
+
+
+
+
+	public function setPaymentType($payment_type)
+	{
+		$this->payment_type = $payment_type;
+		return $this;
+	}
 
 
 	public function reVerifyPayment()
@@ -145,6 +161,8 @@ class BankTransfer implements PaymentMethodInterface
 		$amount = $breakdown['total_payable']['value'];
 
 		return $amount;
+
+
 	}
 
 
@@ -208,8 +226,9 @@ class BankTransfer implements PaymentMethodInterface
 
 		// $payment_details['api_keys'] = $this->api_keys['public_key'];
 
+		$this->api_keys = [] ; //hide api keys
 
-		return $payment_details;
+		return $this;
 
 	}
 

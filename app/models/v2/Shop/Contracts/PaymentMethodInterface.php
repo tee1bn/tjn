@@ -9,10 +9,8 @@ interface PaymentMethodInterface{
 		public function initializePayment();	
 		public function attemptPayment();	
 		public function verifyPayment();	
-		public function reVerifyPayment();	
-		public function gatewayChargeOn($amount);
 		public function setOrder(OrderInterface $order);
-		public function amountPayable();
+		// public function amountPayable(OrderInterface $order);
 
 
 

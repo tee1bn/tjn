@@ -6,7 +6,7 @@
 class Validator
 {	
 	private $_errors,
-			$_passed = false;
+	$_passed = false;
 
 
 
@@ -22,12 +22,12 @@ class Validator
 					// echo "$item must be $rule $rule_value<br>";
 					//rule definitions of
 
-					$value = trim($data["$item"]);
+				$value = trim($data["$item"]);
 
-					if ($rule === 'required' && empty($value)) {
-						
-				$this->addError($item, "$item is required");
-								}else if(! empty($value)){
+				if ($rule === 'required' && empty($value)) {
+					
+					$this->addError($item, "$item is required");
+				}else if(! empty($value)){
 
 					switch ($rule) {
 						case 'min':
@@ -35,7 +35,7 @@ class Validator
 						(strlen($value) < $rule_value)? $this->addError($item, "$item cannot be less than $rule_value characters."):'' ;
 
 
-							break;
+						break;
 						case 'max':
 
 						(strlen($value) > $rule_value)? $this->addError($item, "$item cannot be more than $rule_value characters."):'' ;
@@ -49,57 +49,57 @@ class Validator
 
 
 
-							break;
+						break;
 
-							case 'min_value':
+						case 'min_value':
 
 						(($value) < $rule_value)? $this->addError($item, "$item cannot be less than $rule_value."):'' ;
 
 
-							break;
+						break;
 
-					case 'max_value':
+						case 'max_value':
 
 						(($value) > $rule_value)? $this->addError($item, "$item cannot be more than $rule_value."):'' ;
 
 
-							break;
+						break;
 
-							case 'equals':
+						case 'equals':
 
 						(($value) != $rule_value)? $this->addError($item, "$item does not match records."):'' ;
 
 
-							break;
+						break;
 
 						case 'step':
 
 						(($value % $rule_value) !== 0 )? $this->addError($item, "$item should be in steps of $rule_value."):'' ;
 
 
-							break;
+						break;
 
 
 						case 'no_special_character':
 
-							if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $value))
-							{
+						if (preg_match('/[\'^£$%&*()}{@#~?><>,|\.=_+¬-]/', $value))
+						{
 							    // one or more of the 'special characters' found in $string
-								$this->addError($item, "$item cannot contain special characters.");
-							}
+							$this->addError($item, "$item cannot contain special characters.");
+						}
 
-							break;
-
+						break;
 
 						case 'one_word':
-							str_word_count($value, $number_of_word);
-							$number_of_word = substr_count(trim($value), ' ');
-							if ($number_of_word > 0)
-							{
-								$this->addError($item, "$item must be one word.");
-							}
+						str_word_count($value, $number_of_word);
+						$number_of_word = substr_count(trim($value), ' ');
+						if ($number_of_word > 0)
+						{
+							$this->addError($item, "$item must be one word.");
+						}
 
-							break;
+						break;
+
 
 
 						case 'email':
@@ -109,19 +109,19 @@ class Validator
 							$this->addError($item, "$item is not valid.");
 						}
 
-							break;
+						break;
 
 
 
 						case 'date':
-							 $d = DateTime::createFromFormat($rule_value, $value);
+						$d = DateTime::createFromFormat($rule_value, $value);
 						    // The Y ( 4 digits year ) returns TRUE for any integer with any number 
 						    // of digits so changing the comparison from == to === fixes the issue.
 
-						    if($d && ($d->format($rule_value) === $value)) {
-						    }else{
-						    	$this->addError($item, "$item is not valid.");
-						    }
+						if($d && ($d->format($rule_value) === $value)) {
+						}else{
+							$this->addError($item, "$item is not valid.");
+						}
 
 
 						break;
@@ -133,56 +133,69 @@ class Validator
 							$this->addError($item, "$item is not valid.");
 						}
 
-							break;
-								case 'numeric':
+						break;
+						case 'numeric':
 
-									if ( ! ctype_digit($value)) {
+						if ( ! ctype_digit($value)) {
 
-										$this->addError($item, "$item must be numeric.");
-									}
-
-										break;
-
-							case 'unique':
-					if( $rule_value::where($item ,$value)->first()){
-						$this->addError($item, "$item already exist.");
+							$this->addError($item, "$item must be numeric.");
 						}
-							break;
 
+						break;
 
-							case 'exist':
+						case 'positive':
 
-							$model  = explode('|' ,$rule_value)[0];
-							$column  = explode('|' ,$rule_value)[1];
+						if ($value < 0) {
 
-					if( $model::where($column ,$value)->first() == null){
-						$this->addError($item, "$item does not exist.");
+							$this->addError($item, "$item must be greater than 0.");
 						}
-							break;
+
+						break;
+
+						
+
+						case 'unique':
+						if( $rule_value::where($item ,$value)->first()){
+							$this->addError($item, "$item already exist.");
+						}
+						break;
+
+
+						case 'exist':
+
+						$model  = explode('|' ,$rule_value)[0];
+						$column  = explode('|' ,$rule_value)[1];
+
+						if( $model::where($column ,$value)->first() == null){
+							$this->addError($item, "$item does not exist.");
+						}
+						break;
 
 
 
 
-							case 'replaceable':
+						case 'replaceable':
 
-							$model  = explode('|' ,$rule_value)[0];
-							$id  = explode('|' ,$rule_value)[1];
+						$model  = explode('|' ,$rule_value)[0];
+						$id  = explode('|' ,$rule_value)[1];
+
+						$id_column =  explode('|' ,$rule_value)[2] ?? 'id';
 
 
-					if( $model::where($item ,$value)->where('id', '!=', $id)->first()){
-						$this->addError($item, "$item is already taken.");
+						if( $model::where($item ,$value)->where($id_column, '!=', $id)->first()){
+							$this->addError($item, "$item is already taken.");
 						}
 						
 
-							break;
+						break;
 						case 'matches':
 
-						if ($value !== $data["$rule_value"]) {
+						if ($value != $data["$rule_value"]) {
 
 							$this->addError("$rule_value", "{$rule_value}s do not match.");
 						}
 
-							break;
+						break;
 
 						case 'not match':
 
@@ -191,19 +204,19 @@ class Validator
 							$this->addError("$item", "{$item} cannot match {$rule_value}.");
 						}
 
-							break;
+						break;
 						
 						default:
 							# code...
-							break;
+						break;
 					}
 
 
-								}
-
-
-
 				}
+
+
+
+			}
 
 
 
@@ -216,17 +229,17 @@ class Validator
 		}
 
 		return false;
-			}
+	}
 
 
 
 
 	public function addError($field, $error)
-				{
-					$this->_errors["$field"][] = $error;
+	{
+		$this->_errors["$field"][] = $error;
 		Session::put('inputs-errors', $this->_errors);
 
-				}	
+	}	
 
 
 	public function passed()
@@ -234,7 +247,7 @@ class Validator
 
 		if ($this->_errors =='') {
 			
-		return  true;
+			return  true;
 		}
 
 		return false;

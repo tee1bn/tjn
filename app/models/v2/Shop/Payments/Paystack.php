@@ -2,54 +2,60 @@
 
 namespace v2\Shop\Payments;
 use v2\Shop\Contracts\OrderInterface;
-use v2\Shop\Contracts\PaymentMethodInterface;
 use Exception, SiteSettings;
 /**
  * 
  */
-class Paystack  implements PaymentMethodInterface
+class Paystack 
 {
 	private $name = 'paystack';
 	private $mode;
-	private $shop;
 	
-	function __construct($shop)
+	function __construct()
 	{
 
-		$this->shop = $shop;
-		$settings = SiteSettings::find_criteria('paystack_keys')->settingsArray;
+		$settings = SiteSettings::paystack_keys();
 
-		$this->mode = $settings['mode']['mode'];
+		$this->mode = $settings['mode'];
 
-		$this->api_keys =  $settings[$this->mode];
+
+
+		$this->api_keys = [
+
+					'test'=> [
+								'public_key' => $settings['public_key'],
+							],
+					'live'=> [
+								'public_key' => $settings['public_key'],
+							],
+
+						];
+
+
+		$this->api_secret_keys = [
+
+					'test'=> [
+								'secret_key' => $settings['secret_key'],
+							],
+					'live'=> [
+								'secret_key' => $settings['secret_key'],
+							],
+
+						];
+
 		
 		//initate my keys and all
 	}
-
-	
-	public function __get($property_name)
-	{
-		return $this->$property_name;
-	}
-	
-
-
-
-	public function reVerifyPayment()
-	{
-		return $this->verifyPayment();
-	}
-
 
 
 	public function verifyPayment()
 	{
 				
-			
-	/*		$confirmation = ['status'=>true];
+/*
+			$confirmation = ['status'=>true];
 			return compact('result','confirmation');
 
-	*/		
+*/
 		
 					$payment_details = json_decode($this->order->payment_details, true);
 					$reference = $payment_details['ref'];
@@ -58,7 +64,7 @@ class Paystack  implements PaymentMethodInterface
 					//The parameter after verify/ is the transaction reference to be verified
 					$url = "https://api.paystack.co/transaction/verify/$reference";
 
-					$secret_key = $this->api_keys['secret_key'];
+					$secret_key = $this->api_secret_keys[$this->mode]['secret_key'];
 
 					$ch = curl_init();
 					curl_setopt($ch, CURLOPT_URL, $url);
@@ -88,7 +94,6 @@ class Paystack  implements PaymentMethodInterface
 					          @ If the user changes his email on your system, it will be unusable
 					          */
 
-					   
 					                     if($this->amountPayable()  == $result['data']['amount']){
 
 					                     		$confirmation = ['status'=>true];
@@ -119,7 +124,7 @@ class Paystack  implements PaymentMethodInterface
 					  }
 
 
-					  Session::putFlash("danger", "we could not verify your payment.");
+					  Session::putFlash("danger", "we could not complete your payment.");
 
 			
 
@@ -132,89 +137,12 @@ class Paystack  implements PaymentMethodInterface
 
 	}
 
-	public function gatewayChargeOn($amount)
-	{
-		$breakdown = $this->breakDownOn($amount);
-		return $breakdown['charge'];
-	}
 
-
-
-		
-	public function breakDownOn($amount, $amount_is='set_price' ) { 
-
-        $constant = 100;
-        $percent = 1.5 * 0.01;
-        $cut_off = 2500;
-        switch ($amount_is) {
-            case 'set_price':
-                $set_price = $amount;
-                if ($set_price > $cut_off) {
-                    $amount_paid = ($set_price + $constant)/ (1- $percent);
-                    $charge = ($percent * $amount_paid) + $constant;
-                }else{
-                    $amount_paid = ($set_price)/ (1- $percent);
-                    $charge = ($percent * $amount_paid);
-                }
-                $breakdown =  [
-                    'set_price' => $set_price,
-                    'amount_paid' => $amount_paid,
-                    'charge' => $charge,
-                ];
-
-                break;
-            case 'amount_paid':
-                $amount_paid = $amount;
-                $set_price1 = (1-$percent) * $amount_paid;
-
-                $set_price2 = ((1-$percent) * $amount_paid) - $constant;
-
-                //case 1
-                 $breakdown1 =  ($this->breakDownOn($set_price1));
-                 if ($breakdown1['amount_paid'] == $amount_paid) {
-                        $correct_set_price = $breakdown1['set_price'];
-                        $breakdown = $breakdown1;
-                 }
-
-                //case 2
-                 $breakdown2 =  ($this->breakDownOn($set_price2));
-                 if ($breakdown2['amount_paid'] == $amount_paid) {
-                        $correct_set_price = $breakdown2['set_price'];
-                        $breakdown = $breakdown2;
-                 }
-
-
-                $breakdown =  [
-                    'set_price' => $correct_set_price,
-                    'amount_paid' => $amount_paid,
-                    'charge' => $breakdown['charge'],
-                ];
-
-                break;
-
-            default:
-                # code...
-                break;
-        }
-
-        $breakdown = array_map(function($number){
-            return round($number, 2);
-        }, $breakdown);
-
-        return $breakdown;
-    }
-
-
-
-	
 	public function amountPayable()
 	{
-		$breakdown = $this->shop->paymentBreakdown();
+		$amount = 100 * $this->order->total_price();
 
-		$number = $breakdown['total_payable']['value'];
-		$amount = 100  * round((float)$number,2);
-
-		return (int)$amount;
+		return $amount;
 	}
 
 
@@ -227,12 +155,13 @@ class Paystack  implements PaymentMethodInterface
 
 		$amount = $this->amountPayable();
 
+
 		$user = $this->order->user;
+
 		$payment_details = [
 						'gateway' => $this->name,
 						'ref' => $order_ref,
 						'order_unique_id' => $this->order->id,
-						'name_in_shop' => $this->order->name_in_shop,
 						'email' => $user->email,
 						'currency' => 'NGN',
 						'amount' => $amount,
@@ -248,8 +177,8 @@ class Paystack  implements PaymentMethodInterface
 										'value' => $user->phonenumber,
 									],
 								],
-						'success_url' => '',
-						'failure_url' => '',
+						'success_url' => $success_url,
+						'failure_url' => $failure_url,
 						];
 
 		$this->order->setPayment($payment_method , $payment_details);
@@ -261,20 +190,20 @@ class Paystack  implements PaymentMethodInterface
 	public function attemptPayment()
 	{
 
+
 		if ($this->order->is_paid()) {
-			throw new Exception("This Order has been paid with {$this->order->payment_method}", 1);
+			throw new Exception("This Order has been paid with {$this->order->payment_details}", 1);
 		}
 
 
-
 		if ($this->order->payment_method != $this->name) {
-			throw new Exception("This Order is not set to use paystack payment method", 1);
+			throw new Exception("This Order is not set to use paystack payment menthod", 1);
 		}
 
 
 		$payment_details = json_decode($this->order->payment_details, true);
 
-		$payment_details['api_keys'] = $this->api_keys['public_key'];
+		$payment_details['api_keys'] = $this->api_keys[$this->mode];
 
 
 		return $payment_details;

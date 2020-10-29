@@ -137,7 +137,7 @@ class SupportMessage extends Eloquent
 			Session::putFlash("success","Documents Uploaded Successfully");
 		} catch (Exception $e) {
 			DB::rollback();
-			Session::putFlash("danger","Documents Uploaded Failed.");
+			// Session::putFlash("danger","Documents Uploaded Failed.");
 			
 		}
 

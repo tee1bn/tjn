@@ -1,23 +1,48 @@
 <?php
+/**
+ * For website Commission
+ */
 
 namespace v2\Shop\Payments;
 use v2\Shop\Contracts\OrderInterface;
 use v2\Shop\Contracts\PaymentMethodInterface;
-use Exception, SiteSettings, Config, MIS, Session, LevelIncomeReport, Redirect;
+use Exception, SiteSettings, Config, MIS, Session, Redirect;
 use Illuminate\Database\Capsule\Manager as DB;
-use v2\Models\Earning;
+use v2\Models\Commission;
 
 /**
  * 
  */
 class Website 
 {
-	private $name = 'website';
-	
+	public $name = 'earning';
+	public $payment_type = 'one_time';
+
+
 	function __construct()
 	{
 
 
+	}
+
+
+
+
+
+
+	public function setShop($shop)
+	{
+		$this->shop = $shop;
+		return $this;
+
+	}
+
+
+
+	public function setPaymentType($payment_type)
+	{
+		$this->payment_type = $payment_type;
+		return $this;
 	}
 
 
@@ -119,11 +144,15 @@ class Website
 	{
 
 		if ($this->order->is_paid()) {
+			Session::putFlash("danger","This Order has been paid with {$this->order->payment_method}");
+			return $this;
 			throw new Exception("This Order has been paid with {$this->order->payment_method}", 1);
 		}
 
 
 		if ($this->order->payment_method != $this->name) {
+			Session::putFlash("danger", "This Order is not set to use {$this->name} payment menthod");
+			return $this;
 			throw new Exception("This Order is not set to use {$this->name} payment menthod", 1);
 		}
 
@@ -132,7 +161,9 @@ class Website
 						$user  = $this->order->user;
 
 						$cost = $this->amountPayable();
-			       		$balance = $user->available_balance();
+
+			       		$balance = Commission::availableBalanceOnUser($user->id);
+
 			       		$currency = Config::currency();
 						DB::beginTransaction();
 
@@ -140,22 +171,24 @@ class Website
 
 							if ($cost > $balance) {
 								Session::putFlash('danger', "This payment method is used on commission earned by referring people. Right now you have insufficient balance:<b>$currency$balance</b>.<br> Earn more by referring people.");
-								return;
+								return $this;
 							}
 
 							$this->order->mark_paid();
 							$ref = json_decode($this->order->payment_details , true)['ref'];
 
+							$identifier = "Order#{$this->order->id}";
+							$comment = "Payment on {$this->order->id}";
 
-							$debit =Earning::createTransaction(
+							$debit =Commission::createTransaction(
 														'debit',
 														$user->id,
 														null,
 														$cost,
 														'completed',
-														'bonus',
+														'commission',
 														$comment,
-														null,
+														$identifier,
 														$this->order->id
 													);
 
@@ -164,17 +197,17 @@ class Website
 							}
 
 							DB::commit();
-							\v2\Shop\Shop::empty_cart_in_session();
+							// \v2\Shop\Shop::empty_cart_in_session();
 							Session::putFlash('success', "Order completed.");
 
 					} catch (Exception $e) {
 						DB::rollback();
-						// print_r($e->getMessage());
+						print_r($e->getMessage());
 					}
 
 		$payment_details = json_decode($this->order->payment_details, true);
 
-		return $payment_details;
+		return $this;
 	}
 
 

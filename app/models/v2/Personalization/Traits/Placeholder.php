@@ -30,6 +30,14 @@ trait Placeholder
 			'description' => '',
 		],
 
+		"[SUBSCRIPTION_NAME]" => [
+			'description' => '',
+		],
+
+
+		"[SUBSCRIPTION_EXPIRY_DATE]" => [
+			'description' => '',
+		],
 
 	];
 

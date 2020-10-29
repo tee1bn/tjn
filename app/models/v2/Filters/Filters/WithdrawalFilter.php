@@ -18,6 +18,24 @@ class WithdrawalFilter extends QueryFilter
 	
 	
 
+	public function withdrawal_method($withdrawal_method)
+	{
+		
+		if ($withdrawal_method == null) {
+				return ;
+			}
+
+
+			$ref = "\"method\":\"$withdrawal_method\"";
+
+        $this->builder->where('method_details', 'like', "%$ref%");
+
+	}
+
+
+	
+	
+
 	public function bank_id($bank_id)
 	{
 		
@@ -29,6 +47,7 @@ class WithdrawalFilter extends QueryFilter
 
 		$this->builder->whereIn('bank_id', $bank_ids);
 	}
+
 
 
 	public function amount($start=null , $end=null )
@@ -50,22 +69,6 @@ class WithdrawalFilter extends QueryFilter
 		$this->Range($start, $end,  'amount');
 	}
 
-
-	
-
-
-	public function firstname($firstname = null)
-	{
-		if ($firstname == null) {
-			return ;
-		}
-		$user_ids = User::where('firstname', "like",  "%$firstname%")->get()->pluck('id')->toArray();
-
-		$this->builder->whereIn('user_id', $user_ids);
-
-
-	}
-
 		
 
 	public function ref($ref=null)
@@ -74,19 +77,10 @@ class WithdrawalFilter extends QueryFilter
 		if ($ref == null) {
 			return ;
 		}
-        $this->builder->where('trans_id', 'like', "%$ref%");
+        $this->builder->where('id', 'like', "%$ref%");
 	}
 
 	
-	public function account_number($account_number = null)
-	{
-		if ($account_number == null) {
-			return ;
-		}
-
-		$this->builder->where('account_number', $account_number);
-	}
-
 
 
 	public function status($status = null)
@@ -99,32 +93,6 @@ class WithdrawalFilter extends QueryFilter
 	}
 
 
-
-
-	public function lastname($lastname = null)
-	{
-		if ($lastname == null) {
-			return ;
-		}
-
-		$user_ids = User::where('lastname', "like",  "%$lastname%")->get()->pluck('id')->toArray();
-
-		$this->builder->whereIn('user_id', $user_ids);
-
-	}
-
-
-	public function email($email = null)
-	{
-		if ($email == null) {
-			return ;
-		}
-
-		$user_ids = User::where('email', $email)->get()->pluck('id')->toArray();
-
-		$this->builder->whereIn('user_id', $user_ids);
-	}
-
 	public function name($name = null)
 	{
 		if ($name == null) {
@@ -133,13 +101,11 @@ class WithdrawalFilter extends QueryFilter
 
 		$user_ids = User::WhereRaw("firstname like ? 
                                       OR lastname like ? 
-                                      OR middlename like ? 
                                       OR username like ? 
                                       OR email like ? 
                                       OR phone like ? 
                                       ",
                                       array(
-                                          '%'.$name.'%',
                                           '%'.$name.'%',
                                           '%'.$name.'%',
                                           '%'.$name.'%',

@@ -46,8 +46,6 @@ class UserBankFilter extends QueryFilter
 		if ($status == null) {
 				return ;
 			}
-
-			
 		$this->builder->where('status', $status);
 	}
 
