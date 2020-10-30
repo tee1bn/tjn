@@ -613,16 +613,6 @@ class User extends Eloquent
 
 
 
-
-    public function accessible_products()
-    {
-
-    	return Products::accessible($this->subscription->id)->get();
-    }
-
-
-
-
     //end of the calendar month degrade
     public static function degrade_all_members()
     {

@@ -299,7 +299,7 @@ class home extends controller
     public function index($page = null)
     {
 
-        Redirect::to('login');
+        // Redirect::to('login');
 
         switch ($page) {
             case 'supportmessages':

@@ -39,6 +39,22 @@ class Products extends Eloquent
 		return $this->belongsTo('User','user_id');
 	}
 
+
+	public function getSlugNameAttribute()
+	{
+		$slug = str_replace(" ", "-", $this->name);
+		return $slug;
+	}
+
+
+	public  function getPromotionLink($user_id)
+	{ 
+		// 49-12-productname
+		$domain = Config::domain();
+		return "$domain/s/s/{$this->id}-$user_id-$this->SlugName";
+	}
+
+
 	public static function userCreateLink()
 	{ 
 		$domain = Config::domain();
@@ -243,21 +259,6 @@ class Products extends Eloquent
     {
     	return $this->belongsTo('SubscriptionPlan', 'scheme');
     }
-
-    public static function accessible($subscription_id)
-    {	
-    	$sub 	 = SubscriptionPlan::find($subscription_id);
-    	$sub_ids = SubscriptionPlan::where('hierarchy', '=', (int)$sub->hierarchy)
-    	->get()
-    	->pluck('id')
-    	->toArray();
-    	$sub_ids[] = 'free';
-
-    	$accessibles =  self::whereIn('scheme', $sub_ids);
-
-    	return $accessibles;
-    }
-
 
 
 
@@ -521,16 +522,23 @@ class Products extends Eloquent
 
 
 
-
-	//market approval status
-		public function getApprovalStatusAttribute()
+		public function getApprovalStateAttribute()
 		{
-
 			$last_submission =  Market::where('category', $this::$category_in_market)
 			->where('item_id', $this->id)
 			->latest()
 			->first();
 
+			return $last_submission;
+		}
+
+
+		//market approval status
+		public function getApprovalStatusAttribute()
+		{
+
+			$last_submission = $this->ApprovalState;
+			
 			if ($last_submission == null) {
 				return "<span class='badge badge-sm badge-dark'>Drafting</span>";
 			}

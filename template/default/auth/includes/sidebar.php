@@ -21,11 +21,37 @@ $icon = "$asset/images/logo/icons";
           Dashboard</a>
       </li>
 
-      <li>
-        <a class="menu-item" href="<?=domain;?>/user/products">
-          <i class="fa fa-briefcase"></i>
-          Products</a>
+
+
+
+
+      <li class=" nav-item">
+
+        <a href="#"><i class="fa fa-list"></i><span class="menu-title" data-i18n="">Vendor</span></a>
+        <ul class="menu-content">
+
+          <li><a class="menu-item" href="<?=domain;?>/user/products">Products</a></li>
+          <li><a class="menu-item" href="<?=domain;?>/user/sales">Sales</a></li>
+          <li><a class="menu-item" href="<?=domain;?>/user/sales">Sales</a></li>
+
+
+          <!-- <li><a class="menu-item" href="<?=domain;?>/user/user-transfers">User Transfer</a> -->
+          <!-- <li><a class="menu-item" href="<?=domain;?>/user/make-withdrawal">Make Withdrawal</a> -->
+          </li>
+        </ul>
       </li>
+
+      <li class=" nav-item">
+
+        <a href="#"><i class="fa fa-list"></i><span class="menu-title" data-i18n="">Affiliate</span></a>
+        <ul class="menu-content">
+
+          <li><a class="menu-item" href="<?=domain;?>/user/affiliate-products">Products</a></li>
+          <li><a class="menu-item" href="<?=domain;?>/user/affiliate-comissions">Commissions</a></li>          
+          </li>
+        </ul>
+      </li>
+
 
 
 

@@ -17,7 +17,6 @@ class SalesController extends controller
     {
         $product_references = explode("-", $product_ref);
 
-
         $item_id = $product_references[0];
         $register = Market::$register;
 

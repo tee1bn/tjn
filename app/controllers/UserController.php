@@ -379,7 +379,7 @@ class UserController extends controller
     public function shop()
     {
 
-        $products = $this->auth()->accessible_products();
+        $products = Products::all();
 
         $this->view('auth/shop', compact('products'));
     }

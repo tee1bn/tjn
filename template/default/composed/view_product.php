@@ -75,7 +75,8 @@
                       <div>
                       <button class="btn btn-dark btn-block">Order Now <span class="price"><?=$product->currency;?><?=$product->price;?></span></button>
                     </div>
-<!-- 
+
+                    <!-- 
                       <div class="card">
                         <div class="card-header">
                           <a class="card-link" data-toggle="collapse" href="#collapseOne">

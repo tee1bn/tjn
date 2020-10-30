@@ -43,7 +43,8 @@ include 'includes/header.php';
                                           Action
                                       </button>
                                       <div class="dropdown-menu">
-                                          <!-- <a class="dropdown-item" href="#">Duplicate</a> -->
+                                          <a class="dropdown-item" 
+                                          onclick="copy_text(`<?=$product->getPromotionLink($auth->id);?>`)" href="javascript:void(0);">Promotional Link</a>
                                           <!-- <a class="dropdown-item" href="#">Delete</a> -->
                                           <!-- <a class="dropdown-item" href="#">Link 3</a> -->
                                       </div>
