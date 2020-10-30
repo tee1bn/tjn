@@ -32,7 +32,8 @@ class home extends controller
 
         echo "<pre>";
 
-
+        // echo MIS::custom_mime_content_type("uploads/images/products/self-made-millionaire_14.jpg");
+        return;
         $setting = SiteSettings::all()->keyBy('criteria');
 
 

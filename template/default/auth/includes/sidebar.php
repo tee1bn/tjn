@@ -21,6 +21,12 @@ $icon = "$asset/images/logo/icons";
           Dashboard</a>
       </li>
 
+      <li>
+        <a class="menu-item" href="<?=domain;?>/user/products">
+          <i class="fa fa-briefcase"></i>
+          Products</a>
+      </li>
+
 
 
       <li class=" nav-item">

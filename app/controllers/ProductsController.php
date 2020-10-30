@@ -3,13 +3,13 @@
 
 /**
  */
-class AdminProductsController extends controller
+class ProductsController extends controller
 {
 
 
     public function __construct()
     {
-        $this->middleware('administrator')->mustbe_loggedin();
+        // $this->middleware('administrator')->mustbe_loggedin();
 
     }
 
@@ -103,25 +103,24 @@ class AdminProductsController extends controller
     }
 
 
-    public function update_item()
+    public function update_item($publish = 0)
     {
         echo "<pre>";
 
 
         $product = Products::find(Input::get('item_id'));
 
-
-        print_r($product->toArray());
+        // print_r($product->toArray());
         print_r($_POST);
         print_r($_FILES);
 
-        // return;
 
         $update = $product->update_product(
             $_POST,
-            $_FILES['front_image'],
-            $_FILES['downloadable_files']);
+            $_FILES['cover'],
+            $_FILES['content']);
 
+        
         // Redirect::back();
     }
 

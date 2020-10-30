@@ -379,7 +379,7 @@ class shopController extends controller
 
     public function submit_for_review($item_id, $model_key='product')
     {
-        $this->middleware('current_user')->mustbe_loggedin();
+        
 
         $register = Market::$register;
 

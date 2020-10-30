@@ -29,7 +29,7 @@ $router =[
 	'guest' 	=> 'GuestController',
 	'terms' 	=> 'TermsController',
 	'genealogy' => 'GenealogyController',
-	'report' 	=> 'ReportsController',
+	's' 	=> 'SalesController',
 	'ref' 		=> 'ReferralController', //referral link handler
 	'r' 		=> 'ReferralController', //referral link handler
 	'forgot-password' 	=> 'forgotPasswordController',
@@ -46,8 +46,10 @@ $router =[
 	'cms_crud' => 'crud/CmsCrud',
 	'user_doc_crud' => 'crud/UserDocCrudController',
 	'package_crud' => 'crud/PackageCrudController',
-
 	'paypal' => 'payments/PayPalController', 
+
+	'product' => 'ProductsController', 
+
 
 
 	#admin
