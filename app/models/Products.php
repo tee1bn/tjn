@@ -94,6 +94,41 @@ class Products extends Eloquent
 	}
 
 
+	public function getCoverArrayAttribute()
+	{
+
+		if ($this->cover == null) {
+			return [];
+		}
+
+		return json_decode($this->cover, true);
+
+	}
+
+
+	public function getCoverLinkArrayAttribute()
+	{ 
+		$domain = Config::domain();
+
+		$files = $this->CoverArray;
+
+		$first_link = $files['file'][0]['file_path'];
+
+		if (strpos("$first_link", "http://")) {
+			$link = $first_link;
+		}else{
+
+			$link = "$domain/$first_link";
+		}
+
+		$type = explode("/", $files['file'][0]['type'])[0];
+
+
+		$response = compact('link','type');
+
+		return $response;
+	}
+
 	public function getDownloadLinkAttribute()
 	{ 
 		$domain = Config::domain();

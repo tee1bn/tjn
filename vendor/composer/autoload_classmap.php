@@ -36,7 +36,7 @@ return array(
     'Filters\\Filters\\WalletFilter' => $baseDir . '/app/models/v2/Filters/Filters/WalletFilter.php',
     'Filters\\Filters\\WithdrawalFilter' => $baseDir . '/app/models/v2/Filters/Filters/WithdrawalFilter.php',
     'Filters\\QueryFilter' => $baseDir . '/app/models/v2/Filters/QueryFilter.php',
-    'Filters\\Traits\\CSVExportable' => $baseDir . '/app/models/v2/Filters/Traits/CSVExportable.php',
+    'Filters\\Traits\\CSVExportable' => $baseDir . '/app/models/v2/Traits/CSVExportable.php',
     'Filters\\Traits\\Filterable' => $baseDir . '/app/models/v2/Filters/Traits/Filterable.php',
     'Filters\\Traits\\RangeFilterable' => $baseDir . '/app/models/v2/Filters/Traits/RangeFilterable.php',
     'Input' => $baseDir . '/app/classes/Input.php',

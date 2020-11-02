@@ -197,15 +197,6 @@ class shopController extends controller
                     DB::commit();
                     $_SESSION['shop_checkout_id'] = $new_order->id;
 
-                    //check that course email is valid
-                    $extra_detail = $new_order->ExtraDetailArray;
-                    $course_email = $extra_detail['course_email'];
-                    $wp_user = WpUser::where('user_email', $course_email)->first();
-
-                    if ($wp_user == null) {
-                        Session::putFlash("danger","Course Email does not exist. Please enter a valid email");
-                        $action='get_breakdown';
-                    }
 
 
                     header("content-type:application/json");
@@ -472,7 +463,7 @@ class shopController extends controller
 
     }
 
-    public function full_view($item_id, $model_key)
+    public function full_view($item_id, $model_key='product')
     {
         $register = Market::$register;
 
@@ -499,34 +490,32 @@ class shopController extends controller
         $good = $item_on_sale->preview();
 
 
-        switch ($model_key) {
-            case 'course':
-            $course = $good;
 
-            $model = 'course';
-            $access = '';
-            // return;
-            $this->view('guest/single-course',compact('course','model','access'));
-            break;
+        $product = $item_on_sale->preview();
 
-            case 'product':
-            $product = $good;
-
-            $model = 'product';
-            $access = '';
-            // return;
-            $this->view('auth/online_shop',compact('product','model','access'));
-            break;
-            
-            default:
-                # code...
-            break;
-        }
-
-
+        $this->view('guest/single-product', compact('product'));
 
 
     }
+
+
+
+
+    public function view_cart()
+    {
+
+        $shop = new Shop;
+        $cart = json_decode($_SESSION['cart'], true)['$items'];
+
+        if (count($cart) == 0) {
+            Session::putFlash("info", "Your cart is empty.");
+            Redirect::to('user/shop');
+        }
+        $this->view('guest/view_cart', compact('shop'));
+    }
+
+
+
 
     
     public function market($page=1 , $type = 'product')

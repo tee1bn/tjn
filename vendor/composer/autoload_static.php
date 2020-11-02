@@ -285,7 +285,7 @@ class ComposerStaticInit81eb7d45cb86396167b941f75b6bed30
         'Filters\\Filters\\WalletFilter' => __DIR__ . '/../..' . '/app/models/v2/Filters/Filters/WalletFilter.php',
         'Filters\\Filters\\WithdrawalFilter' => __DIR__ . '/../..' . '/app/models/v2/Filters/Filters/WithdrawalFilter.php',
         'Filters\\QueryFilter' => __DIR__ . '/../..' . '/app/models/v2/Filters/QueryFilter.php',
-        'Filters\\Traits\\CSVExportable' => __DIR__ . '/../..' . '/app/models/v2/Filters/Traits/CSVExportable.php',
+        'Filters\\Traits\\CSVExportable' => __DIR__ . '/../..' . '/app/models/v2/Traits/CSVExportable.php',
         'Filters\\Traits\\Filterable' => __DIR__ . '/../..' . '/app/models/v2/Filters/Traits/Filterable.php',
         'Filters\\Traits\\RangeFilterable' => __DIR__ . '/../..' . '/app/models/v2/Filters/Traits/RangeFilterable.php',
         'Input' => __DIR__ . '/../..' . '/app/classes/Input.php',

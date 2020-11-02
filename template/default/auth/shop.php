@@ -28,9 +28,6 @@ include 'includes/header.php';?>
         <?php include "$template/composed/shop/shop.php";?>
 
 
-                        
-
-
 <!-- 
           <section id="video-gallery" class="card">
             <div class="card-header">

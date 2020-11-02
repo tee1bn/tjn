@@ -6,6 +6,8 @@
       'user/cart',
       'user/shop',
       'user/courses',
+      'user/view_cart',
+      'shop/view_cart',
       'shop',
       'shop/full_view',
     ];
@@ -17,7 +19,7 @@
   </script>
 
   <script src="<?=asset;?>/angulars/shop.js"></script>
-  <?php if (in_array($current_url, $allowed) )  :?>
+  <?php if (in_array($current_url, $allowed) || true)  :?>
     <li ng-cloak ng-controller="CartNotificationController" id="cart-notification" class="dropdown dropdown-notification nav-item">
       <a class="nav-link nav-link-label" href="#" data-toggle="dropdown"><i class="ficon ft-shopping-cart"></i>
         <span class="badge badge-pill badge-default badge-danger badge-default badge-up">{{$cart.$items.length}} </span>
@@ -28,21 +30,23 @@
           <center class="dropdown-header m-0"><span class="grey darken-2">Your Cart is Empty</span>
           </center>
         </li>
-        <li class="scrollable-container media-list">
+        <li class=" media-list" style="max-height: 250px; overflow-y: scroll;">
 
             <a ng-repeat="($index, $item) in $cart.$items" href="javascript:void(0)">
             <div class="media">
-              <div class="media-left align-self-center"><i class="ft-file icon-bg-circle bg-teal"></i></div>
+              <div class="media-left align-self-center"><i class="ft-file icon-bg-circle bg-dark"></i></div>
               <div class="media-body">
                 <h6 class="media-heading">{{$item.market_details.short_name}}</h6><small>
                   <time class="media-meta text-muted" style="font-size: 16px; font-weight: bold;">
                     <span ng-bind-html="$cart.$config.currency"></span>{{$item.market_details.price  | number:2}} </time></small>
-                    <span class="float-right">x{{$item.qty}} qty</span>
+                    <!-- <span class="float-right">x{{$item.qty}} qty</span> -->
+                    <!-- <small class="float-right text-danger" ng-click="$shop.$cart.remove_item($item)">Remove</small> -->
               </div>
             </div>
           </a>
           </li>
-            <li class="dropdown-menu-header">
+
+          <li class="dropdown-menu-header">
           <div class="dropdown-header m-0"  ng-hide="$cart.$items.length==0">
             <span class="grey darken-2">Total:
               <span ng-bind-html="$cart.$config.currency"></span> 
@@ -52,16 +56,14 @@
               {{$cart.$items.length}} Item(s)
             </span>
           </div>
+          <a ng-hide="$cart.$items.length==0" class="btn btn-outline-dark btn-block text-center" href="<?=domain;?>/user/cart">Proceed to Checkout</a>
         </li>
-        <br>
-        <li class="dropdown-menu-footer text-center" ng-hide="$cart.$items.length==0">
-          <a class="btn btn-outline-dark  text-center" href="<?=domain;?>/user/cart">Proceed to Checkout</a></li>
       </ul>
     </li>   
   <?php endif ;?>
 
   <?php if ($auth):?>
-      <!-- <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown"><span class="avatar avatar-online">
+      <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown"><span class="avatar avatar-online">
         <img src="<?=domain;?>/<?=$auth->resized_profile_pix;?>" alt="avatar"
         style="height: 30px;object-fit: cover;"><i></i></span><span class="user-name">
     <?=$auth->fullname;?>
@@ -76,7 +78,7 @@
 
         </div>
 
-      </li> -->
+      </li>
     <?php else:?>
 
    <!--  <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">

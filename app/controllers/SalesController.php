@@ -42,7 +42,8 @@ class SalesController extends controller
 
         $product = $item_on_sale->preview();
 
-        $this->view('composed/view_product', compact('product'));
+        $this->view('guest/single-product', compact('product'));
+        // $this->view('composed/view_product', compact('product'));
 
     }
 

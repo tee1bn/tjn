@@ -8,6 +8,15 @@ class MIS
 {
 	
 
+
+
+
+		
+	public static function encode_for_url($string){
+			return str_replace(' ', '-', $string);
+	}
+
+	
 	public static function filter_note($showing, $of, $total_set, $sieve, $pass_mark=1)
 	{
 	    $note = "Showing $showing of $of ";

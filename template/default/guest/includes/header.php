@@ -24,37 +24,33 @@
 
 
     <!-- BEGIN: Page CSS-->
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/menu/menu-types/horizontal-menu.min.css">
+<!--     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/menu/menu-types/horizontal-menu.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/simple-line-icons/style.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/pages/timeline.min.css">
-    <!-- END: Page CSS-->
+ -->    <!-- END: Page CSS-->
 
 
 
 
     <!-- BEGIN: Vendor CSS-->
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
+<!--     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/extensions/unslider.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/meteocons/style.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/morris.css">
-    <!-- END: Vendor CSS-->
+ -->    <!-- END: Vendor CSS-->
 
+    <script src="<?=asset;?>/js/jquery1.12.min.js"></script>
 
 
     <link rel="stylesheet" type="text/css" href="<?=asset;?>/fonts/feather/style.min.css">
 
-    <meta name="google-site-verification" content="uHs718_iV5yGsoQJxVE9s4gKYo7hVzkxcmX_ciw0nTY" />
-
-
   </head>
   <!-- END: Head-->
 
-  <?php   
-
-  include_once "app/others/angularjs_installation.php" ; ?>
+  <?php include_once "app/others/angularjs_installation.php" ; ?>
 
   <style>
     .app-content{
@@ -69,7 +65,7 @@
     <!-- BEGIN: Header-->
     <nav class="header-navbar navbar-expand-md navbar navbar-with-menu navbar-static-top navbar-white bg-white navbar-border navbar-brand-center">
       <div class="navbar-wrapper">
-        <div class="navbar-header">
+        <div class="navbar-header sticky-wrapper" id="sticky-wrapper">
           <ul class="nav navbar-nav flex-row">
             <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
             <li class="nav-item"><a class="navbar-brand" href="<?=domain;?>">

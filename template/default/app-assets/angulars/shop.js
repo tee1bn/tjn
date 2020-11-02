@@ -12,7 +12,7 @@
 		    var i;
 		    console.log(obj)
 		    for (i = 0; i < list.length; i++) {
-		        if ((list[i] === obj )) {
+		        if ((list[i].market_details.id === obj.market_details.id ) && (list[i].market_details.model === obj.market_details.model )) {
 		            return true;
 		        }
 
@@ -29,7 +29,6 @@
 
 		this.buy_now = function($item){
 			this.add_item($item);
-
 			location.href = $base_url+"/user/cart";
 		}
 
