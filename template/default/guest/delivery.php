@@ -56,25 +56,31 @@ include 'includes/header.php';?>
                                <div class="media-body">
                                 <h4 class="media-heading"><b>{{$item.market_details.name}}</b></h4>
                                 <span ng-bind-html = $item.market_details.short_description></span>
-                              </div>
+                              </div><br>
                               <ul>
                                 <li class="text-danger"><a>34mb</a></li>
                                 <li><h2><b><?=$currency;?>{{$item.market_details.price }}<i class="fa fa-tags"></i> </b></h2></li>
                               </ul>                                 
 
-                                </div>
-                                <hr />
-                                <a href="" class="pull-right btn btn-outline-dark"> Download all</a><br>
                               </div>
+                              <a href="" class=" btn-sm btn btn-outline-dark"> Download</a><br>
+<!--                                 <hr />
+                                <a href="" class="pull-right btn btn-outline-dark"> Download all</a><br>
+ -->                              </div>
                             </div>
                           </div>
                         </div>
 
-                        <div class=" col-md-5" >
+                        <div class=" col-md-3" >
                           <div class=" card ">
                             <div class="card-body">
-                              <h6>Summary</h6>
-
+                              <h6>Delivered to:</h6>
+                                <p>
+                                  Ope-ifas Taiwo <br>
+                                  email@email.com <br>
+                                  081223353617 <br>
+                                  Date: 2020-92-92
+                                </p>
 
                                       </div>
                                     </div>
