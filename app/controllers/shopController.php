@@ -130,7 +130,7 @@ class shopController extends controller
 
             public function delivery($order_id)
             {
-                $order = Order::where('order_id', $order_id)->Paid()->first();
+                $order = Orders::where('id', $order_id)->Paid()->first();
                 if ($order == null) {
                     Redirect::back();
                 }

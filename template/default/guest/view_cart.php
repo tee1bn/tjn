@@ -51,7 +51,7 @@ include 'includes/header.php';?>
               <div class="content-detached content-lef" >
                 <div class="content-body">
                   <section class="row">
-                    <div id=" col-md-7" class="card">
+                    <div id=" " class="card col-md-7">
                       <div class="card-header">
                         <h4 class="card-title">{{$shop.$cart.$items.length}} Item(s) in Cart</h4>
                         <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
