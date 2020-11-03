@@ -43,7 +43,7 @@ include 'includes/header.php';?>
                   <section class="row">
                     <div id="" class="card col-md-7">
                       <div class="card-header">
-                        <h4 class="card-title">x Item(s)</h4>
+                        <h4 class="card-title"><?=$order->total_item();?> Item(s)</h4>
                         <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                       </div>
 
@@ -51,22 +51,29 @@ include 'includes/header.php';?>
                       <div class="card-content collapse show">
                         <div class="card-body">
                           <div class="card-text">
+                            <?php foreach ($order->order_detail() as $key => $item) :
+                              $product = v2\Models\Market::where('item_id', $item['market_details']['id'])
+                              ->latest()
+                              ->OnSale()
+                              ->first()
+                              ->good();
 
-                            <div ng-repeat="($index, $item) in $shop.$cart.$items" class="media courses-in-cart">
+                              // print_r($product);
+                              ;?>
+                            <div class="media courses-in-cart">
                                <div class="media-body">
-                                <h4 class="media-heading"><b>{{$item.market_details.name}}</b></h4>
-                                <span ng-bind-html = $item.market_details.short_description></span>
+                                <h4 class="media-heading"><b><?=$product->name;?></b></h4>
+                                <span> <?=$product->ShortDescription;?> </span>
                               </div><br>
                               <ul>
                                 <li class="text-danger"><a>34mb</a></li>
-                                <li><h2><b><?=$currency;?>{{$item.market_details.price }}<i class="fa fa-tags"></i> </b></h2></li>
+                                <li><h2><b><?=$currency;?><?=$product->price;?><i class="fa fa-tags"></i> </b></h2></li>
                               </ul>                                 
 
                               </div>
-                              <a href="" class=" btn-sm btn btn-outline-dark"> Download</a><br>
-<!--                                 <hr />
-                                <a href="" class="pull-right btn btn-outline-dark"> Download all</a><br>
- -->                              </div>
+                              <a href="<?=$product->DownloadLink;?>" class=" btn-sm btn btn-outline-dark"> Download</a><br>
+                            <?php endforeach;?>
+                            </div>
                             </div>
                           </div>
                         </div>

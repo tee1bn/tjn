@@ -155,7 +155,7 @@
 
 
            <li class="dropdown nav-item" data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#" data-toggle="dropdown">
-             <i class="ft-users"></i><span>Traders</span></a>
+             <i class="ft-users"></i><span>Vendors</span></a>
 
              <ul class="dropdown-menu">
                <li class="" data-menu=""><a class="dropdown-item" href="<?=domain;?>/fx-signals" data-toggle="dropdown">Forex Signals</a></li>
@@ -165,10 +165,11 @@
 
            </li>
 
+
           <li class=" nav-item" data-menu="">
-            <a class="-toggle nav-link" href="<?=domain;?>/courses/1/access" data-toggle="">
+            <a class="-toggle nav-link" href="<?=domain;?>/" data-toggle="">
               <i class="ft-bookmark"></i>
-              <span>Fx Academy</span></a>
+              <span>About</span></a>
           </li>
       
       
