@@ -378,7 +378,8 @@ class Orders extends Eloquent  implements OrderInterface
 	public function after_payment_url()
 	{
 		$domain = Config::domain();
-		$url = "$domain/user/courses";
+		$id = MIS::dec_enc('encrypt', $this->id);
+		$url = "$domain/shop/delivery/$id";
 		return $url;
 	}												
 	

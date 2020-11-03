@@ -131,29 +131,38 @@ include 'includes/header.php';?>
                             {{$shop.$cart}}
                           </textarea>
 
+                          <?php if (!$auth) :?>
                           <br>
                           <div class="form-group">                               
                             <label><small>First Name</small></label>
-                            <input type="" name="firstname" class="form-control" ng-init="$shop.$cart.$extra_detail.firstname='<?=$auth->firstname ?? $auth->firstname;?>'"
+                            <input type="" name="firstname" class="form-control" ng-init="$shop.$cart.$extra_detail.firstname='<?=$auth->firstname ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.firstname" value=""  required=""> 
                           </div> 
 
                           <div class="form-group">                               
                             <label><small>Last Name</small></label>
-                            <input type="" name="lastname" class="form-control" ng-init="$shop.$cart.$extra_detail.lastname='<?=$auth->lastname ?? $auth->lastname;?>'"
+                            <input type="" name="lastname" class="form-control" ng-init="$shop.$cart.$extra_detail.lastname='<?=$auth->lastname ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.lastname" value=""  required=""> 
                           </div> 
 
                           <div class="form-group">                               
                             <label><small>Your Email</small></label>
-                            <input type="email" name="email" class="form-control" ng-init="$shop.$cart.$extra_detail.email='<?=$auth->email ?? $auth->email;?>'"
+                            <input type="email" name="email" class="form-control" ng-init="$shop.$cart.$extra_detail.email='<?=$auth->email ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.email" value=""  required=""> 
                           </div> 
 
                           <div class="form-group">                               
                             <label><small>Your Phone</small></label>
-                            <input type="" name="phone" class="form-control" ng-init="$shop.$cart.$extra_detail.phone='<?=$auth->phone ?? $auth->phone;?>'"
+                            <input type="" name="phone" class="form-control" ng-init="$shop.$cart.$extra_detail.phone='<?=$auth->phone ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.phone" value=""  required=""> 
+                          </div> 
+
+
+                          <?php endif ;?>
+                          <div class="form-group">                               
+                            <input type="hidden" name="product_ref"
+                             class="form-control" ng-init="$shop.$cart.$extra_detail.product_ref='<?=$_SESSION['product_ref'] ?? '' ;?>'"
+                            ng-model="$shop.$cart.$extra_detail.product_ref"  required=""> 
                           </div> 
 
                           <!-- <input type="hidden" name="payment_method" value="paystack"> -->

@@ -29,16 +29,18 @@
 
 		this.buy_now = function($item){
 			this.add_item($item);
-			location.href = $base_url+"/user/cart";
+			location.href = $base_url+"/shop/cart";
 		}
 
-
+		
+		
 		this.add_item = function($item){
-			$checkout_url = $base_url+"/user/cart";
+			$checkout_url = $base_url+"/shop/cart";
 
 			//ensure item is not added in cart more than once
 			if (this.contains_object($item, this.$items)) {
-				window.show_notification('<b>'+$item.market_details.name+'</b><br> Already in Cart! <br> <a class="btn btn-outline-teal btn-sm" href='+$checkout_url+'>Check out</a>');
+				window.show_notification('<b>'+$item.market_details.name+
+					'</b><br> Already in Cart! <br> <a class="btn btn-outline-teal btn-sm" href='+$checkout_url+'>Check out</a>');
 				return ;
 			}
 

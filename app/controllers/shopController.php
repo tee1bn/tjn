@@ -92,7 +92,7 @@ class shopController extends controller
                 $item_purchased = $shop->available_type_of_orders[$_REQUEST['item_purchased']];
                 $full_class_name = $item_purchased['namespace'].'\\'.$item_purchased['class'];          
                 $order_id = $_REQUEST['order_unique_id'];
-                $order = $full_class_name::where('id' ,$order_id)->where('user_id', $auth->id)->where('paid_at', null)->first();
+                $order = $full_class_name::where('id' ,$order_id)->where('paid_at', null)->first();
 
 
                 switch ($_REQUEST['item_purchased']) {
@@ -110,13 +110,13 @@ class shopController extends controller
                     
 
                 if ($order==null) {
-                    Redirect::to($redirect);
+                    // Redirect::to($redirect);
                 }
 
 
                 $shop->setOrder($order)->verifyPayment();
                 
-                Redirect::to($redirect);
+                // Redirect::to($redirect);
                 
 
                 $url = $order->after_payment_url();
@@ -129,9 +129,11 @@ class shopController extends controller
 
 
             public function delivery($order_id)
-            {
+            {   
+                $order_id = MIS::dec_enc('decrypt', $order_id);
                 $order = Orders::where('id', $order_id)->Paid()->first();
                 if ($order == null) {
+
                     Redirect::back();
                 }
 
@@ -190,8 +192,8 @@ class shopController extends controller
                     $auth = $this->auth();
 
                     //create new customer
+                    $extra_detail = $cart['$extra_detail'];
                     if (! $auth) {
-                        $extra_detail = $cart['$extra_detail'];
                         $customer = Customer::updateOrcreate(
                                             [
                                                 'email' => $extra_detail['email'],
@@ -205,11 +207,16 @@ class shopController extends controller
                     }
 
 
+                    $product_references = explode("-", $extra_detail['product_ref']);
+                    $affiliate_id = $product_references[1] ?? null;
+
+
                     $new_order = $model::updateOrcreate(
                         ['id' => $_SESSION['shop_checkout_id'] ??null ],
                         [
                             'user_id'        => $auth->id ?? null,
                             'customer_id'        => $customer->id ?? null,
+                            'affiliate_id'        => $affiliate_id ?? null,
                             'buyer_order'    => json_encode($cart['$items']),
                             'extra_detail'    => json_encode($cart['$extra_detail']),
                             'percent_off'    => $percent_off ?? 0,
@@ -493,10 +500,18 @@ class shopController extends controller
 
     }
 
-    public function full_view($item_id, $model_key='product')
+    public function full_view($product_ref)
     {
-        $register = Market::$register;
 
+        $product_references = explode("-", $product_ref);
+
+        $item_id = $product_references[0];
+        $affiliate_id = $product_references[1] ?? null;
+
+
+        $model_key ='product';
+
+        $register = Market::$register;
 
         $model = $register[$model_key]['model'];
         $item =  new $model;
@@ -519,9 +534,9 @@ class shopController extends controller
 
         $good = $item_on_sale->preview();
 
-
-
         $product = $item_on_sale->preview();
+
+        $_SESSION['product_ref'] = $product_ref;
 
         $this->view('guest/single-product', compact('product'));
 
@@ -531,7 +546,7 @@ class shopController extends controller
 
 
 
-    public function view_cart()
+    public function cart()
     {
 
         $shop = new Shop;
