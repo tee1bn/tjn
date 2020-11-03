@@ -57,21 +57,36 @@ class Shop
 				'class' => 'CoinPay',
 				'namespace' => "v2\Shop\Payments",
 				'available' => $payments_settings['coinpay_keys']->settingsArray['mode']['available']
-			],
+			],*/
 
 			'bank_transfer' => [
 				'name' => 'Bank Transfer',
 				'class' => 'BankTransfer',
 				'namespace' => "v2\Shop\Payments",
 				'available' => $payments_settings['bank_transfer']->settingsArray['mode']['available']
-			],*/
+			],
 
-			'website' => [
+
+			'paystack' => [
+							'name' => 'Paystack',
+							'class' => 'Paystack',
+							'namespace' => "v2\Shop\Payments",
+							'available' => $payments_settings['paystack_keys']->settingsArray['mode']['available']
+						],
+
+			'rave' => [
+							'name' => 'Flutter Wave (Rave)',
+							'class' => 'Rave',
+							'namespace' => "v2\Shop\Payments",
+							'available' => $payments_settings['flutter_wave_keys']->settingsArray['mode']['available']
+						],
+
+			/*'website' => [
 							'name' => 'earning',
 							'class' => 'Website',
 							'namespace' => "v2\Shop\Payments",
 							'available' => $payments_settings['website_bonus_keys']->settingsArray['mode']['available']
-						],
+						],*/
 
 
 

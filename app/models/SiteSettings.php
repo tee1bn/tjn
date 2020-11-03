@@ -56,7 +56,7 @@ class SiteSettings extends Eloquent
 
 	public static function payment_gateway_settings()
 	{
-		$payments_settings_keys = [/*'coinpay_keys', 'paypal_keys', 'livepay_keys'*/ 'website_bonus_keys'];
+		$payments_settings_keys = [/*'coinpay_keys', 'paypal_keys', 'livepay_keys', */ 'paystack_keys','bank_transfer','flutter_wave_keys', 'website_bonus_keys'];
 
 		return self::whereIn('criteria', $payments_settings_keys)->get();
 

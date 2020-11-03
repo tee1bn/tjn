@@ -35,6 +35,8 @@ class Orders extends Eloquent  implements OrderInterface
 	
 		protected $fillable = [
 								'user_id',
+								'affiliate_id',
+								'customer_id',
 								'percent_off',
 								'amount_payable',
 								'item',
@@ -750,9 +752,15 @@ class Orders extends Eloquent  implements OrderInterface
 
 	public function user()
 	{
-
 		return $this->belongsTo('User', 'user_id');
 	}
+
+
+	public function customer()
+	{
+		return $this->belongsTo('Customer', 'customer_id');
+	}
+
 
 	public function mark_paid()
 	{
@@ -764,8 +772,8 @@ class Orders extends Eloquent  implements OrderInterface
 			$this->update(['paid_at'=> date("Y-m-d H:i:s")]);
 			// $this->give_upline_sale_commission();
 
-			$this->give_value_on_wordpress();
-			$this->create_sale();
+			// $this->give_value_on_wordpress();
+			// $this->create_sale();
 
 			DB::commit();
 			Session::putFlash("success","Payments Recieved Successfully");
@@ -901,11 +909,22 @@ class Orders extends Eloquent  implements OrderInterface
 	}
 
 
+	public function getBuyerAttribute()
+	{
+		if ($this->user_id != null) {
+
+			return $this->user;
+		}
+
+		return $this->customer;
+
+	}
+
 	public function generateOrderID()
 	{
 
 		$substr = substr(strval(time()), 7 );
-		$order_id = "MA{$this->id}C{$this->user->id}";
+		$order_id = "MA{$this->id}C{$this->Buyer->id}";
 
 		return $order_id;
 	}

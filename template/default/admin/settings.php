@@ -28,7 +28,7 @@ include 'includes/header.php';?>
         </div>
         <div class="content-body">
 
-         <div class="row" style="display:none ;">
+         <div class="row" style="display: ;">
           <div class="col-12">
             <div class="card">
 

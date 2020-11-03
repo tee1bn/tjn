@@ -128,6 +128,18 @@ class shopController extends controller
             }
 
 
+            public function delivery($order_id)
+            {
+                $order = Order::where('order_id', $order_id)->Paid()->first();
+                if ($order == null) {
+                    Redirect::back();
+                }
+
+
+                $this->view('guest/delivery', compact('order'));
+            }
+
+
             public function checkout()
             {
                 $shop = new Shop();
@@ -177,10 +189,27 @@ class shopController extends controller
 
                     $auth = $this->auth();
 
+                    //create new customer
+                    if (! $auth) {
+                        $extra_detail = $cart['$extra_detail'];
+                        $customer = Customer::updateOrcreate(
+                                            [
+                                                'email' => $extra_detail['email'],
+                                            ],
+                                            [
+                                            'firstname' => $extra_detail['firstname'],
+                                            'lastname' => $extra_detail['lastname'],
+                                            'phone' => $extra_detail['phone']
+                                        ]);
+
+                    }
+
+
                     $new_order = $model::updateOrcreate(
                         ['id' => $_SESSION['shop_checkout_id'] ??null ],
                         [
-                            'user_id'        => $auth->id,
+                            'user_id'        => $auth->id ?? null,
+                            'customer_id'        => $customer->id ?? null,
                             'buyer_order'    => json_encode($cart['$items']),
                             'extra_detail'    => json_encode($cart['$extra_detail']),
                             'percent_off'    => $percent_off ?? 0,
@@ -215,8 +244,9 @@ class shopController extends controller
                         ->attemptPayment();
 
 
+
                         Session::putFlash('success', "Order Created Successfully. ");
-                        echo json_encode($payment_details->order);
+                        echo json_encode($payment_details);
                         break;
 
                         default:

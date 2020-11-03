@@ -246,6 +246,7 @@ class Products extends Eloquent
 		$thumbnail = "$this->mainimage";
 		$market_details = [
 			'id' => $this->id,
+			'user_id' => $this->user_id, //seller
 			'model' => self::class,
 			'name' => $this->name,
 			'short_name' => substr($this->name, 0, 34),

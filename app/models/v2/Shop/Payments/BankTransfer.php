@@ -176,7 +176,7 @@ class BankTransfer implements PaymentMethodInterface
 		$amount = $this->amountPayable();
 
 
-		$user = $this->order->user;
+		$user = $this->order->Buyer;
 		$success_url = "";
 		$failure_url = "";
 
@@ -186,7 +186,7 @@ class BankTransfer implements PaymentMethodInterface
 						'order_unique_id' => $this->order->id,
 						'name_in_shop' => $this->order->name_in_shop,
 						'email' => $user->email,
-						'phone' => $user->phonenumber,
+						'phone' => $user->phone,
 						'currency' => 'NGN',
 						'amount' => $amount,
 						'custom_fields'=> [
@@ -196,7 +196,7 @@ class BankTransfer implements PaymentMethodInterface
 									],
 									[
 										'metaname' => "Phone",
-										'metavalue' => $user->phonenumber,
+										'metavalue' => $user->phone,
 									],
 								],
 						'success_url' => $success_url,
