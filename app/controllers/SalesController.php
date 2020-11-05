@@ -10,6 +10,7 @@ class SalesController extends controller
 
     public function __construct()
     {
+        
     }
 
     //landing page for all sales

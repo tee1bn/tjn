@@ -9,6 +9,7 @@ use  v2\Models\Market;
 use  Filters\Traits\Filterable;
 
 
+require_once "app/controllers/home.php";
 class Products extends Eloquent 
 {
     use Filterable;
@@ -192,18 +193,16 @@ class Products extends Eloquent
 		$currency = Config::currency();
 		$price = MIS::money_format($this->price);
 		$by = ($this->instructor == null)? '' : "By {$this->instructor->fullname} ";
-
+		
+		$product = $this;
+		$controller = new \home;
+		$view = $controller->buildView('composed/view_product', compact('product'));
 
 		$last_updated = date("M j, Y h:iA" , strtotime($this->updated_at));
 		$quickview = "
-		<small>Last updated -{$last_updated}</small>
-		<h5><b>{$this->title}</b></h5>
-		<p> $this->primarily_taught | $this->category | $this->level</p>
-		<p>$by <span style='margin-left: 30px;    font-weight: bold;    font-size: 25px;'> $currency$price</span>
-		</p> 
-		<hr>
+		
 
-		<p>$this->description</p>
+		 $view
 		<ul>
 
 		</ul>
@@ -241,7 +240,7 @@ class Products extends Eloquent
 
 	public function market_details()
 	{
-
+		$product = $this;
 		$domain = Config::domain();
 		$thumbnail = "$this->mainimage";
 		$market_details = [
@@ -250,7 +249,7 @@ class Products extends Eloquent
 			'model' => self::class,
 			'name' => $this->name,
 			'short_name' => substr($this->name, 0, 34),
-			'description' => $this->description,
+			'description' =>  $this->description,
 			'short_description' => substr($this->description, 0, 50).'...',
 			'quick_description' => substr($this->description, 0, 250).'...',
 			'price' => $this->price,

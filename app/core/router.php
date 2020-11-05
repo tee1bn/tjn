@@ -30,6 +30,7 @@ $router =[
 	'terms' 	=> 'TermsController',
 	'genealogy' => 'GenealogyController',
 	's' 	=> 'SalesController',
+	's' 	=> 'shopController',
 	'ref' 		=> 'ReferralController', //referral link handler
 	'r' 		=> 'ReferralController', //referral link handler
 	'forgot-password' 	=> 'forgotPasswordController',

@@ -275,7 +275,7 @@ class shopController extends controller
 
 
 
-        
+
         public function show_invoice($order_id, $type)
         {
             $auth = $this->auth();
@@ -566,6 +566,11 @@ class shopController extends controller
 
     }
 
+    public function s($product_ref){
+        $this->full_view($product_ref);
+    }
+
+
     public function full_view($product_ref)
     {
 
@@ -620,8 +625,9 @@ class shopController extends controller
 
         if (count($cart) == 0) {
             Session::putFlash("info", "Your cart is empty.");
-            Redirect::to('user/shop');
+            Redirect::to('shop');
         }
+
         $this->view('guest/view_cart', compact('shop'));
     }
 
@@ -631,7 +637,7 @@ class shopController extends controller
     
     public function market($page=1 , $type = 'product')
     {   
-        
+        $type = 'product';
 
         $domain = Config::domain();
         $shop_link = "$domain/user/shop";
@@ -657,7 +663,7 @@ class shopController extends controller
         $per_page = $market_category['per_page'];
         $skip = (($page -1 ) * $per_page) ;
 
-/*
+
 
 
         $items_on_sale = Market::latest()
@@ -667,41 +673,16 @@ class shopController extends controller
         ->take($per_page)
         ->get()
         ;
-*/
-
-        $courses = Post::Courses()->get();
-
-        // echo $courses->count();
-
-        $course = $courses->first();
-
-        // print_r($course->post_meta->toArray());
-
-        $published_courses = $courses->filter(function($course){
-            $post_meta = $course->post_meta->keyBy('meta_key');
-
-            if (! isset($post_meta['_lp_course_status'])) {
-                           return false;
-                       }
-            if ($post_meta['_lp_course_status']['meta_value'] == 'publish') {
-                return true;
-            }
-        });
-
-
-        $items_on_sale = $published_courses->forPage($page, $per_page);
-
-        // print_r($items_on_sale->toArray());
 
         $shaded=[];
         foreach ($items_on_sale as $key => $item_on_sale) {
-           /* $market_content = $item_on_sale->item;
+            $market_content = $item_on_sale->item;
 
             if ($market_content == null) {
                 continue;
-            }*/
+            }
 
-            $shaded_market[]['market_details'] = $item_on_sale->market_details();
+            $shaded_market[]['market_details'] = $item_on_sale->good()->market_details();
         }
 
         header("Content-type: application/json");

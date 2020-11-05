@@ -82,13 +82,6 @@ include 'includes/header.php';?>
                     <br>
 
                     <?php
-                        if ($auth->wp_user!= null) {
-                          $user= $auth->wp_user;
-                          echo $view = $this->buildView('composed/wp_user_detail', compact('user'), null, true);
-                        }else{
-
-                           echo      "<center><a class='btn btn-outline-dark' href='$domain/connect/wp'>Connect your school profile</a></center>";
-                        }
 
                      foreach (v2\Models\UserDocument::$document_types as $key => $type) :?>
                    
