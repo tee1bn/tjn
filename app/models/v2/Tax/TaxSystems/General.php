@@ -116,7 +116,8 @@ class General
 		$applicable_tax  = $this->settings->settingsArray['components'];
 
 		$component_names = [
-			'vat_percent' => ['name' => "VAT"]
+			'vat_percent' => ['name' => "VAT"],
+			'sgst' => ['name' => "SGST"],
 		];
 
 
@@ -176,7 +177,13 @@ class General
 
 
 		foreach ($tax_array['component'] as $key => $value) {
-				$calculated_component_tax= ($value['percent'])/$total_percent_tax * $tax_array['breakdown']['tax_payable'];
+				$divisor = $total_percent_tax * $tax_array['breakdown']['tax_payable'];
+				if ($divisor==0) {
+					$calculated_component_tax = 0;
+				}else{
+
+					$calculated_component_tax= ($value['percent'])/ $divisor;
+				}
 				$tax_array['component'][$key]['tax'] = $calculated_component_tax;
 		}
 

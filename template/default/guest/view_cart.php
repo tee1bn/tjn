@@ -224,7 +224,7 @@ include 'includes/header.php';?>
                               switch($data.gateway) {
 
                                 case 'bank_transfer':
-                                window.location.href = $base_url+"/user/bank-transfer/"+$data.order_unique_id+"/product";
+                                window.location.href = $base_url+"/shop/bank-transfer/"+$data.order_unique_id+"/product";
                                 break;
 
                                 case 'paystack':

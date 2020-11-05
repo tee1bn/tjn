@@ -49,4 +49,4 @@ $page_title = "Bank Transfer";
     </div>
     <!-- END: Content-->
 
-<?php include 'includes/footer.php';?>
+<?php //include 'includes/footer.php';?>

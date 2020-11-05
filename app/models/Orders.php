@@ -453,6 +453,14 @@ ELL;
 				'rate' => $line['market_details']['price'],
 				'qty' => $line['qty'],
 				'amount' => $amount,
+
+
+				'print_tax' => '0%',
+				'line_tax' => $amount,
+				'before_tax' => $amount,
+				'after_tax' => $amount,
+				'tax' => [],
+
 			];
 		}
 
@@ -1125,6 +1133,18 @@ public function scopePaid($query)
 		return $tax->setOrder($this)->calculateApplicableTax()->amount_taxable;*/
 	}
 
+
+
+
+
+	public function tax_breakdown()
+	{
+		$tax = new Tax;
+		$tax_payable  =	$tax->setTaxSystem('general_tax');
+		 return $tax->setProduct($this)
+		 ->calculateApplicableTax()->amount_taxable
+		 ;
+	}
 
 
 	public function is_paid()

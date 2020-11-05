@@ -88,8 +88,6 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 
 
 
-		echo  "$view";
-		return;		
 		$mpdf->WriteHTML($view);
 		$mpdf->Output("invoice#$order->id.pdf", \Mpdf\Output\Destination::INLINE);			
 
@@ -204,7 +202,6 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 		 return $tax->setProduct($this)
 		 ->calculateApplicableTax()->amount_taxable
 		 ;
-
 	}
 
 
@@ -216,12 +213,19 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 
 		$tax = $this->tax_breakdown();
 
+
 		$rate = $this->payment_plan->price;
 		$qty = 1;
 		$amount = $qty *  $rate;
 
 		$unit_tax = $tax['breakdown']['tax_payable'];
 		$line_tax = $unit_tax * $qty;
+
+		$component_tax = '';
+		foreach ( $tax['component'] as $key =>  $component) {
+			$component_tax .="<br><small> {$component['percent']}% {$component['name']} </small>";
+		}
+
 		$print_tax = "$line_tax 
 		<br><small> {$tax['breakdown']['total_percent_tax']}%  {$tax['pricing']} </small>";
 
