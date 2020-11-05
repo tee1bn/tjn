@@ -20,19 +20,6 @@
 
                                 <div class="row">
 
-                                    <div class="form-group col-sm-6">
-                                        <label>Item</label><br>
-
-                                        <select class="form-control" name="item">
-                                            <option value="">Select</option>
-                                            <?php foreach (SubscriptionPlan::available()->get() as $key => $value):?>
-                                                <option <?=((isset($sieve['item'])) && ($sieve['item']==(int)$value->id)) ?'selected':'';?> value="<?=$value->id;?>"> 
-                                                    <?=$value->package_type;?>
-                                                </option>
-                                            <?php endforeach ;?>
-                                        </select>
-
-                                    </div>
                                 
                                     <div class="form-group col-md-6">
                                         <label>Paid Status</label>

@@ -79,6 +79,15 @@ use v2\Models\InvestmentPackage;
                       </label><br>
                     </div>
 
+                    <div class="form-group col-md-12">
+                      <textarea name="features" class="form-control" rows="4"><?=$plan->features;?></textarea>
+                    </div>
+                    </div>
+
+
+
+                    <div class="row">
+                      <h5 class="col-12">Benefits</h5>
                     <?php foreach (SubscriptionPlan::$benefits as $key => $benefit):?>
 
                     <div class="form-group col-md-2">
@@ -88,13 +97,24 @@ use v2\Models\InvestmentPackage;
                       </label><br>
                     </div>
                     <?php endforeach;?>
+                    </div>
 
+
+                    <div class="row">
+                      <h5 class="col-12">Comparison</h5>
+
+                    <?php foreach (SubscriptionPlan::$comparison as $key => $benefit):?>
+                    <div class="form-group col-md-2">
+                      <label><?=$benefit['title'];?>
+                      <input type="checkbox" <?=(@$plan->DetailsArray['comparison'][$key] == 1)? 'checked' :'';?>
+                       value="1" name="details[comparison][<?=$key;?>]" >
+                      </label><br>
+                    </div>
+                    <?php endforeach;?>
+                  </div>
 
 
                 
-
-                  </div>
-
                   <div class="form-group">
                     <button type="submit" class="btn btn-success">Save</button>
                   </div>

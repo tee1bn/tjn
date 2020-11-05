@@ -27,7 +27,7 @@ $invoice = $order->invoice();
 </style>                          
 
 
-<div class="">
+<div class="container">
   <div class="row">
     <div class="col-md-12">
         <?php if((!isset($remove_mle_detail)) || ($remove_mle_detail == false)):?>
@@ -64,7 +64,7 @@ $invoice = $order->invoice();
 
                 <address>
                   <?php 
-                  $user = $order->user;
+                  $user = $order->Buyer;
                   ;?>
 
                   <strong>
@@ -78,7 +78,6 @@ $invoice = $order->invoice();
                   <a href="mailto:<?=$user->email;?>">
                     <?=$user->email;?>
                   </a>
-
 
                 </address>
 
@@ -119,17 +118,19 @@ $invoice = $order->invoice();
                     <thead>
                       <tr>
                         <th>#</th>
-                         <th style="text-align: left;">Item &amp; Description</th>
+                         <th style="text-align: left;">Item <br>&amp; Description</th>
                         <th style="text-align: right;">Rate</th>
                         <th style="text-align: right;">Qty</th>
                         <th style="text-align: right;">Amount (<?=$currency;?>)</th>
+                        <th style="text-align: right;">Tax </th>
+                        <th style="text-align: right;">Taxable <br>Value (<?=$currency;?>)</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <?php foreach ($invoice['summary'] as $key => $summary) :?>
+                      <?php $i=1; foreach ($invoice['summary'] as $key => $summary) :?>
 
                         <tr>
-                          <th scope="row">1</th>
+                          <th scope="row"><?=$i++;?></th>
                           <td>
                             <p><?=$summary['item'];?> </p>
                             <p><small class="text-mute"> <?=$summary['description'];?></small></p>
@@ -138,11 +139,20 @@ $invoice = $order->invoice();
                             <p><?=$summary['rate'];?></p>
                           </td>
                           <td style="text-align: right;">
-                            <?=MIS::money_format($summary['qty'] );?>
+                            <?=($summary['qty'] );?>
                           </td>
 
                           <td style="text-align: right;">
                             <?=MIS::money_format($summary['amount'] );?>
+                          </td>
+
+                          <td style="text-align: right;">
+                            <?=$summary['print_tax'];?>
+                            
+                          </td>
+
+                          <td style="text-align: right;">
+                            <?=MIS::money_format($summary['before_tax'] );?>
                           </td>
                         </tr>
 

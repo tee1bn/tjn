@@ -7,6 +7,11 @@ include 'includes/header.php';
 
 
 
+<script src="https://api.ravepay.co/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+<script src="<?=asset;?>/angulars/payments/rave-checkout.js"></script>
+
+
+
 <!-- BEGIN: Content-->
 <div class="app-content content">
   <div class="content-wrapper">
@@ -35,72 +40,6 @@ include 'includes/header.php';
         <div class="col-md-2 d-none d-lg-block">   
           &nbsp;
         </div>
-        <div class=" col-md-4">   
-          <div class="card">   
-           <div class="card-content">
-            <div class="card-body">
-              <h4 class="card-title">Black Partner</h4>
-              <h6 class="card-subtitle text-mute"> <b class="float-right">
-                <b>$</b>0.00<!--  /Month --></b>
-              </h6> 
-            </div>
-
-            <div class="card-body">
-              <!-- <h6 class="card-subtitle text-mute">Support card subtitle</h6> -->
-              <!-- <p class="card-text">Excluding VAT 0% </p> -->
-              <ul class="list-group list-group-flush">
-
-                  <li class="list-group-item use-bg small-padding">
-                    <span class="badge custom-blue float-right"><i class="fa fa-check"></i></span>
-                      University Access (Limited)                          
-                </li>
-
-                  <li class="list-group-item use-bg small-padding">
-                    <span class="badge custom-blue float-right"><i class="fa fa-check"></i></span>
-                      Passive Income (Limited)                          
-                </li>
-
-                <li class="list-group-item use-bg small-padding">
-                  <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
-                Participate in compensation plan                          </li>
-
-
-                <li class="list-group-item use-bg small-padding">
-                  <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
-                Get leadership rewards                          </li>
-
-
-                <li class="list-group-item use-bg small-padding">
-                  <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
-                Qualification for trips and quartely conventions                           </li>
-
-
-                <li class="list-group-item use-bg small-padding">
-                  <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
-                Recieve promotional items                           </li>
-
-
-                <li class="list-group-item use-bg small-padding">
-                  <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
-                Step by step guide to generate $10,000 commission                          </li>
-
-
-          
-
-              </ul>
-              <br>
-              <br>
-              <br>
-              <div class="form-group">
-                <button href="#" class="btn">Free Subscription</button>
-              </div>
-
-
-            </div>
-          </div>
-        </div>
-      </div>
-
 
 
       <?php foreach (SubscriptionPlan::available()->get() as  $subscription): 
@@ -113,7 +52,7 @@ include 'includes/header.php';
           <div class="card-body">
             <h4 class="card-title"><?=$subscription->name;?></h4>
             <h6 class="card-subtitle text-mute"> <b class="float-right">
-              <?=$currency;?><?=MIS::money_format($subscription->price);?><!--  /Month --></b>
+              <?=$currency;?><?=MIS::money_format($subscription->price);?>/<?=SubscriptionPlan::$cycle;?></b>
             </h6> 
           </div>
 
@@ -123,9 +62,20 @@ include 'includes/header.php';
             <ul class="list-group list-group-flush">
               <?php foreach (SubscriptionPlan::$benefits as $key => $benefit): ?>
 
+                  <?php if (@$subscription->DetailsArray['benefits'][$key] == 1) :?>
+                    <li class="list-group-item use-bg small-padding">
+                    <span class="badge bg-success float-right"><i class="fa fa-check"></i></span>
+                    <?=$benefit['title'];?>
+                    </li>
+                    <?php endif ;?>
+
+                <?php endforeach;?>
+
+
+              <?php foreach (SubscriptionPlan::$comparison as $key => $benefit): ?>
                 <li class="list-group-item use-bg small-padding">
-                  <?php if ($subscription->DetailsArray['benefits'][$key] == 1) :?>
-                    <span class="badge custom-blue float-right"><i class="fa fa-check"></i></span>
+                  <?php if ($subscription->DetailsArray['comparison'][$key] == 1) :?>
+                    <span class="badge bg-success float-right"><i class="fa fa-check"></i></span>
                     <?php else :?>
                       <span class="badge bg-danger float-right"><i class="fa fa-times"></i></span>
                     <?php endif ;?>
@@ -133,39 +83,53 @@ include 'includes/header.php';
                   </li>
 
                 <?php endforeach;?>
+
+              <?php foreach ($subscription->FeaturesList as $key => $feature): ?>
+                <li class="list-group-item use-bg small-padding">
+                    <span class="badge bg-success float-right"><i class="fa fa-check"></i></span>
+                    <?=$feature;?>
+                  </li>
+
+                <?php endforeach;?>
+                
               </ul>
+              <pre>
+              </pre>
               <br>
-              <?php if (@$auth->subscription->payment_plan['price']  < $subscription->price):?>
+              <?php if ($auth->subscriptions[$subscription->id] == null):?>
                <form 
                id="upgrade_form<?=$subscription->id;?>"
                method="post"
-               class="ajax_for"
+               class="ajax_form"
+               data-overlay="in"
+               data-function="initiate_payment"
                action="<?=domain;?>/user/create_upgrade_request">
 
 
                 <input type="hidden" name="wallet" value="deposit">
-<!-- 
+
                <div class="form-group">
-                <select class="form-control" required="" name="wallet">
-                  <option value="">Pay Using Wallet</option>
-                  <?php foreach ($wallet->available_wallets($auth) as $key => $option):?>
-                    <option value="<?=$key;?>"><?=$option['name'];?> &nbsp;&nbsp; (<?=$currency;?><?=$option['balance'];?>) </option>
-                  <?php endforeach;?>
-                </select>                   
-              </div> -->
+                   <select class="form-control payment_method_selection" required="" name="payment_method">
+                       <option value="">Select Payment method</option>
+                       <?php foreach ($shop->get_available_payment_methods() as $key => $option): ?>
+                           <option value="<?= $key; ?>"><?= $option['name']; ?></option>
+                       <?php endforeach; ?>
+                   </select>
+               </div>
+
 
               <input type="hidden" name="subscription_id" value="<?=$subscription->id;?>">
               <br>
               <div class="form-group">
-                <button href="#" class="btn">Subscribe</button>
+                <button href="#" class="btn btn-outline-dark">Subscribe</button>
               </div>
             </form>
           <?php endif ;?>
 
-          <?php if (@$auth->subscription->payment_plan['id']  == $subscription->id):?>
+          <?php if ($auth->subscriptions[$subscription->id] != null):?>
             <div class="form-group">
-              <button type="button" class="btn btn-sm">Current</button>
-              <small><?=$auth->subscription->NotificationText;?></small>
+              <small><?=$auth->subscriptions[$subscription->id]->NotificationText;?>
+              </small>
             </div>
           <?php endif ;?>
 
@@ -182,28 +146,42 @@ include 'includes/header.php';
 <script>
   initiate_payment= function($data){
 
-    switch($data.payment_method) {
-     case 'coinpay':
-                       // code block
-                       window.location.href = $base_url+ 
-                       "/shop/checkout?item_purchased=packages&order_unique_id="+$data.id+"&payment_method=coinpay";
+    try {
 
-                       break;
+        switch ($data.gateway) {
+            case 'coinpay':
+                // code block
+                window.location.href = $base_url +
+                    "/shop/checkout?item_purchased=packages&order_unique_id=" + $data.order_unique_id + "&payment_method=coinpay";
 
-                       case 'paypal':
-                       // code block
-                       window.location.href = $base_url+ 
-                       "/shop/checkout?item_purchased=packages&order_unique_id="+$data.id+"&payment_method=paypal";
+                break;
 
-                       break;
-                       case 'razor_pay':
-                       // code block
-                       window.SchemeInitPayment($data.id);
-                       break;
-                       default:
-                       // code block
-                     }
-                   }
+            case 'paypal':
+                // code block
+                window.location.href = $base_url +
+                    "/shop/checkout?item_purchased=packages&order_unique_id=" + $data.order_unique_id + "&payment_method=paypal";
+
+                break;
+
+
+                case 'bank_transfer':
+
+                  window.location.href = $base_url+"/user/bank-transfer/"+$data.order_unique_id+"/packages";
+
+                break;
+                case 'rave':
+                  payWithRave($data);
+                break;
+            default:
+            // code block
+        }
+
+    } catch (e) {
+
+    }
+
+    
+  }
                  </script>
 
                </div>

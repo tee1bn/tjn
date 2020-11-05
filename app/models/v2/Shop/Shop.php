@@ -131,7 +131,7 @@ class Shop
 	{	
 		$this->setPaymentMethod($this->order->payment_method) ;
 		$verification =  ($this->payment_method->verifyPayment($this->order));
-
+		
 		//payment confirmed
 		if ($verification['confirmation']['status'] == 1) {
 			$this->order->mark_paid();

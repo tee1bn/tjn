@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Capsule\Manager as DB;
 use v2\Shop\Contracts\OrderInterface;
 use  v2\Shop\Shop;
+use v2\Tax\Tax;
 
 
 
@@ -45,6 +46,64 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 			 		'coinpay'=> 'one_time',
 			 	];
 
+	
+
+
+	public  function getInvoice()
+	{
+		$controller = new \home;
+
+		$order = $this;
+		$remove_mle_detail = false;
+		$view  =	$controller->buildView('composed/invoice', compact('order', 'remove_mle_detail'));
+
+		// $view = "I am here"	;
+
+		$mpdf = new \Mpdf\Mpdf([
+			'margin_left' => 5,
+			'margin_right' => 5,
+			'margin_top' => 10,
+			'margin_bottom' => 20,
+			'margin_header' => 10,
+			'margin_footer' => 10
+		]);
+
+
+		$src = Config::logo();
+		$company_name = \Config::project_name();
+		$mpdf->AddPage('P');
+		$mpdf->SetProtection(array('print'));
+		$mpdf->SetTitle("{$company_name}");
+		$mpdf->SetAuthor($company_name);
+		// $mpdf->SetWatermarkText("{$company_name}");
+		$mpdf->watermarkImg($src, 0.1);
+		$mpdf->showWatermarkText = true;
+		$mpdf->watermark_font = 'DejaVuSansCondensed';
+		$mpdf->watermarkTextAlpha = 0.2;
+		$mpdf->SetDisplayMode('fullpage');
+
+		$date_now = (date('Y-m-d H:i:s'));
+
+		$mpdf->SetFooter("Date Generated: " . $date_now . " - {PAGENO} of {nbpg}");
+
+
+
+		echo  "$view";
+		return;		
+		$mpdf->WriteHTML($view);
+		$mpdf->Output("invoice#$order->id.pdf", \Mpdf\Output\Destination::INLINE);			
+
+
+	}
+
+
+
+	public function after_payment_url()
+	{
+		$domain = Config::domain();
+		$url = "$domain/user/account_plan";
+		return $url;
+	}												
 
 
 	public function getExpiryDateAttribute()
@@ -56,11 +115,17 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 
 		$date_string = $this->paid_at;
 
-		$date =  date("Y-m-d", strtotime("$date_string + 1 month" )); // 2011-01-03
+		$cycle = SubscriptionPlan::$cycle;
+		$date =  date("Y-m-d", strtotime("$date_string + 1 $cycle" )); // 2011-01-03
 
 		return $date;
 	}
 
+	public function scopeNotExpired($query)
+	{
+		return $query->whereDate('expires_at', '>', date("Y-m-d"));
+	}
+	
 	public function is_expired()
 	{
 		if (strtotime($this->ExpiryDate) < time()) {
@@ -123,48 +188,127 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 		return $note;
 	}
 
+
 	public function scopePaid($query)
 	{
 		return $query->where('paid_at','!=',null);
 	}
 
 
+
+
+	public function tax_breakdown()
+	{
+		$tax = new Tax;
+		$tax_payable  =	$tax->setTaxSystem('general_tax');
+		 return $tax->setProduct($this)
+		 ->calculateApplicableTax()->amount_taxable
+		 ;
+
+	}
+
+
+
 	public  function invoice()
 	{
 
-		$controller = new home;
-		$order = $this;
-		$view  =	$controller->buildView('auth/order_detail', compact('order'));
+		$detail = $this->plandetails;
+
+		$tax = $this->tax_breakdown();
+
+		$rate = $this->payment_plan->price;
+		$qty = 1;
+		$amount = $qty *  $rate;
+
+		$unit_tax = $tax['breakdown']['tax_payable'];
+		$line_tax = $unit_tax * $qty;
+		$print_tax = "$line_tax 
+		<br><small> {$tax['breakdown']['total_percent_tax']}%  {$tax['pricing']} </small>";
+
+		$before_tax = $tax['breakdown']['before_tax'] * $qty;
+		$after_tax = $tax['breakdown']['total_payable'] * $qty;
+
+
+
+
+		$summary = [
+			[
+				'item' => "$this->TransactionID",
+				'description' => "{$detail['name']} Package ",
+				'rate' => $rate,
+				'qty' => $qty,
+				'amount' => $amount,
+				'print_tax' => $print_tax,
+				'line_tax' => $line_tax,
+				'before_tax' => $before_tax,
+				'after_tax' => $after_tax,
+				'tax' => $tax,
+			]
+		];
+
+
+		$total_tax = collect($summary)->sum('line_tax');
+		$total_before_tax = collect($summary)->sum('before_tax');
+		$total_after_tax = collect($summary)->sum('after_tax');
+
+		$lines =  [
+				'subtotal' =>[
+						'name'=> 'Sub Total Before Tax',
+						'value'=> $total_before_tax,
+					],
+				'tax' =>[
+						'name'=> 'Tax',
+						'value'=> $total_tax,
+					],
+				'grand_total' =>[
+						'name'=> 'Grand Total',
+						'value'=> $total_after_tax,
+					],
+
+				'total_payable' =>[
+						'name'=> 'Total Payable',
+						'value'=> $total_after_tax,
+					],
+			];
+
+		$extra_lines = [
+
+			'total_before_tax' =>[
+					'name'=> 'Sub Total Before Tax',
+					'value'=> $total_before_tax,
+				],
+
+			'total_after_tax' =>[
+					'name'=> 'Sub Total Before Tax',
+					'value'=> $total_after_tax,
+				],
+		];
+
+		$full_lines = array_merge($lines, $extra_lines);
+
+
+		$subtotal = [
+			'subtotal'=> null,
+			'lines'=> $lines,
+			// 'lines' => $this->PaymentBreakdownArray,
+			'total'=> null,
+			'full_lines'=> $full_lines,
+		];
 		
-		$mpdf = new \Mpdf\Mpdf([
-		    'margin_left' => 5,
-		    'margin_right' => 5,
-		    'margin_top' => 10,
-		    'margin_bottom' => 20,
-		    'margin_header' => 10,
-		    'margin_footer' => 10
-		]);
-
-		$company_name = Config::project_name();
-
-		$mpdf->AddPage('P');
-		$mpdf->SetProtection(array('print'));
-		$mpdf->SetTitle("{$company_name}");
-		$mpdf->SetAuthor($company_name);
-		$mpdf->SetWatermarkText("{$company_name}");
-		$mpdf->showWatermarkText = true;
-		$mpdf->watermark_font = 'DejaVuSansCondensed';
-		$mpdf->watermarkTextAlpha = 0.1;
-		$mpdf->SetDisplayMode('fullpage');
-
-		$date_now = (date('Y-m-d H:i:s'));
-
-		$mpdf->SetFooter("Date Generated: " . $date_now . " - {PAGENO} of {nbpg}");
 
 
-		$mpdf->WriteHTML($view);
-		$mpdf->Output("invoice#$order->id.pdf", \Mpdf\Output\Destination::DOWNLOAD);			
-	
+		$invoice = [
+			'order_id' => $this->TransactionID,
+			'invoice_id' => $this->TransactionID,
+			'order_date' => $this->created_at,
+			'payment_status' => $this->paymentstatus,
+			'summary' => $summary,
+			'subtotal' => $subtotal,
+		];
+
+		return $invoice;
+
+		
 	}
 
 
@@ -191,8 +335,12 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 
 		DB::beginTransaction();
 		try {
+			$cycle = SubscriptionPlan::$cycle;
 
-			$this->update(['paid_at' => date("Y-m-d H:i:s")]);
+			$this->update([
+					'paid_at' => date("Y-m-d H:i:s"), 
+					'expires_at' => date("Y-m-d H:i:s" ,strtotime("+1 $cycle"))
+				]);
 			$this->give_value();
 
 
@@ -430,6 +578,12 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 		}
 	}
 
+
+	public function getpaymentDetailArrayAttribute()
+	{
+		return  $this->PaymentDetailsArray;
+	}
+
 	public function getPaymentDetailsArrayAttribute()
 	{
 		if ($this->payment_details == null) {
@@ -466,6 +620,20 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 
 
 
+	
+	public function getBuyerAttribute()
+	{
+		if ($this->user_id != null) {
+
+			return $this->user;
+		}
+
+		return $this->customer;
+	}
+
+
+
+
 
 	public  function create_order($cart)
 	{
@@ -479,8 +647,49 @@ class SubscriptionOrder extends Eloquent implements OrderInterface
 								 'details'		=> json_encode($payment_plan),
 							]);
 
+
+		// print_r($new_payment_order);
 		return $new_payment_order;
 	}
+
+
+	public function setPaymentBreakdown(array $payment_breakdown, $order_id = null)
+	{
+		$this->update([
+			'order_id' => $order_id,
+			'payment_breakdown' => json_encode($payment_breakdown),
+			'amount_payable' => $payment_breakdown['total_payable']['value'],
+		]);
+
+		return $this;
+	}
+
+	public function calculate_vat()
+	{
+
+	/*	$setting = \SiteSettings::find_criteria('site_settings')->settingsArray;
+		$vat_percent =  $setting['vat_percent'];
+		
+		$subtotal = $this->total_price();		
+		$vat = $vat_percent * 0.01 * $subtotal;
+
+
+		$result =[
+			'value' => $vat,
+			'percent' => $vat_percent,
+		];*/
+
+		$result =[
+			'value' => 0,
+			'percent' => 0,
+		];
+
+
+		return $result;
+	}
+
+	
+
 
 
 	public function getpaymentstatusAttribute()

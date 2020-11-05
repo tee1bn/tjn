@@ -274,6 +274,72 @@ class shopController extends controller
 
 
 
+
+        
+        public function show_invoice($order_id, $type)
+        {
+            $auth = $this->auth();
+                  
+
+            $shop = new Shop;
+            $class = $shop->available_type_of_orders[$type]['class'];
+
+
+
+            $order = $class::where('id', $order_id)->where('payment_method', 'bank_transfer')
+                                         // ->where('user_id', $auth->id)
+                                         ->where('paid_at', null)->first();
+
+
+            if ($order==null) {
+                // Session::putFlash('danger','Invalid Request');
+                Redirect::back();
+            }
+
+            Shop::empty_cart_in_session();
+
+            // $invoice = 
+            // $invoice = 
+            $order->getInvoice();
+
+
+        }
+
+        
+
+
+
+        public function bank_transfer($order_id, $type)
+        {
+            $auth = $this->auth();
+
+
+            $shop = new Shop;
+            $class = $shop->available_type_of_orders[$type]['class'];
+
+
+           $order = $class::where('id', $order_id)->where('payment_method', 'bank_transfer')
+                                        ->first();
+
+
+
+
+            if ($order==null) {
+                // Session::putFlash('danger','Invalid Request');
+                // Redirect::back();
+            }
+
+            Shop::empty_cart_in_session();
+
+            $this->view('auth/deposit_bank_transfer', compact('order','type'));
+
+        }
+
+
+
+
+
+
     /**
      * this is the default landing point for all request to our application base domain
      * @return a view from the current active template use: Config::views_template()

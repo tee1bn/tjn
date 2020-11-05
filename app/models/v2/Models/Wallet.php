@@ -9,18 +9,15 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use SiteSettings, User, Config, Notifications, Session, home;
 use v2\Shop\Contracts\OrderInterface;
 
-use  v2\Models\InvestmentPackage;
 use  v2\Traits\Wallet as BookRecords;
 use  Filters\Traits\Filterable;
-
-
 
 /**
 This represent
 deposit wallet
 investment wallet
 */
-class Wallet extends Eloquent implements OrderInterface
+class Wallet extends Eloquent 
 {
 	
 	use BookRecords, Filterable;

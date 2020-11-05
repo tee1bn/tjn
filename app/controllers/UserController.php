@@ -399,16 +399,17 @@ class UserController extends controller
     {
 
         $subscription_id = $_REQUEST['subscription_id'];
-
-
         $response = SubscriptionPlan::create_subscription_request($subscription_id, $this->auth()->id);
-
-
         header("content-type:application/json");
-        echo $response;
+        echo json_encode($response);
 
-        Redirect::back();
+        // Redirect::back();
     }
+
+
+
+
+
 
 
     public function deposit_orders_history()
@@ -466,8 +467,7 @@ class UserController extends controller
 
 
     public function commission_history()
-    {
-
+    {        
         $auth = $this->auth();
 
         $sieve = $_REQUEST;
@@ -497,6 +497,43 @@ class UserController extends controller
 
 
         $balance = Commission::availableBalanceOnUser($auth->id);
+
+        $note = MIS::filter_note($records->count() , $data, $total,  $sieve, 1);
+
+        $this->view('auth/commission_history', compact('records', 'balance', 'sieve', 'data', 'per_page', 'note'));
+    }
+
+    public function wallet_history()
+    {        
+        $auth = $this->auth();
+
+        $sieve = $_REQUEST;
+        $sieve = array_merge($sieve);
+
+        $query = Wallet::for($auth->id)->latest();
+        // ->where('status', 1);  //in review
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new  WalletFilter($sieve);
+
+        $balance = $query->Credit()->sum('amount');
+
+        $total = $query->count();
+
+        $data = $query->Filter($filter)->count();
+
+        $sql = $query->Filter($filter);
+
+        $records = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
+
+
+        $balance = Wallet::availableBalanceOnUser($auth->id);
 
         $note = MIS::filter_note($records->count() , $data, $total,  $sieve, 1);
 
@@ -542,31 +579,11 @@ class UserController extends controller
     }
 
 
-    public function your_packs()
-    {
-        $packs = InvestmentPackage::for ($this->auth()->id)->latest()->get();
-        $this->view('auth/your_packs', compact('packs'));
-    }
-
-
-    public function select_pack()
-    {
-        $investment = InvestmentPackage::find($_POST['investment_id']);
-
-        if ($investment == null) {
-            Session::putFlash('danger', "Invalid Request");
-            Redirect::back();
-        }
-
-        $wallet = new Wallet;
-
-        $this->view('auth/select_pack', compact('investment', 'wallet'));
-    }
   
     public function account_plan()
     {
-        $wallet = new Wallet;
-        $this->view('auth/account_plan', compact('wallet'));
+        $shop = new Shop;
+        $this->view('auth/account_plan', compact('shop'));
     }
 
 
@@ -631,6 +648,52 @@ class UserController extends controller
     }
 
 
+    public function sales()
+    {
+
+        $auth = $this->auth();
+        $sieve = $_REQUEST;
+        $query = Orders::SoldBy($auth->id)->latest();
+
+        $total = $query->count();
+
+        $sieve = array_merge($sieve, [
+            'sold_by' => $auth->id
+        ]);
+        
+        $page = (isset($_GET['page']))?  $_GET['page'] : 1 ;
+        $per_page = 50;
+        $skip = (($page -1 ) * $per_page) ;
+
+        $filter =  new  OrderFilter($sieve);
+
+        $data =  $query->Filter($filter)->count();
+
+        $result_query = Orders::query()->Filter($filter);
+
+        $orders =  $query->Filter($filter)
+                        ->offset($skip)
+                        ->take($per_page)
+                        ->get();  //filtered
+
+        
+
+        $shop = new Shop;
+
+        $note = MIS::filter_note($orders->count(), ($data), ($total),  $sieve, 1);
+
+        $this->view('auth/sales', compact('orders',
+                                                        'data',
+                                                        'note',
+                                                        'per_page',
+                                                        'shop',
+                                                        'sieve'
+                                                        )); 
+    }
+
+
+
+
     public function products()
     {
 
@@ -656,12 +719,7 @@ class UserController extends controller
 
 
 
-        $this->view('auth/products', compact('products') );
-    }
-
-    public function reports()
-    {
-        $this->view('auth/report');
+        $this->view('auth/products', compact('products','data','per_page') );
     }
 
 

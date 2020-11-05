@@ -1,5 +1,5 @@
 <?php
-$page_title = "Commission Wallet";
+$page_title = "Wallet Histroy";
 include 'includes/header.php';
 ;?>
 
@@ -11,7 +11,7 @@ include 'includes/header.php';
       <div class="content-header-left col-6 mb-2">
         <?php include 'includes/breadcrumb.php';?>
 
-        <h3 class="content-header-title mb-0">Commission Wallet</h3>
+        <h3 class="content-header-title mb-0">Wallet History</h3>
       </div>
       <div class="content-header-right col-6">
               <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
@@ -37,8 +37,6 @@ include 'includes/header.php';
 
                 <?=$note;?>
 
-
-
               </div>
             </div>
             <div class="card-content">
@@ -53,7 +51,7 @@ include 'includes/header.php';
                       <th>#ID</th>
                       <th>Date</th>
                       <th>Amount(<?=$currency;?>)</th>
-                      <th>Upon</th>
+                      <!-- <th>Upon</th> -->
                       <th>Remark</th>
                     </tr>
                   </thead>
@@ -62,12 +60,14 @@ include 'includes/header.php';
                     <tr>
                       <td><?=$record->id;?></td>
                       <td><span class="badge badge-dark"><?=date("M j, Y h:ia" , strtotime($record->created_at));?></span></td>
-                      <td><?=MIS::money_format($record['amount']);?></td>
-                      <td><?=$record->upon->username ?? 'NA';?></td>
+                      <td><?=MIS::money_format($record['amount']);?><?=$record->displayedType;?></td>
+                      <!-- <td><?=$record->upon->username ?? 'NA';?></td> -->
                       <td><?=$record->comment;?></td>
                     </tr>
                   <?php endforeach ;?>
-
+                  <?php if ($records->isEmpty()) :?>
+                    <center>Your wallet history will show here</center>
+                  <?php endif ;?>
                 </tbody>
               </table>
 

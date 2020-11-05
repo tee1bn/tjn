@@ -68,7 +68,62 @@ class Orders extends Eloquent  implements OrderInterface
 
 
 
+	public function items_sold_by_editor($editor_id)
+	{
+		$order_detail = $this->order_detail();
 
+
+		$order_details = array_filter($order_detail, function($item) use ($editor_id){
+
+			if ($item['market_details']['user_id'] == $editor_id){
+				return true;
+			}
+		});
+
+		$count = count($order_details);
+
+		foreach ($order_details as $order) {
+			$total_price[] = $order['market_details']['price'] * $order['qty'];
+		}
+
+		$total =  array_sum($total_price) ;
+
+
+		$response = compact('order_details','count','total');
+
+		return $response;
+	}
+
+
+
+public function scopeSoldBy($query, $editor_id)
+{	
+
+$identifier1 = <<<ELL
+"user_id":$editor_id
+
+ELL;
+
+	$identifier1 = trim($identifier1);
+
+$identifier2 = <<<ELL
+"user_id":"$editor_id"
+
+ELL;
+
+	$identifier2 = trim($identifier2);
+
+
+	$query->whereRaw("(buyer_order like ? 
+								OR buyer_order like ? )", 
+
+								array("%$identifier1%",
+									"%$identifier2%"
+							));
+
+		return $query;
+	}
+												
 
 	public function give_value_on_wordpress()
 	{
@@ -868,10 +923,10 @@ class Orders extends Eloquent  implements OrderInterface
 	{
 		if ($this->paid_at) {
 
-			return '<span class="label label-success">Paid</span>';
+			return '<span class="badge badge-success">Paid</span>';
 		}
 
-			return '<span class="label label-danger">Unpaid</span>';
+			return '<span class="badge badge-danger">Unpaid</span>';
 
 	}
 
@@ -918,7 +973,6 @@ class Orders extends Eloquent  implements OrderInterface
 		}
 
 		return $this->customer;
-
 	}
 
 	public function generateOrderID()
@@ -941,8 +995,6 @@ class Orders extends Eloquent  implements OrderInterface
 		return $this;
 	}
 
-
-	
 
 	public function getpaymentDetailArrayAttribute()
 	{

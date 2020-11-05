@@ -94,6 +94,7 @@ class Rave
 
         $resp = json_decode($response, true);
 
+
       	$paymentStatus = $resp['data']['status'];
         $chargeResponsecode = $resp['data']['chargecode'];
         $chargeAmount = $resp['data']['amount'];

@@ -35,7 +35,7 @@
 
 
                                 <div class="form-group">
-                                    <button type="Submit" class="btn">Submit</button>
+                                    <button type="Submit" class="btn btn-outline-dark">Submit</button>
                                     <!-- <a  onclick="$('#filter_form').reset()">Reset</a> -->
                                 </div>
                             </form>

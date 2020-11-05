@@ -1,16 +1,8 @@
 <?php
 $page_title = "Bank Transfer";
- include 'includes/header.php';
+ // include 'includes/header.php';
 
  ;?>
-
-
- <script src="https://js.paystack.co/v1/inline.js"></script>
-  <script src="<?=general_asset;?>/js/payments/paystack-checkout.js"></script>
-
-
-  <script src="https://api.ravepay.co/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
-  <script src="<?=general_asset;?>/js/payments/rave-checkout.js"></script>
 
 
 
@@ -38,7 +30,7 @@ $page_title = "Bank Transfer";
                   <div class="card">
                      <div  class="card-content collapse show">
 
-                      <iframe style="height: 564px;width: 100%;" src="<?=domain;?>/user/show_invoice/<?=$order->id;?>/<?=$type;?>" frameborder="0" scrolling="no" onload="resizeIframe(this)" ></iframe>
+                      <iframe style="height: 564px;width: 100%;" src="<?=domain;?>/shop/show_invoice/<?=$order->id;?>/<?=$type;?>" frameborder="0" scrolling="no" onload="resizeIframe(this)" ></iframe>
 
 
                           </div>

@@ -673,9 +673,27 @@ class User extends Eloquent
     }
 
 
+    public function getSubscriptionsAttribute()
+    {
+        $result = [
+            'vendor' => 1,   //mapping to id
+            'affiliate' => 2, 
+        ]; 
+
+        $outcome = [];
+        foreach ($result as $key => $plan_id) {
+            $subscription =  SubscriptionOrder::where('user_id', $this->id)->Paid()->NotExpired()->where('plan_id', $plan_id )
+            ->latest('paid_at')->first();
+
+            $outcome[$plan_id] = $subscription;
+        }
+
+        return $outcome;
+    }
 
     public function getsubscriptionAttribute()
     {
+
         $today = strtotime(date("Y-m-d"));
         $subscription =  SubscriptionOrder::where('user_id', $this->id)->Paid()->latest('paid_at')->first();
 

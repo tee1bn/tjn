@@ -58,6 +58,12 @@ include 'includes/header.php';
               </div>
           </div>
 
+          <ul class="pagination">
+              <?= $this->pagination_links($data, $per_page);?>
+          </ul>
+
+
+
 
       </div>
   </div>

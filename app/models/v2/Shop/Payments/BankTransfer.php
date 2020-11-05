@@ -228,7 +228,7 @@ class BankTransfer implements PaymentMethodInterface
 
 		$this->api_keys = [] ; //hide api keys
 
-		return $this;
+		return $payment_details;
 
 	}
 
