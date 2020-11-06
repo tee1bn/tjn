@@ -4,8 +4,7 @@
 <div class="drag-target"></div>
 
 <!-- BEGIN: Footer-->
-<footer class="footer footer-static footer-light navbar-shadow">
-
+<footer class="footer footer-static footer-light navbar-border">
  <!--  <div class=" container" style="padding-top: 10px;">
 
     <div class="row">

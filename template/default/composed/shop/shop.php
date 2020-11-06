@@ -5,7 +5,7 @@
 
 
               <div class="card-header">
-                <h4 class="card-title col-md-6">Courses ({{$shop.$items.length}})<span class="badge badge-secondary"><?=(@$category);?></span>
+                <h4 class="card-title col-md-6">Shop ({{$shop.$items.length}})<span class="badge badge-secondary"><?=(@$category);?></span>
                 </h4>
                 <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                 <div class="heading-elements">
@@ -73,7 +73,6 @@
                 </button>
                 </div> -->
                 <div class="modal-body">
-
                     <span ng-bind-html="$shop.$quickview.market_details.quickview"></span>
                 </div>
                 <div class="modal-footer">

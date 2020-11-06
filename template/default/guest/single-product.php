@@ -62,21 +62,9 @@ body{
 <div class="content-detached content-left">
   <div class="content-body"><section class="row">
     <div class="col-sm-12">
-
-
-
       <?=$this->buildView('composed/view_product', compact('product'));?>
-
-
-
-
-
+    </div>
 </div>
-<!--/ How to-->
-
-
-</div>
-</section>
 
 </div>
 </div>

@@ -1483,11 +1483,9 @@ public static function where_to_place_new_user_within_team_introduced_by($team_l
             $total_volume = $users->join('sales', function($join){
                                 $join->on('users.id', '=', 'sales.user_id');
 
-
                             })->sum("sales.$sum_column");
-
         }
-         return $total_volume;
+        return $total_volume;
     }
 
 

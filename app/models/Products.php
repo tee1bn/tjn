@@ -200,8 +200,6 @@ class Products extends Eloquent
 
 		$last_updated = date("M j, Y h:iA" , strtotime($this->updated_at));
 		$quickview = "
-		
-
 		 $view
 		<ul>
 

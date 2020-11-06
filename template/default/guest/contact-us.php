@@ -2,12 +2,13 @@
 $page_title = 'Contact us now for any enquiries about our services';
 $page_description = "";
 
+$site_setting = SiteSettings::find_criteria('site_settings')->settingsArray;
 include 'includes/header.php';?>
 
 
 
     <!-- BEGIN: Content-->
-    <div class="app-content content">
+    <div class="app-content container center-layout mt-2">
       <div class="content-wrapper">
         <div class="content-header row">
         </div>
@@ -24,21 +25,18 @@ include 'includes/header.php';?>
               </ol>
             </div>
           </div>
-
  -->
+
         <div class="row">
-
-         <?php include 'includes/sidebar.php';?>
-
-          <div class="col-md-9">             
+          <div class="col-md-12">             
             <div class="row">
               <div class="card col-md-6" style="">
                 <div class="card-content">
-                  <!-- <div class="card-body">
+                  <div class="card-body">
                     <h4 class="card-title">Contact us</h4>
                     <h6 class="card-subtitle text-muted">Support card subtitle</h6>
                   </div>
- -->
+
                  
                   <div class="card-body">
                         <div class="col-sm-12">
@@ -63,19 +61,6 @@ include 'includes/header.php';?>
                           </div>
                         </div>
                      
-                        <div class="col-sm-12">
-                          <div class="card bg-">
-                            <div class="card-content">
-                              <div class="card-body">
-                                <h4 class="card-title">Address</h4>
-                                <p class="card-text"><?=$site_setting['contact_address'];?></p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                     
-
-
                     <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> -->
                   </div>
                 </div>

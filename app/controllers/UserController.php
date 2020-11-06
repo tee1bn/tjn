@@ -56,6 +56,13 @@ class UserController extends controller
     }
 
 
+    public function affiliate_products()
+    {
+        $this->shop();
+        return;
+    }
+
+
     public function direct_ranks()
     {
         $direct_ranks = $this->auth()->referred_members_downlines(1)[1];
@@ -366,10 +373,8 @@ class UserController extends controller
 
     public function shop()
     {
-
-        $products = Products::all();
-
-        $this->view('auth/shop', compact('products'));
+        
+        $this->view('auth/shop');
     }
 
 

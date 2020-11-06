@@ -15,11 +15,7 @@ $icon = "$asset/images/logo/icons";
           data-placement="right" data-original-title="UI"></i>
       </li>
 
-      <li>
-        <a class="menu-item" href="<?=domain;?>/user/dashboard">
-          <i class="fa fa-dashboard"></i>
-          Dashboard</a>
-      </li>
+      <li><a class="menu-item" href="<?=domain;?>/user/dashboard"><i class="fa fa-dashboard"></i>Dashboard</a></li>
 
 
 
@@ -40,10 +36,7 @@ $icon = "$asset/images/logo/icons";
 
         <a href="#"><i class="fa fa-list"></i><span class="menu-title" data-i18n="">Affiliate</span></a>
         <ul class="menu-content">
-
           <li><a class="menu-item" href="<?=domain;?>/user/affiliate-products">Products</a></li>
-          <li><a class="menu-item" href="<?=domain;?>/user/affiliate-comissions">Commissions</a></li>          
-          </li>
         </ul>
       </li>
 
@@ -67,6 +60,9 @@ $icon = "$asset/images/logo/icons";
       </li> -->
 
 
+      <li><a class="menu-item" href="<?=domain;?>/user/products-orders"><i class="fa fa-list"></i>My Orders</a></li>
+
+<!-- 
       <li class=" nav-item"><a href="#">
           <i class="fa fa-list"></i><span class="menu-title" data-i18n="">Purchases</span></a>
         <ul class="menu-content">
@@ -75,7 +71,7 @@ $icon = "$asset/images/logo/icons";
           </li>
         </ul>
       </li>
-
+ -->
 
 
 

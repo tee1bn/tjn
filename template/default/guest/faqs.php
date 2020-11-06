@@ -7,7 +7,7 @@ include 'includes/header.php';?>
 
 
     <!-- BEGIN: Content-->
-    <div class="app-content content">
+    <div class="app-content container center-layout mt-2">
       <div class="content-wrapper">
         <div class="content-header row">
         </div>
@@ -28,9 +28,7 @@ include 'includes/header.php';?>
  -->
         <div class="row">
 
-          <?php include 'includes/sidebar.php';?>
-
-          <div class="col-md-9">
+          <div class="col-md-12">
             <div class="card">
                     <div class="card-content">
                       <div class="card-body">

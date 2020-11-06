@@ -79,7 +79,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 
 
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="card">
             <div class="card-content">
               <div class="card-body">
@@ -97,7 +97,27 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
           </div>
         </div>
 
-        <div class="col-md-4">
+
+        <div class="col-md-3">
+             <div class="card">
+               <div class="card-content">
+                 <div class="card-body">
+                   <div class="media">
+                     <div class="media-body text-left w-100">
+                       <h3 class="secondary"><?=$currency;?> <?=MIS::money_format($balances['commission_balance']);?></h3>
+                       <span>SALES</span>
+                     </div>
+                     <div class="media-right media-middle">
+                       <i class="icon-graph secondary font-large-2 float-right"></i>
+                     </div>                        
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+
+
+        <div class="col-md-3">
           <div class="card">
             <div class="card-content">
               <div class="card-body">
@@ -116,7 +136,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
         </div>
 
 
-        <div class="col-md-4">
+        <div class="col-md-3">
           <div class="card">
             <div class="card-content">
               <div class="card-body">
@@ -143,7 +163,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
         </div>
 
 
-        <div class="row match-height">   
+        <div class="row match-height" style="display: none;">   
 
             <div class="col-md-12">
 
@@ -283,7 +303,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 
 
-        <div class="col-md-6">
+        <div class="col-md-12">
 
           <div class="col-md-12">
             <h4>FINANCIAL STATS</h4>
@@ -303,23 +323,8 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
               </div>
             </div>
           </div>
-       <!--    <div class="col-md-12">
-            <div class="card">
-              <div class="card-content">
-                <div class="media align-items-stretch">
-                  <div class="p-2 media-middle">
-                    <h1 class="secondary"><?=$currency;?><?=MIS::money_format($balances['rank_bonus'] ?? 0);?></h1>
-                  </div>
-                  <div class="media-body p-2">
-                    <h4>Career/Rank Bonus</h4>
-                  </div>
-                  <div class="media-right p-2 media-middle">
-                    <i class="ft-award font-large-2"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
+
+
 
           <div class="col-md-12">
             <div class="card">
@@ -343,7 +348,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6"  style="display: none;">
           <h4>CAREER INFORMATION
             <small class="float-right">
               
@@ -362,17 +367,10 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
           <div class="match-height">
             <div class="card" style="padding: 2px;">
               <div class="card-content">
-              <!--   <div class="card-body">
-                    <h4 class="card-title">enrolment Information</h4>
-                </div>
-              -->
               <div class="row">
               
                 <div class="col-6">
                   <ul class="list-group list-group-flush">
-                   <!--  <li class="list-group-item use-bg">
-                      <span class="badge  badge-dark float-right" title="Weekly Personal Volume "><?=MIS::money_format($life_personal_volume);?></span>Personal Volume (PV)
-                    </li> -->
                     <li class="list-group-item use-bg">
                       <span class="badge  badge-dark float-right" title="Life Personal Volume ">
                         <?=$currency;?><?=MIS::money_format($life_personal_volume);?></span>Life Personal Volume (LPV)
@@ -395,9 +393,6 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
                </div>
                <div class="col-6">
                 <ul class="list-group list-group-flush">
-                 <!--  <li class="list-group-item use-bg">
-                      <span class="badge  badge-dark float-right" title="Weekly Group Volume "><?=MIS::money_format($life_group_volume);?></span>Group Volume (GV)
-                  </li> -->
                   <li class="list-group-item use-bg">
                     <span class="badge  badge-dark float-right" title="Life Group Volume ">
                       <?=$currency;?><?=MIS::money_format($life_group_volume);?></span>Life Group Volume (LGV)
@@ -414,10 +409,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 
 
-
-
-                </ul>
-                  <ul class="list-group list-group-flush">
+                 <ul class="list-group list-group-flush">
                    <li class="list-group-item use-bg">
                    Team Member Qualifiers<br>
                     <?=$team_qualifiers['qualifiers_text'];?>

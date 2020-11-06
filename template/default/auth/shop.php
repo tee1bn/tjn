@@ -1,5 +1,5 @@
 <?php
-$page_title = "Courses";
+$page_title = "Products";
 include 'includes/header.php';?>
 
 
@@ -9,8 +9,7 @@ include 'includes/header.php';?>
     <div class="content-header row">
       <div class="content-header-left col-md-6 col-12 mb-2">
         <?php include 'includes/breadcrumb.php';?>
-
-        <h3 class="content-header-title mb-0">Courses</h3>
+        <h3 class="content-header-title mb-0">Products</h3>
       </div>
 
          <!--  <div class="content-header-right col-md-6 col-12">
@@ -25,33 +24,11 @@ include 'includes/header.php';?>
         <div class="content-body">
 
 
-        <?php include "$template/composed/shop/shop.php";?>
+        <?php 
+
+          echo $this->buildView("composed/shop/shop", compact(''));?>
 
 
-<!-- 
-          <section id="video-gallery" class="card">
-            <div class="card-header">
-              <h4 class="card-title">Shop</h4>
-              <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
-              <div class="heading-elements">
-                <ul class="list-inline mb-0">
-                  <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                  <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                </ul>
-              </div>
-            </div>
-            <div class="card-content">
-              <div class="card-body">
-
-
-
-
-
-
-              </div>
-            </div>
-          </section>
- -->
         </div>
       </div>
     </div>

@@ -352,8 +352,10 @@ class home extends controller
                 $this->view('guest/faqs');
                 break;
 
-            case 'contact':
-                $this->view('guest/contact');
+            case 'contact-us':
+                
+
+                $this->view('guest/contact-us');
                 break;
 
             case 'terms':
