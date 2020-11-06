@@ -25,8 +25,8 @@ include 'includes/header.php';?>
 
 
         <?php 
-
-          echo $this->buildView("composed/shop/shop", compact(''));?>
+          $show_affiliate_link = true;
+          echo $this->buildView("composed/shop/shop", compact('show_affiliate_link'));?>
 
 
         </div>

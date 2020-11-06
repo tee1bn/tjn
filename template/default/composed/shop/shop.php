@@ -41,6 +41,9 @@
                         <!-- <span class="ft-heart"></span> -->
                         <a><span ng-click="$shop.$cart.add_item($item)" class="ft-shopping-cart fa-2x"></span></a>
                         <a><span ng-click="$shop.quickview($item)" class="ft-eye fa-2x"></span></a>
+                        <?php if (isset($show_affiliate_link) && ($show_affiliate_link)) :?>
+                          <a><span onclick="copy_text();" class="ft-link fa-2x"></span></a>
+                        <?php endif ;?>
                       </span>
                       <span class="pull-right">      
                         <del class="cent" ng-show="$item.market_details.old_price != undefined">
