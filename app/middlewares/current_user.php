@@ -39,16 +39,7 @@ class current_user extends controller
 
 	}
 	
-	public function connect_wp_account()
-	{
 
-		if ($this->auth()->wp_user_id == null) {
-
-			Redirect::to('connect/wp');
-		}
-
-		return $this;
-	}
 	
 	
 

@@ -32,7 +32,9 @@
 			location.href = $base_url+"/shop/cart";
 		}
 
-		
+		this.copy = function($text){
+			copy_text($text);
+		}
 		
 		this.add_item = function($item){
 			$checkout_url = $base_url+"/shop/cart";
@@ -131,6 +133,10 @@
 			            contentType: false,
 			            processData: false,
 			            data: $form,
+			            async: true,
+                        headers: {
+                          "cache-control": "no-cache"
+                        },
 			            success: function(data) {
 							$("#page_preloader").css('display', 'none');
 			              // console.log(data);

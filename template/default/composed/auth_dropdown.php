@@ -70,6 +70,7 @@
       
     </span></a>
         <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" href="<?=domain;?>/user/dashboard"><i class="fa fa-dashboard"></i> Dashboard </a>
           <a class="dropdown-item" href="<?=domain;?>/user/profile"><i class="ft-user"></i> Profile </a>
           <a class="dropdown-item" href="<?=domain;?>/user/password"><i class="ft-lock"></i> Password</a>
           <div class="dropdown-divider"></div>
@@ -81,7 +82,7 @@
       </li>
     <?php else:?>
 
-   <!--  <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+    <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
     <span class=" ft ft-lock" style="position: relative;top: 5px;font-size: 20px;"></span></a>
 
       <div class="dropdown-menu dropdown-menu-right">
@@ -89,5 +90,5 @@
         <div class="dropdown-divider"></div>
         <a class="dropdown-item" href="<?=domain;?>/login"><i class=""></i> Sign In</a>
       </div>
-    </li> -->
+    </li>
  <?php endif;?>

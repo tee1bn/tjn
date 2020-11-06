@@ -48,9 +48,12 @@ class Products extends Eloquent
 	}
 
 
-	public  function getPromotionLink($user_id)
+	public  function getPromotionLinkFor($user_id=null)
 	{ 
-		// 49-12-productname
+		if ($user_id == null) {
+			return null;
+		}
+
 		$domain = Config::domain();
 		return "$domain/s/s/{$this->id}-$user_id-$this->SlugName";
 	}
@@ -241,6 +244,10 @@ class Products extends Eloquent
 		$product = $this;
 		$domain = Config::domain();
 		$thumbnail = "$this->mainimage";
+		$controller = new \home;
+		$auth = $controller->auth();
+
+
 		$market_details = [
 			'id' => $this->id,
 			'user_id' => $this->user_id, //seller
@@ -257,6 +264,7 @@ class Products extends Eloquent
 			'quickview' =>  $this->quickview(),
 			'single_link' =>  $this->ViewLink,
 			'thumbnail' =>  $thumbnail,
+			'promotional_link' =>  $this->getPromotionLinkFor($auth->id ?? null),
             'unique_name' =>  'product',  // this name is used to identify this item in cart and at delivery
         ];
 
@@ -751,7 +759,7 @@ class Products extends Eloquent
 
 		public function url_link()
 		{
-			return Config::domain()."/shop/product_detail/{$this->id}/{$this->url_title()}";
+			return Config::domain()."/shop/full_view/{$this->id}/{$this->url_title()}";
 		}
 
 

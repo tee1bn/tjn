@@ -25,7 +25,7 @@ include 'includes/header.php';?>
 
 
         <?php 
-          $show_affiliate_link = true;
+          $show_affiliate_link = $auth->is('affiliate');
           echo $this->buildView("composed/shop/shop", compact('show_affiliate_link'));?>
 
 

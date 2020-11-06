@@ -115,6 +115,11 @@ class User extends Eloquent
     ];  
 
 
+    public static $subscription_type = [
+        'vendor' => 1,   //mapping to id
+        'affiliate' => 2, 
+    ]; 
+
     public function wp_user()
     {
         return $this->belongsTo('wp\Models\User', 'wp_user_id');
@@ -673,15 +678,20 @@ class User extends Eloquent
     }
 
 
-    public function getSubscriptionsAttribute()
+    public function is($type='affiliate')
     {
-        $result = [
-            'vendor' => 1,   //mapping to id
-            'affiliate' => 2, 
-        ]; 
+        $outcome = $this->ActiveSubscriptions;
+        $index = self::$subscription_type[$type];
+
+        return $outcome[$index] != null;
+
+    }
+
+    public function getActiveSubscriptionsAttribute()
+    {
 
         $outcome = [];
-        foreach ($result as $key => $plan_id) {
+        foreach (self::$subscription_type as $key => $plan_id) {
             $subscription =  SubscriptionOrder::where('user_id', $this->id)->Paid()->NotExpired()->where('plan_id', $plan_id )
             ->latest('paid_at')->first();
 

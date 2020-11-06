@@ -38,12 +38,10 @@ class UserController extends controller
 
 
         if (!$this->admin()) {
-            $this->middleware('current_user')
-                ->mustbe_loggedin()
-                ->must_have_verified_email()
-                ->connect_wp_account()
-                ;
-            // ->must_have_verified_company();
+            $this->middleware =   $this->middleware('current_user')
+                                        ->mustbe_loggedin()
+                                        ->must_have_verified_email()
+                                        ;
         }
 
     }

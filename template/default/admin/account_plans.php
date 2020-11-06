@@ -25,18 +25,14 @@ use v2\Models\InvestmentPackage;
       </div> -->
     </div>
     <div class="content-body">
-
       <?php $i=1; foreach (SubscriptionPlan::orderBy('hierarchy')->get() as $key => $plan) :?>
-
-
-
       <div class="row" >
         <div class="col-12">
           <div class="card">
             <div class="card-header"  data-toggle="collapse" data-target="#plan<?=$plan->id;?>">
               <a href="javascript:void;" class="card-title">
                 <span class="badge badge-secondary">
-                  <?=$plan->hierarchy;?>
+                  <?=$plan->id;?>
                 </span>
                 <?=$plan->name;?></a>
                 <div class="heading-elements">

@@ -154,18 +154,6 @@
 
 
 
-           <li class="dropdown nav-item" data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#" data-toggle="dropdown">
-             <i class="ft-users"></i><span>Vendors</span></a>
-
-             <ul class="dropdown-menu">
-               <li class="" data-menu=""><a class="dropdown-item" href="<?=domain;?>/fx-signals" data-toggle="dropdown">Forex Signals</a></li>
-               <li class="" data-menu=""><a class="dropdown-item" href="<?=domain;?>/event-calendar" data-toggle="dropdown">Event Calendar</a></li>
-               
-             </ul>
-
-           </li>
-
-
           <li class=" nav-item" data-menu="">
             <a class="-toggle nav-link" href="<?=domain;?>/" data-toggle="">
               <i class="ft-bookmark"></i>

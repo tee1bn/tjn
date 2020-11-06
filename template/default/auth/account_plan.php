@@ -96,7 +96,7 @@ include 'includes/header.php';
               <pre>
               </pre>
               <br>
-              <?php if ($auth->subscriptions[$subscription->id] == null):?>
+              <?php if ($auth->ActiveSubscriptions[$subscription->id] == null):?>
                <form 
                id="upgrade_form<?=$subscription->id;?>"
                method="post"
@@ -126,10 +126,11 @@ include 'includes/header.php';
             </form>
           <?php endif ;?>
 
-          <?php if ($auth->subscriptions[$subscription->id] != null):?>
+
+
+          <?php  if ($auth->ActiveSubscriptions[$subscription->id] != null):?>
             <div class="form-group">
-              <small><?=$auth->subscriptions[$subscription->id]->NotificationText;?>
-              </small>
+              <small><?=$auth->subscriptions[$subscription->id]->NotificationText;?></small>
             </div>
           <?php endif ;?>
 
