@@ -116,8 +116,8 @@ class User extends Eloquent
 
 
     public static $subscription_type = [
-        'vendor' => 1,   //mapping to id
-        'affiliate' => 2, 
+        'vendor' => 2,   //mapping to id
+        'affiliate' => 1, 
     ]; 
 
     public function wp_user()
@@ -675,6 +675,20 @@ class User extends Eloquent
         }
 
         return $display;
+    }
+
+
+    public function hasNoSubscription()
+    {
+
+        foreach (self::$subscription_type as $type => $id) {
+            $array[] = (int) $this->is($type);
+        }
+
+        if (array_sum($array)==0) {
+            return true;
+        }
+
     }
 
 

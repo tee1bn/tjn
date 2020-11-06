@@ -16,7 +16,7 @@
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap-extended.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css"> -->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/components.min.css">
     <!-- END: Theme CSS-->
 
@@ -35,12 +35,12 @@
 
 
     <!-- BEGIN: Vendor CSS-->
-<!--     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/extensions/unslider.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/meteocons/style.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/morris.css">
- -->    <!-- END: Vendor CSS-->
+    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/extensions/unslider.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/meteocons/style.min.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/morris.css"> -->
+    <!-- END: Vendor CSS-->
 
     <script src="<?=asset;?>/js/jquery1.12.min.js"></script>
 

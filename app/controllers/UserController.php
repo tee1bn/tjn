@@ -37,10 +37,11 @@ class UserController extends controller
     {
 
 
-        if (!$this->admin()) {
+        if (!$this->admin() || true) {
             $this->middleware =   $this->middleware('current_user')
                                         ->mustbe_loggedin()
                                         ->must_have_verified_email()
+                                        ->check_subscription()
                                         ;
         }
 

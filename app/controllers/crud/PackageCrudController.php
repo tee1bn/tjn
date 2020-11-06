@@ -4,6 +4,9 @@ use Illuminate\Database\Capsule\Manager as DB;
 use v2\Models\HotWallet;
 use v2\Models\InvestmentPackage;
 
+use v2\Shop\Shop;
+
+
 require_once "app/controllers/home.php";
 
 
@@ -23,6 +26,12 @@ class PackageCrudController extends controller
 
     }
 
+    public function now()
+    {
+        $shop = new Shop;
+        $this->view('auth/account_plan', compact('shop'));
+        
+    }
 
     public function resume_package($package_id)
     {

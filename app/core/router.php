@@ -47,6 +47,7 @@ $router =[
 	'cms_crud' => 'crud/CmsCrud',
 	'user_doc_crud' => 'crud/UserDocCrudController',
 	'package_crud' => 'crud/PackageCrudController',
+	'subscribe' => 'crud/PackageCrudController',
 	'paypal' => 'payments/PayPalController', 
 
 	'product' => 'ProductsController', 

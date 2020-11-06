@@ -40,6 +40,49 @@ class current_user extends controller
 	}
 	
 
+	public function check_subscription()
+	{
+		$url = explode("/", $_GET['url']);
+		$function = $url[1];
+
+		$affiliate_access = [
+			'affiliate-products'
+		];
+
+		$vendor_access = [
+			'products',
+			'sales'
+		];
+
+		$access ="";
+		if (in_array($function, $affiliate_access)) {
+			$access = 'affiliate';
+
+		}elseif (in_array($function, $vendor_access)) {
+			$access = 'vendor';
+
+		}else{
+			$access = 'all';
+		}
+
+		$auth = $this->auth();
+
+		$subscription  = $auth->ActiveSubscriptions;
+
+
+		if (($access !='all') && (!$auth->is($access))) {
+			Session::putFlash("danger","Please subscribe to the $access package to get its access ");
+			Redirect::to('subscribe/now');
+		}
+
+		if ($auth->hasNoSubscription()) {
+			Session::putFlash("danger","Please subscribe to one of the package to get access ");
+			Redirect::to('subscribe/now');
+
+		}
+
+		return $this;
+	}
 	
 	
 
