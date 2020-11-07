@@ -33,6 +33,7 @@
           <ul class="menu-content">
             <!-- <li><a class="menu-item" href="<?=domain;?>/admin/deposits"></i>Deposits</a></li> -->
              <li><a class="menu-item" href="<?=domain;?>/admin/products-orders">Orders</a></li>
+             <li><a class="menu-item" href="<?=domain;?>/admin/membership_orders"></i>Membership Orders</a></li>
             <li><a class="menu-item" href="<?=domain;?>/admin/withdrawals"></i>Withdrawals</a></li>
             <li><a class="menu-item" href="<?=domain;?>/admin/points"></i>Testimonial Points</a></li>
           </ul>
@@ -49,15 +50,6 @@
           </ul>
         </li>  -->
 
-<!-- 
-        <li class=" nav-item"><a href="#"><i class="ft-clock"></i><span class="menu-title" data-i18n="">History</span></a>
-          <ul class="menu-content">
-            <li><a class="menu-item" href="<?=domain;?>/admin/invoices"></i>Invoices</a></li>
-            <li><a class="menu-item" href="<?=domain;?>/admin/membership_orders"></i>Membership Orders</a></li>
-          </ul>
-        </li> 
-
- -->
 
 <!-- 
         <li class=" nav-item"><a href="#"><i class="ft-folder"></i><span class="menu-title" data-i18n=""> Resources & Downloads</span></a>

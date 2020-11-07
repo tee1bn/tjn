@@ -1506,8 +1506,6 @@ EOL;
   
     public function membership_orders()
     {
-
-
         $sieve = $_REQUEST;
         // $sieve = array_merge($sieve, $extra_sieve);
 

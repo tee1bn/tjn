@@ -43,75 +43,86 @@ include 'includes/header.php';?>
               <div class="card-body">
 
 
-                <table id="myTable" class="table table-striped">
-                     <?php $i=1; foreach ($orders as $order):?>
+
+                  <table id="" class="table table-striped">
+                    <thead>
                       <tr>
+                        <th style="width: 20px;">#Ref</th>
+                        <th>Items </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     <?php foreach ($orders as $order):?>
+                      <tr>
+                        <td><?=$order->TransactionID;?>
+                        <span class="badge badge-sm badge-primary"><?=date("M j, Y h:iA" , strtotime($order->created_at));?></span><br>
+                        <?=$order->payment;?>
+                        </td>
+                        <td>
+                          <?php foreach ($order->order_detail() as $item):?>
+                                <div class="alert alert-secondary" style="margin: 0px;padding: 2px;">
+                                  <b><a href="javascript:void;"><?=($item['market_details']['name']);?></a></b><br>
+                                    <?=$item['qty'];?> x  <?=$this->money_format($item['market_details']['price']);?> = 
+                                    <?=$this->money_format($item['market_details']['price'] * $item['qty'] );?>
+                                </div>
+                            
+                          <?php endforeach ;?>
+                          <b>Total</b>: <?=$currency;?> <?=$this->money_format($order->total_price());?>
+                          <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                             Action <span class="caret"></span></button>
+                              <form id="payment_proof_form<?=$order->id;?>" action="<?=domain;?>/user/upload_payment_proof/<?=$order->id;?>" method="post" enctype="multipart/form-data">
+                                <input 
+                                style="display: none" 
+                                type="file" 
+                                onchange="document.getElementById('payment_proof_form<?=$order->id;?>').submit();" id="payment_proof_input<?=$order->id;?>"  
+                                name="payment_proof">
 
-                        <div class="alert bg-dark text-white  alert-dismissible mb-2 " role="alert">
-                        <span style="margin-right: 7px;">
-                             <?=$i++;?>)
-                        </span>
+                                <input type="hidden" name="order_id" value="<?=$order->id;?>">
+                              </form>
 
-                                <strong> Items x Qty: <?=$order->total_item();?> x <?=$order->total_qty();?></strong>
-                                 <br>
-                                <small>Price: </small><?=$currency;?><?=$this->money_format($order['amount_payable']);?><br>
-                                <span class="float-"><?=date("M j Y h:ia" , strtotime($order->created_at));?> <?=$order->paymentstatus;?></span>
-                            <div style="position: absolute;top: 10px;right: 25px;">
-                            <?=$order->TransactionID;?>
-                            <div class="dropdown">
-                              <button type="button" class="btn btn-secondary  btn-sm dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                              </button>
-                              <div class="dropdown-menu">
-                                <form id="payment_proof_form<?=$order->id;?>" action="<?=domain;?>/user/upload_payment_proof/<?=$order->id;?>/product" method="post" enctype="multipart/form-data">
-                                    <input 
-                                    style="display: none" 
-                                    type="file" 
-                                    onchange="document.getElementById('payment_proof_form<?=$order->id;?>').submit();" id="payment_proof_input<?=$order->id;?>"  
-                                    name="payment_proof">
+                              <ul class="dropdown-menu">
 
-                                    <input type="hidden" name="order_id" value="<?=$order->id;?>">
-                                </form>
+                              <?php if(! $order->is_paid()) :?>
+                              
 
-                                    <a href="<?=domain;?>/user/product_order/<?=$order->id;?>" class="dropdown-item" >
-                                        Open
-                                    </a>
+                                <li>
+                                 <a href="javascript:void;" class="dropdown-item"  onclick="document.getElementById('payment_proof_input<?= $order->id;?>').click()" >
+                                    Upload Proof
+                                </a></li>
 
-                                <?php if(! $order->is_paid()) :?>
-                                
+                                <li>
+                                 <a href="<?=domain;?>/user/pay_now/<?=$order->id;?>" class="dropdown-item" >
+                                    Pay Now
+                                </a></li>
+                              
+                              <?php else:?>
+                           
+                              <?php endif;?>                                             
 
 
-                                   <a href="javascript:void;" class="dropdown-item"  onclick="document.getElementById('payment_proof_input<?= $order->id;?>').click()" >
-                                      Upload Proof
-                                  </a>
-
-                                
-                                <?php else:?>
-                                <!-- 
-                                    <a href="<?=domain;?>/user/download_request/<?=$order->id;?>" class="dropdown-item" >
-                                        Download
-                                    </a> -->
 
 
-                                <?php endif;?>                                             
-                                <?php if ($order->payment_proof != null) : ?>
-                                    <a class="dropdown-item" target="_blank"
-                                    href="<?= domain; ?>/<?= $order->payment_proof; ?>">See Proof</a>
-                                <?php endif; ?>
+                                <?php if($order->payment_proof !=null) :?>
+                                  <li><a class="dropdown-item" target="_blank" href="<?=domain;?>/<?=$order->payment_proof;?>">See Proof</a>
+                                  </li>
+                                <?php endif ;?>
+                             
+                                <li>          
+                                <a href="<?=domain;?>/user/bank-transfer/<?=$order->id;?>/advert_papers" class="dropdown-item" >
+                                  Invoice
+                                </a>
+                              </li>
+                              <!-- <li><a href="#">JavaScript</a></li> -->
 
-
-                                
-                              </div>
-                            </div>
+                            </ul>
                           </div>
-                            </div>
                         </td>
                       </tr>
                     <?php endforeach ;?>
-                    
-                    </tbody>
-                  </table>
 
+                  </tbody>
+                </table>
 
 
               </div>
