@@ -588,7 +588,7 @@ class AdminController extends controller
 
 
 
-    private function course_orders_matters($extra_sieve=[])
+    private function orders_matters($extra_sieve=[])
     {
         $sieve = $_REQUEST;
         $sieve = array_merge($sieve, $extra_sieve);
@@ -622,7 +622,7 @@ class AdminController extends controller
     {
 
         $sieve = [];
-        $compact =  $this->course_orders_matters($sieve);
+        $compact =  $this->orders_matters($sieve);
         extract($compact);
         $page_title = 'Product Orders';
 

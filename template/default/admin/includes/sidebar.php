@@ -32,7 +32,6 @@
         <li class=" nav-item"><a href="#"><i class="fa fa-list"></i><span class="menu-title" data-i18n=""> Transactions</span></a>
           <ul class="menu-content">
             <!-- <li><a class="menu-item" href="<?=domain;?>/admin/deposits"></i>Deposits</a></li> -->
-            <li><a class="menu-item" href="<?=domain;?>/admin/sales"></i>Sales</a></li>
              <li><a class="menu-item" href="<?=domain;?>/admin/products-orders">Orders</a></li>
             <li><a class="menu-item" href="<?=domain;?>/admin/withdrawals"></i>Withdrawals</a></li>
             <li><a class="menu-item" href="<?=domain;?>/admin/points"></i>Testimonial Points</a></li>

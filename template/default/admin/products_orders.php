@@ -44,78 +44,68 @@ $page_title = "$page_title";
             </div>
              <div class="card-content">
               <div class="card-body table-responsive">
-                <table class="table table-bordered table-striped">
-                  <thead>
-                    <tr>
-                      <th>#Ref</th>
-                      <th>User</th>
-                      <th>Items x Qty</th>
-                      <th>Product</th>
-                      <th>Amount/Payable</th>
-                      <th>Date/Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>                    
-
-                   <?php  $i=1; foreach ($orders as $order) :?>
-                    <tr>
-                      <td><?=$i;?> - <?=$order->TransactionID;?></td>
-                      <td><?=$order->user->DropSelfLink;?></td>
-                      <td><?=$order->total_item();?> x <?=$order->total_qty();?></td>
-                      <td>
-                       <?=$order->order_detail()[0]['market_details']['name'];?>
-                      </td>
-                      <td>
-                          <?=$currency;?><?=MIS::money_format($order->amount_payable);?><br>
-                      </td>
-                      <td><span class="badge badge-secondary"><?=date('M j, Y H:i:A', strtotime($order->created_at));?></span>
-                        <br/><?=$order->DisplayStatus;?><?=$order->PaidStatus;?> </td>
-                      <td>
-
-                          <?php if(! $order->is_paid()) :?>
-                          <!--   <form id="fo<?=$order->id;?>" class="ajax_form"
-                             action="<?=$order->reverifyLink;?>" method="post">
-                             <button type="submit" class="dropdown-item" class="">
-                              Query
-                            </button>
-                          </form> -->
-                        <?php endif ;?>
 
 
-                        <div class="dropdown">
-                          <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">
-                          </button>
-                          <div class="dropdown-menu">
-
-                            <a  href="javascript:void(0);" onclick="$confirm_dialog = new ConfirmationDialog('<?=domain;?>/admin-products/mark_as_complete/<?=$order->id;?>')" 
-                               class="dropdown-item"> 
-                                 Mark as Paid 
-                              <i class="fa fa-check"></i>
-                            </a>
-
-
-                            <a class="dropdown-item" href="<?=domain;?>/admin/order/<?=$order->id;?>">  
-                                 Open 
-                            </a>
-
-                            <?php if ($order->payment_proof != null) : ?>
-                                <a class="dropdown-item" target="_blank"
-                                href="<?= domain; ?>/<?= $order->payment_proof; ?>">See Proof</a>
-                            <?php endif; ?>
-
-
+                  <table id="myTabl" class="table table-striped table-hover">
+                    <thead>
+                      <tr>
+                        <th style="width: 20px;">#Ref</th>
+                        <th>Items </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     <?php foreach ($orders as $order):?>
+                      <tr>
+                        <td><?=$order->TransactionID;?>
+                        <span class="badge badge-sm badge-primary"><?=date("M j, Y h:iA" , strtotime($order->created_at));?></span><br>
+                        <?=$order->payment;?><br>
+                        <?=$order->Buyer->DropSelfLink;?>
+                          
+                        </td>
+                        <td>
+                          <?php foreach ($order->order_detail() as $item):?>
+                                <div class="alert alert-secondary" style="margin: 0px;padding: 2px;">
+                                  <b><a href="<?=$item['market_details']['single_link'];?>" target="_blank">
+                                    <?=($item['market_details']['name']);?></a></b><br>
+                                    <?=$item['qty'];?> x  <?=$this->money_format($item['market_details']['price']);?> = 
+                                    <?=$this->money_format($item['market_details']['price'] * $item['qty'] );?>
+                                </div>
                             
-                          </div>
-                        </div>
+                          <?php endforeach ;?>
+                          <b>Total</b>: <?=$currency;?> <?=$this->money_format($order->total_price());?>
 
-                      </td>
-                    </tr>
-                
-                    <?php $i++; endforeach ; ?>
-                       
-                
-                      </tbody>
-                </table>                               
+                          <div class="dropdown" style="display: inline;">
+                            <button type="button" class="btn btn-light btn-sm dropdown-toggle" data-toggle="dropdown">Action
+                            </button>
+                            <div class="dropdown-menu">
+
+                              <a  href="javascript:void(0);" onclick="$confirm_dialog = new ConfirmationDialog('<?=domain;?>/admin-products/mark_as_complete/<?=$order->id;?>')" 
+                                 class="dropdown-item"> 
+                                   Mark as Paid 
+                                <i class="fa fa-check"></i>
+                              </a>
+
+
+                              <a class="dropdown-item" href="<?=domain;?>/admin/order/<?=$order->id;?>">  
+                                   Open 
+                              </a>
+
+                              <?php if ($order->payment_proof != null) : ?>
+                                  <a class="dropdown-item" target="_blank"
+                                  href="<?= domain; ?>/<?= $order->payment_proof; ?>">See Proof</a>
+                              <?php endif; ?>
+
+
+                              
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    <?php endforeach ;?>
+
+                  </tbody>
+                </table>
+
 
                   
               </div>

@@ -16,9 +16,18 @@ include 'includes/auth_header.php';?>
 								<label>Username</label>
                        			 <input type="" required="" 
                        			 	class="form-control " 
-                       			 	value="<?=@Input::old('username');?>" name="username" placeholder="User Name">
+                       			 	value="<?=@Input::old('username');?>" name="username" placeholder="@username">
                         			<span class="text-danger"><?=@$this->inputError('username');?></span>
 							</fieldset>
+
+							<!-- <fieldset class="form-group col-md-12">
+								<label>Username</label>
+                       			 <input type="" required="" 
+                       			 	class="form-control " 
+                       			 	value="<?=@Input::old('username');?>" name="username" placeholder="User Name">
+                        			<span class="text-danger"><?=@$this->inputError('username');?></span>
+							</fieldset> -->
+
 
 						<!-- 	<fieldset class="form-group col-md-12">
 							<select class=" form-control" name="gender" required="" >
@@ -82,7 +91,7 @@ include 'includes/auth_header.php';?>
 								;?>
 									
 
-
+<!-- 
 
 								<fieldset class="form-group col-md-12">
 									<label>Sponsor</label>
@@ -90,7 +99,7 @@ include 'includes/auth_header.php';?>
 	                     		    value="<?=$introduced_by;?>" name="introduced_by" placeholder="Sponsor">
 	                        		<span class="text-danger"><?=@$this->inputError('introduced_by');?></span>
 								</fieldset>
-
+ -->
 
 <!-- 
 								<fieldset class="form-group col-md-12">
