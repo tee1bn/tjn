@@ -64,17 +64,43 @@ $allowed_file_for_cover = ['image/*','video/*'];
                 background-position: center;
               }
 
+              .cover-upload{
+
+                text-align: center;
+                padding: 20px;
+              }
+
               .file-upload{
 
                 text-align: center;
                 padding: 20px;
+              }
+
+              .files-details{
+
+                background: #d7d7d7;
+                padding: 10px;
+              }
+
+              .file-size{
+
+                position: absolute;
+                left: 63px;
+                top: 39px;
+              }
+
+              .textarea{
+
+                min-height: 150px;
+                border: 1px solid #0000002b;
+                position: relative;
+                padding: 5px;
               }
             </style>
             <div class="content-body row">
               <div class="col-md-7">
                 <form action="<?=domain;?>/product/update_item" method="post" enctype="multipart/form-data">
 
-                  <greet-user></greet-user>d
 
                   <w3-test-directive></w3-test-directive>
 
@@ -84,7 +110,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
                   </div>
                   <div class="form-group">
                     <label>Description </label>
-                    <div contenteditable="true" ng-model="i"  name="description"></div>
+                    <div class="textarea" contenteditable="true" ng-model="i" ck-editor  name="description"></div>
                   </div>
 
                   <input type="hidden" name="item_id" value="<?=$product->id;?>">
@@ -94,11 +120,10 @@ $allowed_file_for_cover = ['image/*','video/*'];
                   <div class="form-group">
                     <div class="file-preview-div" style="height: 300px;padding: 2px;">
 
-
-                        <!-- <div class="media-holder" style="height: 100%; width: 100%;">
-                          <img style="width: 100%; height: 100%;" 
-                          src="https://image.shutterstock.com/image-photo/view-lagos-lagoon-victoria-island-260nw-1066980758.jpg" >
-                        </div> -->
+                      <!-- <div class="media-holder" style="height: 100%; width: 100%;">
+                        <img style="width: 100%; height: 100%;" 
+                        src="https://image.shutterstock.com/image-photo/view-lagos-lagoon-victoria-island-260nw-1066980758.jpg" >
+                      </div> -->
 
 
                         <div class="media-holder" style="height: 100%; width: 100%;">
@@ -131,7 +156,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
                             </button>
                             <div class="dropdown-menu">
 
-                             <div class="file-upload" style="width: 30em;">
+                             <div class="cover-upload" style="width: 30em;">
                                  <button type="button" class="btn btn-light">Upload File (Images or videos)</button>
                                  <p><small>Embed from exterenal website instead</small></p>
 
@@ -155,41 +180,71 @@ $allowed_file_for_cover = ['image/*','video/*'];
                   </div>
 
 
+                  <div class="form-group">
+                    <label>Files <small>Image or Video</small> </label>
+                    <div class="list-group">
+                      <div  class="list-group-item ">
+                        <div class="d-flex w-100 justify-content-between">
+                          <h5 class=""><span class="badge badge-light">PDF</span> List group item heading</h5>
+                          <small>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                              <button type="button" class="btn btn-light text-white"><i class="fa fa-check"></i></button>
+                              <button type="button" class="btn btn-light text-white"><i class="fa fa-pencil"></i></button>
+                              <button type="button" class="btn btn-light text-white"><i class="fa fa-trash"></i></button>
+                            </div>
+                          </small>
+                        </div>
+                      <small class="file-size">800kb.</small>
+                      </div>
+                      <div class="files-details">
+                        <div class="form-group">
+                          <label>Name</label>
+                          <input type="" class="form-control" name="">
+                        </div>
+                        <div class="form-group">
+                          <label>Description</label>
+                          <input type="" class="form-control" name="">
+                        </div>
+                      </div>
+                      
+                    </div>
 
+                  </div>
+                    
 
                   <div class="form-group">
                     <label>Cover <small>Image or Video</small> </label>
-                    <div style="" class="centralize">
-                      <input type="file" name="cover[]" accept="<?=implode($allowed_file_for_cover, ",");?>">
-                      <br>
+                    
 
-                     
-                    </div>
-                  </div>
+                    <div class="file-upload" style="width: 30em;">
+                        <button type="button" class="btn btn-light">Upload your Files</button>
+                        <p><small>Redirect to a URL after purchase</small></p>
 
-                  <div class="form-group">
-                    <label>Content </label>
-                    <div style="" class="centralize">
-                      <input type="file" name="content[]" >
-                     <!--  <br>
-                      <small>or Redirect to Url after purchase</small>
-                      <input type="url" class="form-control" placeholder="http://" name="content[]" > -->
+
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+                          </div>
+                        </div>
+                          <p><small>Deliver content through <?=project_name;?></small></p>
                     </div>
-                    <div class="btn-group btn-group-sm">
-                      <a href="<?=$product->DownloadLink;?>" target="_blank" class="btn btn-light text-white">Download File <i class="fa fa-cloud-download"></i></a>
-                    </div>
+
 
                   </div>
-                  
-                  <!-- 
-                  <pre>
-                  <?php print_r($product->DownloadLink);?>
-                  </pre> -->
 
                   <div class="form-group">
                     <label>Price </label>
                     <input class="form-control" type="number" min="5000" name="price" value="<?=$product->price;?>" placeholder="Amount">
                   </div>
+
+
+
+                  <div class="form-group">
+                   <label>Thank you note</label>
+                   <textarea class="form-control" rows="4"></textarea>
+                  </div>
+                  
 
 
                   <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
@@ -198,7 +253,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
                       <a class="btn btn-outline-dark"
                        onclick="$confirm_dialog = new ConfirmationDialog('<?= domain; ?>/shop/submit_for_review/<?= $product->id; ?>')" >Publish</a>
                       <a class="btn btn-outline-dark" href="<?=$product->PreviewLink;?>">Preview</a>
-                      <!-- <a class="btn btn-outline-primary" href="timeline-center.html"><i class="feather icon-pie-chart"></i></a> -->
                   </div>
 
                 </form>

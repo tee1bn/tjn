@@ -37,8 +37,6 @@
 
 
 app.controller('ProductController', function($scope, $http) {
-
-	$scope.ui = "ola";
 	
 	$scope.fetch_payment_gateway_settings = function () {
 		$http.get($base_url+"/settings/fetch_payment_gateway_settings/")
@@ -55,23 +53,48 @@ app.controller('ProductController', function($scope, $http) {
 });
 
 
+
+
+app.directive('ckEditor', function () {
+    return {
+        require: '?ngModel',
+        link: function (scope, elm, attr, ngModel) {
+
+        
+            var ck = CKEDITOR.replace(elm[0],{
+
+                filebrowserBrowseUrl: `${$base_url}/uploads/media`,
+                filebrowserImageBrowseUrl: `${$base_url}/uploads/media?type=Images`,
+                filebrowserUploadUrl: `${$base_url}/media/upload/files`,
+                filebrowserImageUploadUrl: `${$base_url}/media/upload/image`
+            });
+ 
+            if (!ngModel) return;
+ 
+            ck.on('pasteState', function () {
+                scope.$apply(function () {
+                    ngModel.$setViewValue(ck.getData());
+                });
+            });
+ 
+            ngModel.$render = function (value) {
+                ck.setData(ngModel.$viewValue);
+            };
+        }
+
+
+    };
+});
+
+
+
+
 app.directive("w3TestDirective", function() {
 
   return {
     template : "<h1>Made by a directive! {{user}}f {{ui}}</h1>",
   };
 });
-
-
- app.component('greetUser', {
-    template: 'Hello, {{$ctrl.user}}!',
-    controller: function GreetUserController() {
-      this.user = 'world';
-    }
-  });
-
-
-
 
 
 

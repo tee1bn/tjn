@@ -16,13 +16,13 @@
 
     <!-- BEGIN: Vendor CSS-->
 
-    <link rel="stylesheet" type="text/css" href="<?=asset;?>/vendors/css/tables/datatable/datatables.min.css">    
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
+<!--     <link rel="stylesheet" type="text/css" href="<?=asset;?>/vendors/css/tables/datatable/datatables.min.css">    
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/jquery-jvectormap-2.0.3.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/morris.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/extensions/unslider.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css">
-    <!-- END: Vendor CSS-->
+ -->    <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap.min.css">

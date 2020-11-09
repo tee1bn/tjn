@@ -37,6 +37,8 @@ class MediaController extends controller
 			                	$handle->Process($directory);
 			                	$file_path = $directory.'/'.$handle->file_dst_name;
 
+			                	Session::putFlash("success","Please copy: $file_path");
+
 			                }else{
 								Session::putFlash("danger","only .pdf and image format  is  allowed");
 			                	throw new Exception("Only Pdf is allowed ", 1);

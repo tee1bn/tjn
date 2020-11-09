@@ -33,7 +33,7 @@
     <!-- END: Page Vendor JS-->    <!-- datatables -->
 
 
-    <!-- BEGIN: Page Vendor JS-->
+    <!-- BEGIN: Page Vendor JS--><!-- 
     <script src="<?=$asset;?>/vendors/js/extensions/jquery.knob.min.js"></script>
     <script src="<?=$asset;?>/js/scripts/extensions/knob.min.js"></script>
     <script src="<?=$asset;?>/vendors/js/charts/raphael-min.js"></script>
@@ -45,7 +45,7 @@
     <script src="<?=$asset;?>/vendors/js/charts/jquery.sparkline.min.js"></script>
     <script src="<?=$asset;?>/vendors/js/extensions/unslider-min.js"></script>
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-climacon.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/simple-line-icons/style.min.css">
+    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/fonts/simple-line-icons/style.min.css"> -->
     <!-- END: Page Vendor JS-->
 
     <!-- BEGIN: Theme JS-->
