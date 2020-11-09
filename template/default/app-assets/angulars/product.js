@@ -33,7 +33,53 @@ function FilePreviewer($files, $index) {
 
 }
 
+ class Content {
+    file =  {};
+    file_path =  "";
+    name =  "first";
+    detail_pad =  false;
+    description =  "first decription image";
 
+    constructor($object){
+      for(let x in $object){
+        this[x] = $object[x];
+      }
+    }
+
+
+    get extension(){
+      if (typeof this.file.name === 'undefined') {
+        return '';
+      }
+      let name = this.file.name;
+      let ext = name.split('.').pop();
+      return ext;
+    }
+
+
+    toggleDetailPad(){
+      if (this.detail_pad==false) {
+        this.detail_pad=true;
+      }else{
+        this.detail_pad=false;
+      }
+    }
+
+    get filesize() {
+        
+        let $fileSize = this.file.size;
+        let $sizes = ["TB","GB","MB","KB","B"];
+
+
+         let $total = ($sizes).length;
+         while ($total-- && $fileSize > 1024) {
+           $fileSize /= 1024;
+         }
+         
+         return $fileSize.toFixed(2) +" "+ $sizes[$total];
+    }
+
+ }
 
 class Product {
 
@@ -52,21 +98,15 @@ class Product {
     },
   ];
   content = [
-    {
-      'file': {},
-      'file_path': "",
-      'name': "first",
-      'detail_pad': true,
-      'description': "first decription image",
-    },
+    new Content,
 
-    {
+    new Content({
       'file': {},
       'file_path': "",
       'name': "second",
       'detail_pad': true,
       'description': "second decription image",
-    },
+    }),
 
   ];
 
@@ -98,6 +138,29 @@ class ProductForm {
 
   constructor() {
 
+  }
+
+
+  deleteCover($file){
+
+    for (var i = 0; i < this.$product.cover.length; i++) {
+      let $cover = this.$product.cover[i];
+      if ($file == $cover) {
+        this.$product.cover.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  deleteFile($file){
+
+    for (var i = 0; i < this.$product.content.length; i++) {
+      let $content = this.$product.content[i];
+      if ($file == $content) {
+        this.$product.content.splice(i, 1);
+        break;
+      }
+    }
   }
 
   loadEmbedLink() {
@@ -148,14 +211,15 @@ class ProductForm {
 
       let $type = $file.type.split('/')[0];
 
-      let $cover = {
-        'file_path': URL.createObjectURL($file),
-        'type': $type,
-        'src': $src,
-        'file': $file,
-      }
+      let $content = new Content ({
+          'file': $file,
+          'file_path': "",
+          'name': $file.name,
+          'detail_pad': true,
+          'description': "first decription image"
+      });
 
-      this.$product.cover.push($cover);
+      this.$product.content.push($content);
       this.$scope.$apply();
 
     }

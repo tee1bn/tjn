@@ -26,6 +26,13 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
     </div>
     <style type="text/css">
+      .truncate {
+        width: 450px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       textarea {
         resize: vertical;
       }
@@ -164,7 +171,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
                     <div class="loaded-file">
                       <div class="row" style="margin-left: 0px;">
                         <div class="col-md-2 thumbnail-div" ng-repeat="(key, $thumbnail) in $product_form.$product.cover">
-                          <span class="fa fa-times text-danger cancel-thumbnail"></span>
+                          <span ng-click="$product_form.deleteCover($thumbnail)" class="fa fa-times text-danger cancel-thumbnail"></span>
 
                           <div ng-if="$thumbnail.type=='video'"  width="100%" height="100%" class="image-thumbnail" src="{{$thumbnail.file_path}}">
                             <center>Video</center>
@@ -227,35 +234,44 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
 
              <div class="form-group">
-              <label>Files <small>Image or Video</small> </label>
+
+              <div ng-hide="$product_form.file_pad.src=='external'" >
+                
+              <label ng-show="$product_form.$product.content.length"><small>Files</small> </label>
               <div class="list-group">
                 <span ng-repeat="(key, $content) in $product_form.$product.content">
                   
                 <div  class="list-group-item" >
                   <div class="d-flex w-100 justify-content-between">
-                    <h5 class=""><span class="badge badge-light">PDF</span> List group item heading</h5>
+                    <h5 class="truncate"><span class="badge badge-light">{{$content.extension}}</span> {{$content.name}}</h5>
                     <small>
                       <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-light text-white"><i class="fa fa-check"></i></button>
-                        <button type="button" class="btn btn-light text-white"><i class="fa fa-pencil"></i></button>
-                        <button type="button" class="btn btn-light text-white"><i class="fa fa-trash"></i></button>
+                        <button ng-show="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
+                          <i class="fa fa-check"></i>
+                        </button>
+
+                        <button ng-hide="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
+                          <i class="fa fa-pencil"></i>
+                        </button>
+                        <button ng-click="$product_form.deleteFile($content)" type="button" class="btn btn-light text-white"><i class="fa fa-trash"></i></button>
                       </div>
                     </small>
                   </div>
-                  <small class="file-size">800kb.</small>
+                  <small class="file-size">800kb. {{$content.filesize}}</small>
                 </div>
-                <div class="files-details">
+                <div class="files-details" ng-show="$content.detail_pad">
                   <div class="form-group">
                     <label>Name</label>
-                    <input type="" class="form-control" name="">
+                    <input type="" class="form-control" ng-model="$content.name" >
                   </div>
                   <div class="form-group">
                     <label>Description</label>
-                    <input type="" class="form-control" name="">
+                    <input type="" class="form-control" ng-model="$content.file.description" >
                   </div>
                 </div>
                 </span>
 
+              </div>
               </div>
 
             </div>
@@ -267,7 +283,17 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
               <div class="file-upload" style="width: 30em;">
                 <span ng-show="$product_form.file_pad.src=='local'" >
-                <button type="button" class="btn btn-light">Upload your Files</button>
+
+                <button type="button" onclick="$('#file_upload_element').click();"
+                 class="btn btn-outline-dark">Upload Files </button>
+                <input type="file" onchange="angular.element(this).scope().$product_form.processFilePad(this);" 
+                ng-model="$product_form.cover_pad.file"
+                 id="file_upload_element" style="display: none;">
+
+
+
+
+
                  <p>
                   <small ng-click="$product_form.setFilePadSrc('external')">
                     <a href="javascript:void(0);">Redirect to a URL after purchase</a>
@@ -277,9 +303,9 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
                 <span ng-show="$product_form.file_pad.src=='external'" >
                 <div class="input-group">
-                  <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+                  <input type="text" class="form-control" placeholder="http://" aria-describedby="button-addon2">
                   <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"><span>Test</span><i class="fa fa-check"></i></button>
                   </div>
                 </div>                
                  <p>
