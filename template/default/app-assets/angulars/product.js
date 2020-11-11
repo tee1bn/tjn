@@ -262,23 +262,42 @@ class ProductForm {
         }
     }
 
-    embeddable_links = ['youtube', 'youtu.be', 'vimeo'];
+
+    determineLinkType($link){
+        let embeddable_links = ['youtube', 'youtu.be', 'vimeo'];
+        let $type = 'image';
+
+        for (var i = 0; i < embeddable_links.length; i++) {
+           let substr =  embeddable_links[i];
+
+           if ($link.includes(substr)) {
+             $type = 'video';
+             break;
+           }
+        }
+
+        return $type;
+    }
+
 
     loadEmbedLink() {
         let $link = this.cover_pad.embed_link;
 
+        let $type = this.determineLinkType($link);
 
         let $src = this.cover_pad.src;
         let $cover = {
             'file_path': $link,
-            'file_type': 'video',
+            'file_type': $type,
             'src': $src,
             'file': {},
         }
 
-        // this.cover_pad.embed_link = '';
+        this.cover_pad.embed_link = '';
         this.$product.cover.push($cover);
         angular.element($('#content')).scope().$apply();
+
+        this.cover_pad.embed_link='';        
     }
 
 

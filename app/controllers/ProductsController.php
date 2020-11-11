@@ -178,7 +178,7 @@ class ProductsController extends controller
 
                 $cover_path_map[] =  [
                     'file_path' => $map['file_path'],
-                    'file_type' => ''
+                    'file_type' => $map['file_type']
                 ]; 
             }else{
 

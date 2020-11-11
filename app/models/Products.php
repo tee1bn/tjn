@@ -146,8 +146,8 @@ class Products extends Eloquent
 
 		$files['file'] = array_map(function($file){
 					$file['file_path'] = $this->getLink($file['file_path']);
-					$file['file_type'] = 'image';
-					 // explode("/", $file['file_type'])[0];
+					$file['file_type'] = explode("/", $file['file_type'])[0];
+					// 'image';
 					return $file;
 				}, $files['file']);
 
