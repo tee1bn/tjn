@@ -25,7 +25,7 @@ class Products extends Eloquent
 		'versions',
 		'settings',
 		'cover',
-		'extras',
+		'extra_details',
 	];
 	
 	protected $table = 'products';
@@ -93,7 +93,44 @@ class Products extends Eloquent
 			return [];
 		}
 
-		return json_decode($this->downloadable_files, true);
+		$files =  json_decode($this->downloadable_files, true);
+
+		$files['file'] = array_map(function($file){
+					$file['file_path'] = $this->getLink($file['file_path']);
+					$file['name'] = $file['file']['name'] ?? '';
+
+					return $file;
+				}, $files['file']);
+
+
+		return $files;
+	}
+
+	public function getExtraDetailsArrayAttribute()
+	{
+
+		if (($this->extra_details == null) || ($this->extra_details == '[]') ) {
+			$default = [
+				    'thank_you_note'=> "",
+				    'allow_affiliate'=> true,
+				    'summary'=> 'You will get xx',
+				    'additional_details'=> [
+				        [ 'attribute'=> 'Joy', 'value'=> 'confirm' ],
+				    ],
+				    'customer_sets_price'=> false,
+				    'pricing'=> [
+				        'minimum'=> 0,
+				        'suggested'=> 0,
+				    ],
+				    'after_purchase_link'=> '',
+				    'after_purchase_link_validity'=> false,
+				    'delivery_method'=> 'local',
+			];
+
+			return $default;
+		}
+
+		return json_decode($this->extra_details, true);
 
 	}
 
@@ -105,7 +142,16 @@ class Products extends Eloquent
 			return [];
 		}
 
-		return json_decode($this->cover, true);
+		$files =  json_decode($this->cover, true);
+
+		$files['file'] = array_map(function($file){
+					$file['file_path'] = $this->getLink($file['file_path']);
+					$file['file_type'] = 'image';
+					 // explode("/", $file['file_type'])[0];
+					return $file;
+				}, $files['file']);
+
+		return $files;		
 
 	}
 
@@ -133,22 +179,30 @@ class Products extends Eloquent
 		return $response;
 	}
 
-	public function getDownloadLinkAttribute()
-	{ 
+	public function getLink($first_link)
+	{
+	
 		$domain = Config::domain();
-
-		$files = $this->FilesArray;
-
-		$first_link = $files['file'][0]['file_path'];
-
-		if (strpos("$first_link", "http://")) {
+		if ((substr($first_link, 0 , 7) == "http://") || (substr($first_link, 0 , 8) == "https://") ) {
 			$link = $first_link;
+
 		}else{
 
 			$link = "$domain/$first_link";
 		}
 
 		return $link;
+	}
+
+
+	public function getDownloadLinkAttribute()
+	{ 
+
+		$files = $this->FilesArray;
+
+		$first_link = $files['file'][0]['file_path'];
+
+		return $this->getLink($first_link);
 
 		return "$domain/user/download-link/$this->id";
 	}
@@ -422,12 +476,18 @@ class Products extends Eloquent
 
 
 
-    public static function upload_file($files)
+    public static function upload_file($files, $refined=false, $model=null)
     {
     	$directory = 'uploads/products';
 
+    	if ($refined) {
 
-    	$refined_file = MIS::refine_multiple_files($files);
+    		$refined_file = $files;
+
+    	}else{
+
+    		$refined_file = MIS::refine_multiple_files($files);
+    	}
 
     	if ($refined_file[0]['error']==4 ) {
     		return [];
@@ -444,7 +504,9 @@ class Products extends Eloquent
     		$min_height = 350;
     		$min_width  = 263;
 
-    		$handle->file_name_body_add = uniqid();
+    		$handle->file_overwrite = true;
+    		$handle->file_name_body_add =  MIS::dec_enc('encrypt',"$model->user_id-$model->id");
+
     		$handle->Process($directory);
 
     		$file_path = $directory.'/'.$handle->file_dst_name;

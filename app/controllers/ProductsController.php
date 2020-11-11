@@ -102,25 +102,176 @@ class ProductsController extends controller
 
     }
 
+    public function fetch($product_id)
+    {
+        $product = Products::find($product_id);
+
+        $product->cover = $product->CoverArray['file'] ?? [];
+        $product->content = $product->FilesArray['file'] ?? [];
+        $product->extra_details = $product->ExtraDetailsArray ?? [];
+
+        // json_encode($pro)
+        header("Content-Type:application/json");
+        echo json_encode([
+            'product'=> $product
+        ]);
+
+
+    }
+
+    public function update_product($publish=0)
+    {
+        echo "<pre>";
+        print_r($_REQUEST);
+
+        // return;
+
+        // print_r($_FILES);
+
+        $product_form = json_decode($_POST['product_form'], true);
+        $product = $product_form['$product'];
+
+        $db_product = Products::find($product['id']);
+        $domain = Config::domain();
+
+
+        $cover = MIS::refine_multiple_files($_FILES['cover']);
+        $content = MIS::refine_multiple_files($_FILES['content']);
+
+        $cover_array = $product['cover'];
+
+        $cover_path_map = [];
+        foreach ($cover_array as $key => $map) {
+            if (isset($map['delete'])) {
+                //delete this file
+
+
+            }elseif (isset($cover[$key]) && ($map['src'] == 'local') ) {
+                //upload
+                $file = $cover[$key];
+                $upload = Products::upload_file([$file], true, $db_product)['file'][0];
+
+
+                $cover_path_map[] =  [
+                    'file_path' => $upload['file_path'],
+                    'file_type' => $upload['type']
+                ]; 
+
+
+            }elseif (isset($map['file']) && ($map['src'] == 'external') ) {
+
+                $get_content = file_get_contents($map['file_path']);
+                $headers = array_map(function($header){
+                    $explode = explode(":", $header);
+
+                    return [
+                        'key' => $explode[0],
+                        'value' => $explode[1],
+                    ];
+                }, $http_response_header);
+
+                $headers_obj = collect($headers);
+
+                $mime = $headers_obj->keyBy('key')['Content-Type']['value'];
+                $type =  explode("/", $mime)[0];
+
+
+                $cover_path_map[] =  [
+                    'file_path' => $map['file_path'],
+                    'file_type' => ''
+                ]; 
+            }else{
+
+                $path = explode("$domain/", $map['file_path'])[1];
+
+
+                $cover_path_map[] =  [
+                    'file_path' => $path,
+                    'file_type' => $map['file_type']
+                ]; 
+
+            }
+
+        }
+
+        $content_array = $product['content'];
+        print_r($product);
+        print_r($content);
+
+        $content_path_map = [];
+        $after_purchase_link = $product['extra_details']['after_purchase_link'];
+        foreach ($content_array as $key => $map) {
+            if (isset($map['delete'])) {
+                //delete this file
+
+
+            }elseif (isset($content[$key]) ) {
+                if ($after_purchase_link) {
+                    continue;
+                }
+
+                //upload
+                $file = $content[$key];
+                $upload = Products::upload_file([$file], true, $db_product)['file'][0];
+
+
+                $content_path_map[] =  [
+                    'file_path' => $upload['file_path'],
+                    'file_type' => $upload['type'],
+                    'file' => $file,
+                    'name' => $content_array['name'],
+                    'description' => $content_array['description'],
+                ]; 
+
+
+            }else{
+
+                $path = explode("$domain/", $map['file_path'])[1];
+
+                $content_path_map[] =  [
+                    'file_path' => $path,
+                    'file' => $map['file'],
+                    // 'file_type' => $map['file_type'],
+                    'name' => $map['name'],
+                    'description' => $map['description'],
+                ]; 
+
+            }
+
+            echo "here";
+        }
+
+
+        print_r($content_path_map);   
+
+        // return;
+        $db_product->update([
+            'extra_details' => json_encode($product['extra_details']),
+            'cover' => json_encode(['file' => $cover_path_map]),
+            'downloadable_files' => json_encode(['file' => $content_path_map]),
+            'extra_details' => json_encode($product['extra_details']),
+            'name' => $product['name'],
+            'description' => $product['description'],
+            'price' => $product['price'],
+        ]);
+
+
+
+    }
+
 
     public function update_item($publish = 0)
     {
         echo "<pre>";
-
-
         $product = Products::find(Input::get('item_id'));
-
         // print_r($product->toArray());
         print_r($_POST);
         print_r($_FILES);
-
 
         $update = $product->update_product(
             $_POST,
             $_FILES['cover'],
             $_FILES['content']);
-
-        
         // Redirect::back();
     }
 

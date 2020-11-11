@@ -119,7 +119,8 @@
 			$scope.$cart = this;
 		
 			$form = new FormData ();
-				$form.append('cart', JSON.stringify(this));
+			$form.append('cart', JSON.stringify(this));
+			
 			for(x in this.$items){
 				$item = this.$items[x];
 				// $form.append('selected_shipping', this.$selected_shipping);

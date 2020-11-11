@@ -1,253 +1,357 @@
 function FilePreviewer($files, $index) {
-  this.$files = $files;
-  this.$index = $index;
-  this.$current_file = $files[$index];
+    this.$files = $files;
+    this.$index = $index;
+    this.$current_file = $files[$index];
 
 
-  this.next = function() {
+    this.next = function() {
 
-    if ((this.$index + 1) == this.$files.length) {
-      this.$index = -1;
-      return;
-    }
+        if ((this.$index + 1) == this.$files.length) {
+            this.$index = -1;
+            return;
+        }
 
-    this.$index++;
-    this.update_current_file();
-  };
+        this.$index++;
+        this.update_current_file();
+    };
 
-  this.back = function() {
+    this.back = function() {
 
-    if ((this.$index) == 0) {
-      this.$index = this.$files.length;
-      return;
-    }
+        if ((this.$index) == 0) {
+            this.$index = this.$files.length;
+            return;
+        }
 
-    this.$index--;
-    this.update_current_file();
-  };
+        this.$index--;
+        this.update_current_file();
+    };
 
-  this.update_current_file = function() {
-    this.$current_file = this.$files[this.$index];
-    // console.log(this);
-  };
+    this.update_current_file = function() {
+        this.$current_file = this.$files[this.$index];
+        // console.log(this);
+    };
 
 }
 
- class Content {
-    file =  {};
-    file_path =  "";
-    name =  "first";
-    detail_pad =  false;
-    description =  "first decription image";
+class Content {
+    file = {};
+    file_path = "";
+    name = "first";
+    detail_pad = false;
+    description = "first decription image";
 
-    constructor($object){
-      for(let x in $object){
-        this[x] = $object[x];
-      }
+    constructor($object) {
+        for (let x in $object) {
+            this[x] = $object[x];
+        }
+    }
+
+    setUp($data){
+       this.file = $data.file;
+       this.file_path = $data.file_path;
+       this.name = $data.name;
+       this.detail_pad = false;
+       this.description = $data.description;
+       return this;
+    }
+
+    get extension() {
+        if (typeof this.file.name === 'undefined') {
+            return '';
+        }
+        let name = this.file.name;
+        let ext = name.split('.').pop();
+        return ext;
     }
 
 
-    get extension(){
-      if (typeof this.file.name === 'undefined') {
-        return '';
-      }
-      let name = this.file.name;
-      let ext = name.split('.').pop();
-      return ext;
-    }
-
-
-    toggleDetailPad(){
-      if (this.detail_pad==false) {
-        this.detail_pad=true;
-      }else{
-        this.detail_pad=false;
-      }
+    toggleDetailPad() {
+        if (this.detail_pad == false) {
+            this.detail_pad = true;
+        } else {
+            this.detail_pad = false;
+        }
     }
 
     get filesize() {
-        
+        if (typeof this.file.size === 'undefined') {
+            return '';
+        }
+
         let $fileSize = this.file.size;
-        let $sizes = ["TB","GB","MB","KB","B"];
+        let $sizes = ["TB", "GB", "MB", "KB", "B"];
 
 
-         let $total = ($sizes).length;
-         while ($total-- && $fileSize > 1024) {
-           $fileSize /= 1024;
-         }
-         
-         return $fileSize.toFixed(2) +" "+ $sizes[$total];
+        let $total = ($sizes).length;
+        while ($total-- && $fileSize > 1024) {
+            $fileSize /= 1024;
+        }
+
+        return $fileSize.toFixed(2) + " " + $sizes[$total];
     }
 
- }
+}
 
 class Product {
 
-  name = 'how to laff';
-  description = 'description is here';
-  cover = [
-    {
-      'file_path': "https://images.unsplash.com/photo-1527342726932-1d392fcdd316?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max",
-      'type': "image",
-      'src': "local",
-    },
-    {
-      'file_path': "https://resources.finalsite.net/images/f_auto,q_auto,t_image_size_2/v1548086771/holychildacademy/wdqethkyrdmodyvzzqui/finearts.png",
-      'type': "image",
-      'src': "external",
-    },
-  ];
-  content = [
-    new Content,
 
-    new Content({
-      'file': {},
-      'file_path': "",
-      'name': "second",
-      'detail_pad': true,
-      'description': "second decription image",
-    }),
+    id  ;
+    name = 'how to laff';
+    description = 'description is here';
+    cover = [{
+            'file_path': "https://images.unsplash.com/photo-1527342726932-1d392fcdd316?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max",
+            'file_type': "image",
+            'src': "local",
+        }
+        /*,
+            {
+              'file_path': "https://resources.finalsite.net/images/f_auto,q_auto,t_image_size_2/v1548086771/holychildacademy/wdqethkyrdmodyvzzqui/finearts.png",
+              'file_type': "image",
+              'src': "external",
+            },*/
+    ];
+    content = [
+        /*
+            new Content,
 
-  ];
+            new Content({
+              'file': {},
+              'file_path': "",
+              'name': "second",
+              'detail_pad': true,
+              'description': "second decription image",
+            }),*/
 
-  price = 200;
+    ];
 
-  thank_you_note = "Well thank you for buying";
+
+
+    price = 200;
+
+
+
+    setUp($data) {
+        this.name = $data.name;
+        this.description = $data.description;
+        this.price = parseInt($data.price);
+        this.cover = $data.cover;
+        this.extra_details =  $data.extra_details;
+        this.id = $data.id;
+
+        this.content = $data.content.map(function(content) {
+            let active_content = new Content;
+            active_content.setUp(content);
+            return active_content;
+        });
+
+
+
+    }
+
 }
+
+
 
 
 class ProductForm {
 
-  $product;
 
-  $scope = angular.element($('#content')).scope();
-
-  cover_pad = {
-    'show': '',
-    'src': 'local',
-    'file': {},
-    'embed_link': ""
-  };
-
-  file_pad = {
-    'show': '',
-    'src': 'local',
-    'file': {},
-    'embed_link': ""
-  };
-
-  constructor() {
-
-  }
+    $product;
 
 
-  deleteCover($file){
+    cover_pad = {
+        'show': '',
+        'src': 'local',
+        'file': {},
+        'embed_link': ""
+    };
 
-    for (var i = 0; i < this.$product.cover.length; i++) {
-      let $cover = this.$product.cover[i];
-      if ($file == $cover) {
-        this.$product.cover.splice(i, 1);
-        break;
-      }
-    }
-  }
-
-  deleteFile($file){
-
-    for (var i = 0; i < this.$product.content.length; i++) {
-      let $content = this.$product.content[i];
-      if ($file == $content) {
-        this.$product.content.splice(i, 1);
-        break;
-      }
-    }
-  }
-
-  loadEmbedLink() {
-    let $link = this.cover_pad.embed_link;
+    file_pad = {
+        'show': '',
+        'src': 'local',
+        'file': {},
+        'embed_link': ""
+    };
 
 
 
-    let $src = this.cover_pad.src;
-    let $cover = {
-      'file_path': $link,
-      'type': 'video',
-      'src': $src,
-      'file': {},
-    }
-
-    this.$product.cover.push($cover);
-    this.$scope.$apply();
-  }
-
-  processCoverPad($input) {
-    if (!$input.files) { return; }
-
-    for (var i = 0; i < $input.files.length; i++) {
-      let $file = $input.files[i];
-      let $src = this.cover_pad.src;
-
-      let $type = $file.type.split('/')[0];
-
-      let $cover = {
-        'file_path': URL.createObjectURL($file),
-        'type': $type,
-        'src': $src,
-        'file': $file,
-      }
-
-      this.$product.cover.push($cover);
-      this.$scope.$apply();
+    constructor() {
 
     }
-  }
 
-  processFilePad($input) {
-    if (!$input.files) { return; }
+    save($publish = 0) {
 
-    for (var i = 0; i < $input.files.length; i++) {
-      let $file = $input.files[i];
-      let $src = this.cover_pad.src;
+        var $form = new FormData();
+        $form.append('product_form', angular.toJson(this));
 
-      let $type = $file.type.split('/')[0];
+        for (var i = 0; i < this.$product.cover.length; i++) {
+            let $cover = this.$product.cover[i];
+            $form.append(`cover[${i}]`, $cover.file);
+        }
 
-      let $content = new Content ({
-          'file': $file,
-          'file_path': "",
-          'name': $file.name,
-          'detail_pad': true,
-          'description': "first decription image"
-      });
+        for (var i = 0; i < this.$product.content.length; i++) {
+            let $content = this.$product.content[i];
+            $form.append(`content[${i}]`, $content.file);
+        }
 
-      this.$product.content.push($content);
-      this.$scope.$apply();
 
+        $form.append('publish', $publish);
+
+        $.ajax({
+            type: "POST",
+            url: $base_url + "/product/update_product",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: $form,
+            async: true,
+            headers: {
+                "cache-control": "no-cache"
+            },
+            success: function(data) {
+                console.log(data);
+                // $("#page_preloader").css('display', 'none');
+                // $scope.fetch_page_content();
+                window.notify();
+            },
+            error: function(data) {
+                alert("fail" + JSON.stringify(data));
+            }
+
+        });
     }
-  }
+
+    submit() {}
 
 
-  setCoverPadSrc($src) {
-    this.cover_pad.src = $src;
-  }
 
-  setFilePadSrc($src) {
-    this.file_pad.src = $src;
-  }
-  
-
-
-  toggleCoverPad() {
-    if (this.cover_pad.show == 'show') {
-      this.cover_pad.show = '';
-    } else {
-      this.cover_pad.show = 'show';
+    afterPurchaseLink() {
+        this.$product.extra_details.after_purchase_link_validity = false;
     }
-  }
-  
 
-  setProduct($product) {
-    this.$product = $product;
-  }
+    deleteCover($file) {
+
+        for (var i = 0; i < this.$product.cover.length; i++) {
+            let $cover = this.$product.cover[i];
+            if ($file == $cover) {
+                this.$product.cover.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    deleteFile($file) {
+
+        for (var i = 0; i < this.$product.content.length; i++) {
+            let $content = this.$product.content[i];
+            if ($file == $content) {
+                this.$product.content.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+    loadDeliveryLink() {
+        let $link = this.$product.extra_details.after_purchase_link;
+        let $test = true;
+        if ($test) {
+            this.$product.extra_details.after_purchase_link_validity = true;
+        } else {
+
+            this.$product.extra_details.after_purchase_link_validity = false;
+        }
+    }
+
+    embeddable_links = ['youtube', 'youtu.be', 'vimeo'];
+
+    loadEmbedLink() {
+        let $link = this.cover_pad.embed_link;
+
+
+        let $src = this.cover_pad.src;
+        let $cover = {
+            'file_path': $link,
+            'file_type': 'video',
+            'src': $src,
+            'file': {},
+        }
+
+        // this.cover_pad.embed_link = '';
+        this.$product.cover.push($cover);
+        angular.element($('#content')).scope().$apply();
+    }
+
+
+
+    processCoverPad($input) {
+        if (!$input.files) { return; }
+
+        for (var i = 0; i < $input.files.length; i++) {
+            let $file = $input.files[i];
+            let $src = this.cover_pad.src;
+
+            let $type = $file.type.split('/')[0];
+
+            let $cover = {
+                'file_path': URL.createObjectURL($file),
+                'file_type': $type,
+                'src': $src,
+                'file': $file,
+            }
+
+            this.$product.cover.push($cover);
+            angular.element($('#content')).scope().$apply();
+
+        }
+    }
+
+    processFilePad($input) {
+        if (!$input.files) { return; }
+
+        for (var i = 0; i < $input.files.length; i++) {
+            let $file = $input.files[i];
+            let $src = this.cover_pad.src;
+
+            let $type = $file.type.split('/')[0];
+
+            let $content = new Content({
+                'file': $file,
+                'file_path': URL.createObjectURL($file),
+                'name': $file.name,
+                'detail_pad': false,
+                'description': "first decription image"
+            });
+
+            this.$product.content.push($content);
+            angular.element($('#content')).scope().$apply();
+
+        }
+    }
+
+
+    setCoverPadSrc($src) {
+        this.cover_pad.src = $src;
+    }
+
+    setFilePadSrc($src) {
+        this.file_pad.src = $src;
+        this.$product.extra_details.delivery_method = $src;
+    }
+
+
+
+    toggleCoverPad() {
+        if (this.cover_pad.show == 'show') {
+            this.cover_pad.show = '';
+        } else {
+            this.cover_pad.show = 'show';
+        }
+    }
+
+
+    setProduct($product) {
+        this.$product = $product;
+    }
 
 }
 
@@ -257,19 +361,27 @@ class ProductForm {
 app.controller('ProductController', function($scope, $http) {
 
 
-  $scope.$product_form = new ProductForm;
-  $scope.$product_form.setProduct(new Product);
+
+    $scope.load = function() {
+        $http.get(`${$base_url}/product/fetch/${$product_id}`)
+            .then(function(response) {
+                var $product_data = response.data.product;
+
+                var $product = new Product;
+                $product.setUp($product_data);
+
+                $scope.$product_form = new ProductForm;
+                $scope.$product_form.setProduct($product);
 
 
-  $scope.fetch_payment_gateway_settings = function() {
-    $http.get($base_url + "/settings/fetch_payment_gateway_settings/")
-      .then(function(response) {
-        $scope.$payment_gateway_settings = response.data;
-      });
-  };
+                // angular.element($('#content')).scope().$apply();
+                console.log(response);
+
+            });
+    };
 
 
-  $scope.fetch_payment_gateway_settings();
+    $scope.load();
 
 
 
@@ -279,34 +391,34 @@ app.controller('ProductController', function($scope, $http) {
 
 
 app.directive('ckEditor', function() {
-  return {
-    require: '?ngModel',
-    link: function(scope, elm, attr, ngModel) {
+    return {
+        require: '?ngModel',
+        link: function(scope, elm, attr, ngModel) {
 
 
-      var ck = CKEDITOR.replace(elm[0], {
+            var ck = CKEDITOR.replace(elm[0], {
 
-        filebrowserBrowseUrl: `${$base_url}/uploads/media`,
-        filebrowserImageBrowseUrl: `${$base_url}/uploads/media?type=Images`,
-        filebrowserUploadUrl: `${$base_url}/media/upload/files`,
-        filebrowserImageUploadUrl: `${$base_url}/media/upload/image`
-      });
+                filebrowserBrowseUrl: `${$base_url}/uploads/media`,
+                filebrowserImageBrowseUrl: `${$base_url}/uploads/media?type=Images`,
+                filebrowserUploadUrl: `${$base_url}/media/upload/files`,
+                filebrowserImageUploadUrl: `${$base_url}/media/upload/image`
+            });
 
-      if (!ngModel) return;
+            if (!ngModel) return;
 
-      ck.on('pasteState', function() {
-        scope.$apply(function() {
-          ngModel.$setViewValue(ck.getData());
-        });
-      });
+            ck.on('pasteState', function() {
+                scope.$apply(function() {
+                    ngModel.$setViewValue(ck.getData());
+                });
+            });
 
-      ngModel.$render = function(value) {
-        ck.setData(ngModel.$viewValue);
-      };
-    }
+            ngModel.$render = function(value) {
+                ck.setData(ngModel.$viewValue);
+            };
+        }
 
 
-  };
+    };
 });
 
 
@@ -314,25 +426,25 @@ app.directive('ckEditor', function() {
 
 app.directive("w3TestDirective", function() {
 
-  return {
-    template: "<h1>Made by a directive! {{user}}f {{ui}}</h1>",
-  };
+    return {
+        template: "<h1>Made by a directive! {{user}}f {{ui}}</h1>",
+    };
 });
 
 
 
 app.filter('replace', [function() {
 
-  return function(input, from, to) {
+    return function(input, from, to) {
 
-    if (input === undefined) {
-      return;
-    }
+        if (input === undefined) {
+            return;
+        }
 
-    var regex = new RegExp(from, 'g');
-    return input.replace(regex, to);
+        var regex = new RegExp(from, 'g');
+        return input.replace(regex, to);
 
-  };
+    };
 
 
 }]);
@@ -341,22 +453,22 @@ app.filter('replace', [function() {
 
 
 app.directive("contenteditable", function() {
-  return {
-    restrict: "A",
-    require: "ngModel",
-    link: function(scope, element, attrs, ngModel) {
+    return {
+        restrict: "A",
+        require: "ngModel",
+        link: function(scope, element, attrs, ngModel) {
 
-      function read() {
-        ngModel.$setViewValue(element.html());
-      }
+            function read() {
+                ngModel.$setViewValue(element.html());
+            }
 
-      ngModel.$render = function() {
-        element.html(ngModel.$viewValue || "");
-      };
+            ngModel.$render = function() {
+                element.html(ngModel.$viewValue || "");
+            };
 
-      element.bind("blur keyup change", function() {
-        scope.$apply(read);
-      });
-    }
-  };
+            element.bind("blur keyup change", function() {
+                scope.$apply(read);
+            });
+        }
+    };
 });

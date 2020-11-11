@@ -5,11 +5,14 @@ include 'includes/header.php';
 $allowed_file_for_cover = ['image/*','video/*'];
 ;?>
 
+<script>
+  var $product_id = <?=$product->id;?>;
+</script>
 <script src="<?=asset;?>/angulars/product.js" type="module"></script>
 
 
 <!-- BEGIN: Content-->
-<div class="app-content content" id="content" ng-controller="ProductController">
+<div class="app-content content" id="content" ng-controller="ProductController" ng-cloak>
   <div class="content-wrapper">
     <div class="content-header row">
       <div class="content-header-left col-6 ">
@@ -73,7 +76,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
 
       .file-preview-div, .file-upload, .loaded-file, .short-list {
-        border: 1px solid black;
+        /*border: 1px solid black;*/
       }
 
       .short-list-btn{
@@ -89,6 +92,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
       .file-upload{
 
+        border: 2px dashed #0000002e;
         text-align: center;
         padding: 20px;
       }
@@ -131,25 +135,25 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
     <div class="content-body row">
       <div class="col-md-7">
-        <form action="<?=domain;?>/product/update_item" method="post" enctype="multipart/form-data">
+        <form action="<?=domain;?>/product/update_product" id="nform" method="post" enctype="multipart/form-data">
 
-          {{$product_form}}
-          <w3-test-directive></w3-test-directive>
+          <!-- {{$product_form}} -->
 
-<!--           <div class="form-group">
+          <div class="form-group">
             <label>Name </label>
             <input class="form-control" placeholder="Name" ng-model="$product_form.$product.name">
           </div>
           <div class="form-group">
             <label>Description </label>
-            <div class="textarea" contenteditable="true" ng-model="$product_form.$product.description" ck-editor  name="description"></div>
+            <textarea class="textarea" contenteditable="true" ng-model="$product_form.$product.description" rows="4" ck-editor></textarea>
           </div>
 
           <input type="hidden" name="item_id" value="<?=$product->id;?>">
- -->
+
 
 
           <div class="form-group">
+            <label>Cover</label>
             <div class="file-preview-div" style="height: 300px;padding: 2px; display: none;">
 
                       <!-- <div class="media-holder" style="height: 100%; width: 100%;">
@@ -173,10 +177,10 @@ $allowed_file_for_cover = ['image/*','video/*'];
                         <div class="col-md-2 thumbnail-div" ng-repeat="(key, $thumbnail) in $product_form.$product.cover">
                           <span ng-click="$product_form.deleteCover($thumbnail)" class="fa fa-times text-danger cancel-thumbnail"></span>
 
-                          <div ng-if="$thumbnail.type=='video'"  width="100%" height="100%" class="image-thumbnail" src="{{$thumbnail.file_path}}">
+                          <div ng-if="$thumbnail.file_type=='video'"  width="100%" height="100%" class="image-thumbnail" src="{{$thumbnail.file_path}}">
                             <center>Video</center>
                           </div>
-                          <img ng-if="$thumbnail.type=='image'" src="{{$thumbnail.file_path}}" width="100%" height="100%" class="image-thumbnail">
+                          <img ng-if="$thumbnail.file_type=='image'" src="{{$thumbnail.file_path}}" width="100%" height="100%" class="image-thumbnail">
                         </div> 
 
                       <div class="btn-group btn-group-lg">
@@ -193,7 +197,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
                             <button type="button" onclick="$('#cover_upload_element').click();"
                              class="btn btn-outline-dark">Upload File (Images or videos)</button>
                             <input type="file" onchange="angular.element(this).scope().$product_form.processCoverPad(this);" 
-                            ng-model="$product_form.cover_pad.file"
+                            ng-model="$product_form.cover_pad.file" accept="image/*,video/*" 
                              id="cover_upload_element" style="display: none;">
 
 
@@ -204,14 +208,14 @@ $allowed_file_for_cover = ['image/*','video/*'];
                             </p>
                           </span>
 
-
+                          {{$product_form.cover_pad.embed_link}}
                           <span ng-show="$product_form.cover_pad.src=='external'" >
                            <div class="input-group">
-                             <input type="url" class="form-control" ng-model="$product_form.cover_pad.embed_link" 
-                             placeholder="http://" aria-describedby="button-addon2">
+                             <input type="text" class="form-control" ng-model="$product_form.cover_pad.embed_link" 
+                             placeholder="http://" aria-describedby="button-addon3">
                              <div class="input-group-append">
                                <button class="btn btn-dark" ng-click="$product_form.loadEmbedLink()"
-                                type="button" id="button-addon2"><i class="fa fa-check"></i></button>
+                                type="button" id="button-addon3"><i class="fa fa-check"></i></button>
                              </div>
                            </div>
                             <p>
@@ -240,24 +244,29 @@ $allowed_file_for_cover = ['image/*','video/*'];
               <label ng-show="$product_form.$product.content.length"><small>Files</small> </label>
               <div class="list-group">
                 <span ng-repeat="(key, $content) in $product_form.$product.content">
-                  
+                    {{$content}}
                 <div  class="list-group-item" >
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="truncate"><span class="badge badge-light">{{$content.extension}}</span> {{$content.name}}</h5>
                     <small>
                       <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-                        <button ng-show="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
+                        <a href="{{$content.file_path}}" target="_blank" type="button" class="btn btn-light text-white">
+                          Open <i class="fa fa-link"></i>
+                        </a>
+
+                        <!-- <button ng-show="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
                           <i class="fa fa-check"></i>
                         </button>
-
                         <button ng-hide="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
                           <i class="fa fa-pencil"></i>
                         </button>
+ -->
+
                         <button ng-click="$product_form.deleteFile($content)" type="button" class="btn btn-light text-white"><i class="fa fa-trash"></i></button>
                       </div>
                     </small>
                   </div>
-                  <small class="file-size">800kb. {{$content.filesize}}</small>
+                  <small class="file-size">{{$content.filesize}}</small>
                 </div>
                 <div class="files-details" ng-show="$content.detail_pad">
                   <div class="form-group">
@@ -278,10 +287,8 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
 
             <div class="form-group">
-              <label>Cover <small>Image or Video</small> </label>
-
-
-              <div class="file-upload" style="width: 30em;">
+              <label>Content <small></small> </label>
+              <div class="file-upload">
                 <span ng-show="$product_form.file_pad.src=='local'" >
 
                 <button type="button" onclick="$('#file_upload_element').click();"
@@ -303,9 +310,14 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
                 <span ng-show="$product_form.file_pad.src=='external'" >
                 <div class="input-group">
-                  <input type="text" class="form-control" placeholder="http://" aria-describedby="button-addon2">
+                  <input type="text" class="form-control" ng-change="$product_form.afterPurchaseLink();" 
+                  ng-model="$product_form.$product.extra_details.after_purchase_link" placeholder="http://" aria-describedby="button-addon2">
                   <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"><span>Test</span><i class="fa fa-check"></i></button>
+                    </button>
+                    <button ng-click="$product_form.loadDeliveryLink()" class="btn btn-outline-secondary" type="button" id="button-addon2">
+                      <span ng-hide="$product_form.$product.extra_details.after_purchase_link_validity">Test</span>
+                      <i ng-show="$product_form.$product.extra_details.after_purchase_link_validity" class="fa fa-check"></i>
+                    </button>
                   </div>
                 </div>                
                  <p>
@@ -320,23 +332,39 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
             </div>
 
-            <div class="form-group">
+            {{$product_form.$product.extra_details}}
+            <label>Allow Customers pay what they want 
+              <input type="checkbox" ng-model="$product_form.$product.extra_details.customer_sets_price">
+            </label>
+            <div class="form-group" ng-hide="$product_form.$product.extra_details.customer_sets_price">
               <label>Price </label>
-              <input class="form-control" type="number" min="5000" ng-model="$product_form.$product.price"  placeholder="Amount">
+              <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">
+            </div>
+
+            <!-- {{$product_form.$product.extra_details.customer_sets_price}}{{$product_form.$product.price}} -->
+            <div class="col-md-12 row" ng-show="$product_form.$product.extra_details.customer_sets_price">
+              <div class="form-group col-6">
+                  <label>Minimum amount</label>
+                  <input class="form-control" type="number" min="0" ng-model="$product_form.$product.extra_details.pricing.minimum"  placeholder="Min ">
+              </div>
+              <div class="form-group col-6">
+                  <label>Suggested amount</label>
+                  <input class="form-control" type="number" min="1" ng-model="$product_form.$product.extra_details.pricing.suggested"  placeholder="Max">
+              </div>
             </div>
 
 
 
             <div class="form-group">
              <label>Thank you note</label>
-             <textarea class="form-control" rows="4" ng-model="$product_form.$product.thank_you_note"></textarea>
+             <textarea class="form-control" rows="4" ng-model="$product_form.$product.extra_details.thank_you_note"></textarea>
            </div>
 
 
 
            <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
 
-            <button class="btn btn-outline-dark" >Save Changes</button>
+            <a class="btn btn-outline-dark" type="a" ng-click="$product_form.save();" >Save Changes</a>
             <a class="btn btn-outline-dark"
             onclick="$confirm_dialog = new ConfirmationDialog('<?= domain; ?>/shop/submit_for_review/<?= $product->id; ?>')" >Publish</a>
             <a class="btn btn-outline-dark" href="<?=$product->PreviewLink;?>">Preview</a>
@@ -369,36 +397,11 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
         <script>
 
-
-          $('li.dropdown.mega-dropdown a').on('click', function (event) {
-            $(this).parent().toggleClass('open');
-          });
-
-          $('body').on('click', function (e) {
-            if (!$('li.dropdown.mega-dropdown').is(e.target) 
-              && $('li.dropdown.mega-dropdown').has(e.target).length === 0 
-              && $('.open').has(e.target).length === 0
-              ) {
-              $('li.dropdown.mega-dropdown').removeClass('open');
-          }
-        });
-
           function publish(form) {
-            form.action = "<?=domain;?>/product/update_item/1";
+            form.action = "<?=domain;?>/product/update_product/1";
             form.submit();
           }
-          function textAreaAdjust(element) {
-            element.style.height = "1px";
-            element.style.height = (25+element.scrollHeight)+"px";
-          }
-
-
-          function refreshIframe() {
-            var ifr = $('#preview-iframe')[0];
-            ifr.src = "<?=$product->PreviewLink;?>";
-
-            console.log(ifr);
-          }
+        
 
         </script>
 
