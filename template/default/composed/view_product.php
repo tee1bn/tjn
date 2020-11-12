@@ -1,19 +1,55 @@
+<!-- {{$carousel}} -->
+          <style>
+            .backleft{
+              position: absolute;
+              top: 20%;
+              left: 20px;
+              cursor: pointer;
+            }
+            .nextright{
+              position: absolute;
+              top: 20%;
+              right: 20px;
+              cursor: pointer;
+            }
+            
+            .carousel-dot{
+              position: relative;
+              top: -29px;
+            }
+          </style>
 
-      
            <div id="how-to" class="card">
              <div class="card-content collapse show" id="course_description">
                  <div class="card-body">
+
+                  {{$carousel.$current_file}}
+
                   <div class="cover">
-                    <div class="">
-                     <?php if ($product->CoverLinkArray['type'] == 'video'):?>
-                         <iframe class="cover-video" src="<?=$product->CoverLinkArray['link'];?>?amp;controls=0&amp;showinfo=0" allowfullscreen></iframe>
-                        <?php elseif ($product->CoverLinkArray['type'] == 'image'):?>
-                         <img src="<?=$product->CoverLinkArray['link'];?>" class="d-block w-100 cover-video" alt="<?=$product->name;?>">
-                     <?php endif;?>
-                 </div>
+                    <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
+                    <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
+                    class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
+
+                     <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 
+                     class ="d-block w-100 cover-video" alt="<?=$product->name;?>">
+
+                     <span ng-if="$carousel.$current_file.file_type=='video'">
+                       
+                     <iframe class="cover-video" ng-src="{{$carousel.$current_file.file_path}}" allowfullscreen>
+                     </iframe>
+                     </span>
+
+                    
+                    <center class="carousel-dot">
+                      <span ng-repeat="($index, $file) in $carousel.$files">
+                        <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
+                        <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
+                      </span>
+                    </center>
               </div>
-              <hr>
-              <h4 class="card-title"><?=$product->name;?></h4>
+
+
+              <h4 class="card-title" ><?=$product->name;?></h4>
               <!-- <p class="card-text"><small class="text-muted">By <?=$product->user->username ?? '';?></small></p> -->
               <p class="card-text"> <?=$product->description;?> </p>
 

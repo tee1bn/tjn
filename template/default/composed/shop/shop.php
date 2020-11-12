@@ -29,7 +29,7 @@
                       <hr>
                       <b>{{$item.market_details.short_name}}...</b>
                       <p class="card-text course-subtext">
-                         <small>{{$item.market_details.short_description}}</small>
+                         <!-- <small ng-bind-html="$item.market_details.short_description"></small> -->
                       </p>
                     
                       <span class="course-subtext">
