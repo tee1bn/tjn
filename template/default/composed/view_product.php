@@ -6,7 +6,7 @@
 
                   <!-- {{$carousel.$current_file}} -->
 
-                  <w3-test-directive></w3-test-directive>
+                  <cover-div></cover-div>
 
 <!--                   <div class="cover">
                     <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  

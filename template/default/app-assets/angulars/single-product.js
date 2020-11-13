@@ -10,7 +10,7 @@ app.controller('CarouselController', function($scope, $http, $sce) {
 
 });
 
-app.directive("w3TestDirective", function() {
+app.directive("coverDiv", function() {
 
     return {
         template: `
