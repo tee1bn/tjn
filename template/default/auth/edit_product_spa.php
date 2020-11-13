@@ -332,7 +332,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
             </div>
 
-            {{$product_form.$product.extra_details}}
             <label>Allow Customers pay what they want 
               <input type="checkbox" ng-model="$product_form.$product.extra_details.customer_sets_price">
             </label>
@@ -340,6 +339,16 @@ $allowed_file_for_cover = ['image/*','video/*'];
               <label>Price </label>
               <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">
             </div>
+
+            <div class="form-group">
+              <label>Category </label>
+              <select  class="form-control custom-select" ng-model="$product_form.$product.category_id"
+               ng-options="$category.id as $category.category for $category in categories">
+              </select>
+            </div>
+
+
+
 
             <!-- {{$product_form.$product.extra_details.customer_sets_price}}{{$product_form.$product.price}} -->
             <div class="col-md-12 row" ng-show="$product_form.$product.extra_details.customer_sets_price">

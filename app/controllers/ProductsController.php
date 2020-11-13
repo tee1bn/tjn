@@ -110,10 +110,13 @@ class ProductsController extends controller
         $product->content = $product->FilesArray['file'] ?? [];
         $product->extra_details = $product->ExtraDetailsArray ?? [];
 
+        $categories = ProductsCategory::get();
+
         // json_encode($pro)
         header("Content-Type:application/json");
         echo json_encode([
-            'product'=> $product
+            'product'=> $product,
+            'categories'=> $categories,
         ]);
 
 
@@ -253,6 +256,7 @@ class ProductsController extends controller
             'name' => $product['name'],
             'description' => $product['description'],
             'price' => $product['price'],
+            'category_id' => $product['category_id'],
         ]);
 
 

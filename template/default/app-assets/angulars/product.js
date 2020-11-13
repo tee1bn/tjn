@@ -1,37 +1,3 @@
-function FilePreviewer($files, $index) {
-    this.$files = $files;
-    this.$index = $index;
-    this.$current_file = $files[$index];
-
-
-    this.next = function() {
-
-        if ((this.$index + 1) == this.$files.length) {
-            this.$index = -1;
-            return;
-        }
-
-        this.$index++;
-        this.update_current_file();
-    };
-
-    this.back = function() {
-
-        if ((this.$index) == 0) {
-            this.$index = this.$files.length;
-            return;
-        }
-
-        this.$index--;
-        this.update_current_file();
-    };
-
-    this.update_current_file = function() {
-        this.$current_file = this.$files[this.$index];
-        // console.log(this);
-    };
-
-}
 
 class Content {
     file = {};
@@ -132,6 +98,7 @@ class Product {
 
     setUp($data) {
         this.name = $data.name;
+        this.category_id = $data.category_id;
         this.description = $data.description;
         this.price = parseInt($data.price);
         this.cover = $data.cover;
@@ -385,6 +352,7 @@ app.controller('ProductController', function($scope, $http) {
         $http.get(`${$base_url}/product/fetch/${$product_id}`)
             .then(function(response) {
                 var $product_data = response.data.product;
+                $scope.categories = response.data.categories;
 
                 var $product = new Product;
                 $product.setUp($product_data);
@@ -443,12 +411,6 @@ app.directive('ckEditor', function() {
 
 
 
-app.directive("w3TestDirective", function() {
-
-    return {
-        template: "<h1>Made by a directive! {{user}}f {{ui}}</h1>",
-    };
-});
 
 
 
