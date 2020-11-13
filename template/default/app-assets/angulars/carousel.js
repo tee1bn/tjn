@@ -1,8 +1,14 @@
-export function FilePreviewer($files, $index) {
+export function FilePreviewer($files, $index, $sce=null) {
     this.$files = $files;
     this.$index = $index;
     this.$current_file = $files[$index];
 
+    if ($sce != null) {
+        this.$files.map(function($file){
+             $file.file_path  = $sce.trustAsResourceUrl($file.file_path);
+             return $file;
+        });
+    }
 
     this.next = function() {
 

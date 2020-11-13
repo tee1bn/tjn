@@ -598,7 +598,7 @@ class shopController extends controller
 
         if ($item_on_sale == null) {
 
-            Session::putFlash("danger","Item not found");
+            // Session::putFlash("danger","Item not found");
             Redirect::back();
         }
 

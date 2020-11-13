@@ -76,6 +76,8 @@
                   <span aria-hidden="true">×</span>
                 </button>
                 </div> -->
+                <!-- {{$shop.$quickview.market_details.quickview}} -->
+                <w3-test-directive></w3-test-directive>
                 <div class="modal-body">
                     <span ng-bind-html="$shop.$quickview.market_details.quickview"></span>
                 </div>

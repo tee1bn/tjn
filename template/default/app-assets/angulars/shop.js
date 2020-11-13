@@ -1,3 +1,4 @@
+import { FilePreviewer } from "./carousel.js";
 
 
 	function Cart(){
@@ -37,7 +38,7 @@
 		}
 		
 		this.add_item = function($item){
-			$checkout_url = $base_url+"/shop/cart";
+			let $checkout_url = $base_url+"/shop/cart";
 
 			//ensure item is not added in cart more than once
 			if (this.contains_object($item, this.$items)) {
@@ -95,11 +96,11 @@
 
 		this.calculate_total = function (){
 
-			$total = 0;
+			let	$total = 0;
 
-			for(x in this.$items){
-				$item = this.$items[x];
-				$qty = ($item.qty != null) ? $item.qty : 1;
+			for(let x in this.$items){
+				let $item = this.$items[x];
+				let $qty = ($item.qty != null) ? $item.qty : 1;
 
 				$total = $total + (parseInt($item.market_details.price) * parseInt($item.qty) );
 			}
@@ -115,14 +116,14 @@
 
 			this.calculate_total();
 
-			$scope = angular.element($('#cart-notification')).scope();
+			 let $scope = angular.element($('#cart-notification')).scope();
 			$scope.$cart = this;
 		
-			$form = new FormData ();
+			let $form = new FormData ();
 			$form.append('cart', JSON.stringify(this));
 			
-			for(x in this.$items){
-				$item = this.$items[x];
+			for(let x in this.$items){
+				let $item = this.$items[x];
 				// $form.append('selected_shipping', this.$selected_shipping);
 				};
 					// $("#page_preloader").css('display', 'block');
@@ -174,7 +175,7 @@
 
 
 		this.add_item = function($new_items= []){
-				for(x in $new_items){
+				for(let x in $new_items){
 				var $new_item = $new_items[x];
 				$new_item.view = $sce.trustAsHtml($new_item.view);
 				this.$items.push($new_item);
@@ -189,13 +190,18 @@
 		this.quickview = function ($item) {
 					$('#quick_view_modal').modal('show');			
 					this.$quickview = $item;
+					// this.$quickview.$carousel = new FilePreviewer($item.market_details.cover.file, 0 , $sce);
+					let $scope = angular.element($('#content')).scope();
+					$scope.$carousel = new FilePreviewer($item.market_details.cover.file, 0, $sce);
+					// $scope.$apply();
+					console.log($scope.$carousel);
 			}
 
 		this.fetch_products = function () {
 
-				$this= this;
+				let $this= this;
 				$model = ($model != undefined) ? $model : null;
-				$url = $base_url+'/shop/market/'+$this.$items_page+'/'+$model;
+				let $url = $base_url+'/shop/market/'+$this.$items_page+'/'+$model;
 				// $("#page_preloader").css('display', 'block');
 			 $.ajax({
 	            type: "POST",
@@ -236,7 +242,7 @@
 
 
 		this.retrieve_cart_in_session = function () {
-			$this = this;
+			let $this = this;
 			// $("#page_preloader").css('display', 'block');
 			 $.ajax({
 	            type: "POST",
@@ -249,7 +255,7 @@
 				    // console.log(data);
 				    // try{
 
-				    for(x in data.$items){
+				    for(let x in data.$items){
 				    	var $item = data.$items[x];
 				    	$this.$cart.$items.push($item);
 				    }
@@ -272,7 +278,7 @@
 
 	
 			this.update_angular_scope = function () {
-					$scope = angular.element($('#content')).scope().$apply();
+					let $scope = angular.element($('#content')).scope().$apply();
 					$scope = angular.element($('#cart-notification')).scope();
 					$scope.$cart = this.$cart;
 					$scope.$apply();
@@ -310,6 +316,57 @@
 
 		$scope.fetch_page_content();
 });
+
+
+app.directive("w3TestDirective", function() {
+
+    return {
+        template: `
+        <style>
+          .backleft{
+            position: absolute;
+            top: 22%;
+            left: 20px;
+            cursor: pointer;
+          }
+          .nextright{
+            position: absolute;
+            top: 22%;
+            right: 20px;
+            cursor: pointer;
+          }
+          
+          .carousel-dot{
+            position: relative;
+            top: -29px;
+          }
+        </style>
+        <div class="cover">
+          <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
+          <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
+          class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
+
+           <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 
+           class ="d-block w-100 cover-video" alt="">
+
+           <span ng-if="$carousel.$current_file.file_type=='video'">
+             
+           <iframe class="cover-video" ng-src="{{$carousel.$current_file.file_path}}" allowfullscreen>
+           </iframe>
+           </span>
+
+          <center class="carousel-dot">
+            <span ng-repeat="($index, $file) in $carousel.$files">
+              <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
+              <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
+            </span>
+          </center>
+        </div>
+        `,
+    };
+});
+
+
 
 	app.directive("compileHtml", function($parse, $sce, $compile) {
 	    return {

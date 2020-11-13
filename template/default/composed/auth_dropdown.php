@@ -15,10 +15,10 @@
 
   
   <script>
-    $model = '<?=(isset($model))?  $model: '';?>';
+    var $model = '<?=(isset($model))?  $model: '';?>';
   </script>
 
-  <script src="<?=asset;?>/angulars/shop.js"></script>
+  <script src="<?=asset;?>/angulars/shop.js" type="module"></script>
   <?php if (in_array($current_url, $allowed) || true)  :?>
     <li ng-cloak ng-controller="CartNotificationController" id="cart-notification" class="dropdown dropdown-notification nav-item">
       <a class="nav-link nav-link-label" href="#" data-toggle="dropdown"><i class="ficon ft-shopping-cart"></i>

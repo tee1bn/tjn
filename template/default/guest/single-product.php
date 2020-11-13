@@ -2,10 +2,15 @@
 $page_title = MIS::encode_for_url($product->title);
 include 'includes/header.php' ;?>
 
+<script>
+    try{
+        $this_item = <?=$product->id;?>;
+    }catch(e){}
 
+</script>
 <script src="<?=asset;?>/angulars/single-product.js" type="module"></script>
 
-<div class="app-content container center-layout mt-2" ng-controller="CarouselController">
+<div class="app-content container center-layout mt-2" ng-controller="CarouselController" ng-cloak>
   <div class="content-wrapper" style="margin: 0px;">
     <div class="content-header row">
       <div class="content-header-left col-6 mb-2">
@@ -23,7 +28,7 @@ include 'includes/header.php' ;?>
 
     <!-- <div w3-test-directive></div> -->
 
-    
+
 
 
     <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
@@ -106,9 +111,6 @@ body{
         <?php endif;?>
 
         <script>
-            try{
-                $this_item = <?=$product->id;?>;
-            }catch(e){}
 
             add_item_singly = function () {
 

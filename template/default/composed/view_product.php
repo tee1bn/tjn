@@ -1,31 +1,14 @@
-<!-- {{$carousel}} -->
-          <style>
-            .backleft{
-              position: absolute;
-              top: 20%;
-              left: 20px;
-              cursor: pointer;
-            }
-            .nextright{
-              position: absolute;
-              top: 20%;
-              right: 20px;
-              cursor: pointer;
-            }
-            
-            .carousel-dot{
-              position: relative;
-              top: -29px;
-            }
-          </style>
 
-           <div id="how-to" class="card">
+
+           <div id="how-to" class="card" ng-cloak>
              <div class="card-content collapse show" id="course_description">
                  <div class="card-body">
 
-                  {{$carousel.$current_file}}
+                  <!-- {{$carousel.$current_file}} -->
 
-                  <div class="cover">
+                  <w3-test-directive></w3-test-directive>
+
+<!--                   <div class="cover">
                     <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
                     <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
                     class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
@@ -46,8 +29,8 @@
                         <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
                       </span>
                     </center>
-              </div>
-
+                  </div>
+ -->
 
               <h4 class="card-title" ><?=$product->name;?></h4>
               <!-- <p class="card-text"><small class="text-muted">By <?=$product->user->username ?? '';?></small></p> -->

@@ -2,40 +2,59 @@ import { FilePreviewer } from "./carousel.js";
 
 app.controller('CarouselController', function($scope, $http, $sce) {
 
-    let $files =[{
-            "file_path": "http://localhost/tjn/uploads/products/LHo3_i6G.jpg-largebGpud2k5RGd1d1U5OE1lbjh3anN5dz09.jpg",
-            "file_type": "image"
-        },
-        {
-            "file_path": "http://localhost/tjn/uploads/products/Screen-Shot-2019-08-12-at-16.20.33bGpud2k5RGd1d1U5OE1lbjh3anN5dz09.png",
-            "file_type": "image"
-        },
-        {
-            "file_path": "https://poolscompilers.com.ng/public/files/site_images/logo.png",
-            "file_type": "image"
-        },
-        {
-            "file_path": "https://www.youtube.com/embed/hLzDBVqAsbo",
-            "file_type": "video",
-        }
-    ];
-
-    $files.map(function($file){
-         $file.file_path  = $sce.trustAsResourceUrl($file.file_path);
-         return $file;
+    $http.get($base_url+'/shop/get_single_item_on_market/product/'+$this_item)
+    .then(function(response) {
+      $scope.$item = response.data.single_good;
+        $scope.$carousel = new FilePreviewer($scope.$item.market_details.cover.file, 0, $sce);
     });
 
-
-    $scope.$carousel = new FilePreviewer($files, 0);
-
-
-    $scope.ui = "ok";
 });
 
 app.directive("w3TestDirective", function() {
 
     return {
-        template: "<h1>Made by a directive! {{user}}f {{ui}}</h1>",
+        template: `
+        <style>
+          .backleft{
+            position: absolute;
+            top: 22%;
+            left: 20px;
+            cursor: pointer;
+          }
+          .nextright{
+            position: absolute;
+            top: 22%;
+            right: 20px;
+            cursor: pointer;
+          }
+          
+          .carousel-dot{
+            position: relative;
+            top: -29px;
+          }
+        </style>
+        <div class="cover">
+          <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
+          <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
+          class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
+
+           <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 
+           class ="d-block w-100 cover-video" alt="">
+
+           <span ng-if="$carousel.$current_file.file_type=='video'">
+             
+           <iframe class="cover-video" ng-src="{{$carousel.$current_file.file_path}}" allowfullscreen>
+           </iframe>
+           </span>
+
+          <center class="carousel-dot">
+            <span ng-repeat="($index, $file) in $carousel.$files">
+              <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
+              <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
+            </span>
+          </center>
+        </div>
+        `,
     };
 });
 

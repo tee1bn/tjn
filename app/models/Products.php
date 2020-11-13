@@ -146,7 +146,7 @@ class Products extends Eloquent
 
 		$files['file'] = array_map(function($file){
 					$file['file_path'] = $this->getLink($file['file_path']);
-					$file['file_type'] = explode("/", $file['file_type'])[0];
+					$file['file_type'] = explode("/", @$file['file_type'])[0];
 					// 'image';
 					return $file;
 				}, $files['file']);
@@ -253,16 +253,10 @@ class Products extends Eloquent
 		
 		$product = $this;
 		$controller = new \home;
-		$view = $controller->buildView('composed/view_product', compact('product'));
+		$view = $controller->buildView('composed/view_product', compact('product'), null, true);
 
 		$last_updated = date("M j, Y h:iA" , strtotime($this->updated_at));
-		$quickview = "
-		 $view
-		<ul>
-
-		</ul>
-
-		";
+		$quickview = "$view";
 
 		return $quickview;
 	}
@@ -318,6 +312,7 @@ class Products extends Eloquent
 			'quickview' =>  $this->quickview(),
 			'single_link' =>  $this->ViewLink,
 			'thumbnail' =>  $thumbnail,
+			'cover' =>  $this->CoverArray,
 			'promotional_link' =>  $this->getPromotionLinkFor($auth->id ?? null),
             'unique_name' =>  'product',  // this name is used to identify this item in cart and at delivery
         ];
