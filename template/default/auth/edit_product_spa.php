@@ -137,8 +137,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
       <div class="col-md-7">
         <form action="<?=domain;?>/product/update_product" id="nform" method="post" enctype="multipart/form-data">
 
-          <!-- {{$product_form}} -->
-
           <div class="form-group">
             <label>Name </label>
             <input class="form-control" placeholder="Name" ng-model="$product_form.$product.name">
@@ -208,7 +206,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
                             </p>
                           </span>
 
-                          {{$product_form.cover_pad.embed_link}}
                           <span ng-show="$product_form.cover_pad.src=='external'" >
                            <div class="input-group">
                              <input type="text" class="form-control" ng-model="$product_form.cover_pad.embed_link" 
@@ -244,7 +241,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
               <label ng-show="$product_form.$product.content.length"><small>Files</small> </label>
               <div class="list-group">
                 <span ng-repeat="(key, $content) in $product_form.$product.content">
-                    {{$content}}
                 <div  class="list-group-item" >
                   <div class="d-flex w-100 justify-content-between">
                     <h5 class="truncate"><span class="badge badge-light">{{$content.extension}}</span> {{$content.name}}</h5>
@@ -348,9 +344,6 @@ $allowed_file_for_cover = ['image/*','video/*'];
             </div>
 
 
-
-
-            <!-- {{$product_form.$product.extra_details.customer_sets_price}}{{$product_form.$product.price}} -->
             <div class="col-md-12 row" ng-show="$product_form.$product.extra_details.customer_sets_price">
               <div class="form-group col-6">
                   <label>Minimum amount</label>

@@ -70,7 +70,7 @@
             <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
             <li class="nav-item"><a class="navbar-brand" href="<?=domain;?>">
                 <!-- <h2 class="brand-text"><?=project_name;?></h2> -->
-                <img src="<?=domain;?>/<?=$logo;?>" style="height: 34px; width:auto;">
+                <img src="<?=$logo;?>" style="height: 34px; width:auto;">
 
               </a></li>
             <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>

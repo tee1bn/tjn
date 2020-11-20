@@ -115,10 +115,8 @@
 				<div class=" authcard card-header border-0" style="background: transparent !important;">
 					<div class="card-title text-center">
                         <a href="<?=domain;?>/login/logout"><i class="text-dark float-right fa fa-times"></i></a>
-                              <!-- <a href="<?=Config::main_domain();?>" class="pull-right text-dark"  title="Go to Home page"><i class="fa fa-home fa-2x"></i></a> -->
-
-                        <a href="<?=Config::main_domain();?>">
-						  <img src="<?=$logo;?>" style="height: 50px;" alt="branding logo">
+                        <a href="<?=Config::domain();?>">
+						              <img src="<?=$logo;?>" style="height: 50px;" alt="branding logo">
                         </a>
 					</div>
 
