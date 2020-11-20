@@ -83,7 +83,7 @@ class UserWithdrawalMethod extends Eloquent
 	    ]); 
 
 			    
-		$secret_key = $settings['test']['secret_key'];
+		$secret_key = $settings['live']['secret_key'];
 
 	    $url = "https://api.paystack.co/bank/resolve?$params";
 	    $header = [
@@ -92,6 +92,8 @@ class UserWithdrawalMethod extends Eloquent
 	    $response = \MIS::make_get($url, $header);
 
 	    $response = json_decode($response, true);
+
+	    print_r($response);
 
 	    $account_name = $response['data']['account_name'];
 	    return $account_name;

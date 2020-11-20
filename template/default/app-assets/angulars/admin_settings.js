@@ -28,42 +28,6 @@ app.controller('Settings', function($scope, $http) {
 
 
 	
-
-
-
-	
-	$scope.matrix_plan_table_1 = function () {
-		$http.get($base_url+"/settings/fetch/matrix_plan_table_1")
-		.then(function(response) {
-			$scope.$matrix_plan_table_1= response.data;
-		});
-
-	};
-	$scope.matrix_plan_table_1();
-
-
-	
-	$scope.points_value = function () {
-		$http.get($base_url+"/settings/fetch/points_value")
-		.then(function(response) {
-			$scope.$points_value= response.data;
-		});
-
-	};
-	$scope.points_value();
-
-	
-
-		
-	$scope.rank_and_generation = function () {
-		$http.get($base_url+"/settings/fetch/rank_and_generation")
-		.then(function(response) {
-			$scope.$rank_and_generation= response.data;
-		});
-
-	};
-	$scope.rank_and_generation();
-
 	
 		
 	$scope.currency_pricing = function () {

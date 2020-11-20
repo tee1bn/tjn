@@ -152,182 +152,9 @@ include 'includes/header.php';?>
 
 
 
-      <div class="row" >
-        <div class="col-12">
-          <div class="card">
-
-            <div class="card-header"  data-toggle="collapse" data-target="#BonusSettings">
-              <a href="javascript:void;" class="card-title">The Matrix Settings- On Sales Partner</a>
-              <div class="heading-elements">
-                <ul class="list-inline mb-0">
-                  <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                  <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                </ul>
-              </div>
-
-            </div>
-            <div class="card-body row collapse" id="BonusSettings">
-              <div class="col-12">
 
 
-                <div class="card">
-
-                  <div class="card-header"  data-toggle="collapse" data-target="#matrix_table_1">
-                    <a href="javascript:void;" class="card-title">Matrix Plan Table 1</a>
-                    <div class="heading-elements">
-                      <ul class="list-inline mb-0">
-                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                      </ul>
-                    </div>
-
-                  </div>
-                  <div class="card-body row collapse" id="matrix_table_1">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>SN</th>
-                          <th>Generation</th>
-                          <th>Commission (%)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="(key, $setting) in $matrix_plan_table_1.table">
-                          <td>{{$index + 1}}</td>
-                          <td>{{$setting.level}}</td>
-                          <td contenteditable="true" ng-model="$setting.commission">{{$setting.commission}}</td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-
-
-                    <form action="<?=domain;?>/settings/update/matrix_plan_table_1" method="post" class="ajax_form" id="matrix_plan_table_1">
-
-                      <textarea style="display: none;" name="content">{{$matrix_plan_table_1}}</textarea>
-
-                      <div class="text-center col-12">
-                        <button ng-show="$matrix_plan_table_1.length != 0" class="btn btn-success" type="submit">Update </button>
-                      </div>
-                    </form>
-
-                  </div>
-
-                </div>
-
-
-                <div class="card">
-
-                  <div class="card-header"  data-toggle="collapse" data-target="#points_value">
-                    <a href="javascript:void;" class="card-title">Points Value</a>
-                    <div class="heading-elements">
-                      <ul class="list-inline mb-0">
-                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                      </ul>
-                    </div>
-
-                  </div>
-                  <div class="card-body row collapse" id="points_value">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>SN</th>
-                          <th>Course Level</th>
-                          <th>Tag</th>
-                          <th>Points </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="(key, $setting) in $points_value.courses">
-                          <td>{{$index + 1}}</td>
-                          <td>{{$setting.level}}</td>
-                          <td>{{$setting.tag}}</td>
-                          <td contenteditable="true" ng-model="$setting.points">{{$setting.points}}</td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-
-                    <div class="form-group col-12">
-                      <label>Video Testimonial Points </label>
-                      <input type="" name="" ng-model="$points_value.video_testimonial">
-                    </div>
-
-
-                    <form action="<?=domain;?>/settings/update/points_value" method="post" class="ajax_form" id="points_value">
-
-                      <textarea style="display: none;" name="content">{{$points_value}}</textarea>
-
-                      <div class="text-center col-12">
-                        <button ng-show="$points_value.length != 0" class="btn btn-success" type="submit">Update </button>
-                      </div>
-                    </form>
-
-                  </div>
-
-                </div>
-
-
-                
-                <div class="card">
-
-                  <div class="card-header"  data-toggle="collapse" data-target="#ranks_and_generation">
-                    <a href="javascript:void;" class="card-title">Ranks and Generational Depth</a>
-                    <div class="heading-elements">
-                      <ul class="list-inline mb-0">
-                        <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                        <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                      </ul>
-                    </div>
-
-                  </div>
-                  <div class="card-body row collapse" id="ranks_and_generation">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>SN</th>
-                          <th>Rank</th>
-                          <th>Commission Depth </th>
-                          <th>Max payout </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr ng-repeat="(key, $setting) in $rank_and_generation.ranks">
-                          <td>{{$index + 1}}</td>
-                          <td>{{$setting.level}}</td>
-                          <td contenteditable="true" ng-model="$setting.generation">{{$setting.generation}}</td>
-                          <td contenteditable="true" ng-model="$setting.max_payout">{{$setting.max_payout}}</td>
-                        </tr>
-
-                      </tbody>
-                    </table>
-
-
-
-                    <form action="<?=domain;?>/settings/update/rank_and_generation" method="post" class="ajax_form" id="rank_and_generation">
-
-                      <textarea style="display: none;" name="content">{{$rank_and_generation}}</textarea>
-
-                      <div class="text-center col-12">
-                        <button ng-show="$rank_and_generation.length != 0" class="btn btn-success" type="submit">Update </button>
-                      </div>
-                    </form>
-
-                  </div>
-
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-
-
-      <div class="row" >
+      <div class="row" style="display: none;" >
         <div class="col-12">
           <div class="card">
 
@@ -501,6 +328,21 @@ include 'includes/header.php';?>
                     <div class="form-group col-md-6">
                       <label>Minimum Withdrawal </label>
                       <input type="" class="form-control" name="" ng-model="$rules_settings.min_withdrawal_usd">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                      <label>Company Percent </label>
+                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.company_percent">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                      <label>Vendor Percent </label>
+                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.vendor_percent">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                      <label>Affiliate Percent </label>
+                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.affiliate_percent">
                     </div>
 
                  <!--

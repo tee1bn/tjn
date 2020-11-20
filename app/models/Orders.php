@@ -8,18 +8,11 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use  Filters\Traits\Filterable;
 
 
-
-use wp\Models\User as WpUser;
-use wp\Models\Post;
-use wp\Models\PostMeta;
-use wp\Models\LearnPressOrderItem;
-use wp\Models\LearnPressOrderItemMeta;
-use wp\Models\LearnPressUserItem;
-use wp\Models\LearnPressUserItemMeta;
-
-
 use v2\Models\Sales;
-use wp\Models\Terms;
+use v2\Models\Wallet;
+
+
+
 
 
 
@@ -48,6 +41,7 @@ class Orders extends Eloquent  implements OrderInterface
 								'buyer_order',
 								'extra_detail',
 								'status',
+								'settled_at',
 								'paid_at',
 							];
 	
@@ -124,281 +118,6 @@ ELL;
 		return $query;
 	}
 												
-
-	public function give_value_on_wordpress()
-	{
-
-		 if ($this->status == 'completed') {
-		 	echo "compact(varname)";
-		 	return;
- 		 }
-
-		 //find user in school
-		$extra_detail = $this->ExtraDetailArray;
-
-		$course_email = $extra_detail['course_email'];
-
-		$user = WpUser::where('user_email', $course_email)->first();
-
-		 // print_r($course_email);
-		 // print_r($this->total_price());
-		 // print_r($this->order_detail());
-
-		 //create Post Order
-
-
-
-		  $line_items = $this->order_detail();
-
-		  // print_r($line_items);
-
-		  // return;
-		 DB::beginTransaction();
-
-
-		 try {
-		     
-
-		 $now = date("Y-m-d H:i:s");
-		 $main_domain = Config::main_domain();
-
-		 $parent_post = Post::create([
-		      'post_author' =>  1 ,
-		      'post_date'   =>  $now,
-		      'post_date_gmt'   =>  $now,
-		      'post_content'    =>  '',
-		      'post_title'  =>  'Auto Draft',
-		      'post_excerpt'    =>  '',
-		      'post_status' =>  'lp-completed',
-		      'comment_status'  =>  'closed',
-		      'ping_status' =>  'closed',
-		      'post_password'   =>  '',
-		      'post_name'   =>  '',
-		      'to_ping' =>  '',
-		      'pinged'  =>  '',
-		      'post_modified'   =>  $now ,
-		      'post_modified_gmt'   =>  $now,
-		      'post_content_filtered'   => '' ,
-		      'post_parent' =>  '0',
-		      'guid'    =>  '',
-		      'menu_order'  =>  '0',
-		      'post_type'   =>  'lp_order',
-		      'post_mime_type'  =>  '',
-		      'comment_count'    =>  '0',
-		 ]);
-
-		 $guid = "$main_domain?post_type=lp_order&p={$parent_post->ID}";
-
-		 // echo  $parent_post;
-
-		 $parent_post->update([
-		     'guid' => $guid
-		 ]);
-
-
-
-		$fine_date = date("l jS F Y h:i:s A");
-		  $post_title = "Order on $fine_date";
-		 $child_post = Post::create([
-		      'post_author' =>  1 ,
-		      'post_date'   =>  $now,
-		      'post_date_gmt'   =>  $now,
-		      'post_content'    =>  '',
-		      'post_title'  =>  $post_title,
-		      'post_excerpt'    =>  '',
-		      'post_status' =>  'lp-completed',
-		      'comment_status'  =>  'closed',
-		      'ping_status' =>  'closed',
-		      'post_password'   =>  '',
-		      'post_name'   =>  '',
-		      'to_ping' =>  '',
-		      'pinged'  =>  '',
-		      'post_modified'   =>  $now ,
-		      'post_modified_gmt'   =>  $now,
-		      'post_content_filtered'   => '' ,
-		      'post_parent' =>  $parent_post->ID,
-		      'guid'    =>  '',
-		      'menu_order'  =>  '0',
-		      'post_type'   =>  'lp_order',
-		      'post_mime_type'  =>  '',
-		      'comment_count'    =>  '0',
-		 ]);
-
-		 $guid = "$main_domain?post_type=lp_order&p={$child_post->ID}";
-
-		 $child_post->update([
-		     'guid' => $guid
-		 ]);
-
-
-		 $total =$this->total_price();
-
-		 //create post meta: parent post
-		 // $parent_post          
-		     $parent_meta_keys = [
-		         '_lp_cert_thumbnail' => NULL,
-		         '_order_currency' => 'NGN',
-		         '_prices_include_tax' => 'no',
-		         '_user_id' => 'a:1:{i:0;s:1:"1";}',
-		         '_order_subtotal' => $total ,
-		         '_order_total' => $total,
-		         '_order_key' => "ORDER5EFB4D81733D6{$parent_post->ID}",
-		         '_payment_method' => '',
-		         '_payment_method_title' => '',
-		         '_user_ip_address' => '',
-		         '_user_agent' => '',
-		         '_order_version' => '',
-		         '_created_via' => '' ,
-		         '_edit_lock' => '',
-		         '_edit_last' => '',
-		         'slide_template' => '',
-		         'rs_page_bg_color' => '',
-		 ];
-
-		 foreach ($parent_meta_keys as $key => $value) {
-		     PostMeta::create([
-		         'post_id' => $parent_post->ID,
-		         'meta_key' => $key,
-		         'meta_value' => $value,
-		     ]);
-
-		 }
-
-		 //create post meta: child post
-		 $child_meta_keys = [
-		         '_lp_cert_thumbnail' => NULL,
-		         '_order_currency' => 'NGN',
-		         '_prices_include_tax' => 'no',
-		         '_user_id' => 1,
-		         '_order_subtotal' => $total ,
-		         '_order_total' => $total,
-		         '_order_key' => "ORDER5EFB4D81733D6{$parent_post->ID}",
-		         '_payment_method' => '',
-		         '_payment_method_title' => '',
-		         '_user_ip_address' => '',
-		         '_user_agent' => '',
-		         '_order_version' => '',
-		         '_created_via' => '' ,
-		         '_edit_lock' => '',
-		 ];
-
-
-
-		 foreach ($child_meta_keys as $key => $value) {
-		     PostMeta::create([
-		         'post_id' => $child_post->ID,
-		         'meta_key' => $key,
-		         'meta_value' => $value,
-		     ]);
-
-		 }
-
-
-
-		 //create learnpressorderItem
-
-		 foreach ($line_items as $key => $line_item) {
-		
-
-
-		     $parent_line_item_object =    LearnPressOrderItem::create([
-		                             'order_item_name' => $line_item['market_details']['name'],
-		                             'order_id' => $parent_post->ID
-		                         ]);
-
-
-		     $parent_learnpress_meta_keys = [
-		         '_quantity' => 1,
-		         'course_id' => $line_item['market_details']['id'],
-		         '_subtotal' => $line_item['market_details']['price'],
-		         '_total'  => $line_item['market_details']['price'],            
-		     ];
-
-		     //do meta for parent
-		     foreach ($parent_learnpress_meta_keys as $key => $value) {
-		         LearnPressOrderItemMeta::create([
-		             'learnpress_order_item_id' => $parent_line_item_object->order_item_id ,
-		             'meta_key' =>  $key,
-		             'meta_value'=> $value,
-		         ]);
-		     }
-
-
-		     $child_line_item_object =
-		             LearnPressOrderItem::create([
-		             'order_item_name' => $line_item['market_details']['name'],
-		             'order_id' => $child_post->ID
-		         ]);
-
-		         $child_learnpress_meta_keys = [
-		             '_quantity' => 1,
-		             'course_id' => $line_item['market_details']['id'],
-		             '_subtotal' => $line_item['market_details']['price'],
-		             '_total'  => $line_item['market_details']['price'],            
-		         ];
-
-
-		     //do meta for parent
-		     foreach ($child_learnpress_meta_keys as $key => $value) {
-		         LearnPressOrderItemMeta::create([
-		             'learnpress_order_item_id' => $child_line_item_object->order_item_id ,
-		             'meta_key' =>  $key,
-		             'meta_value'=> $value,
-		         ]);
-		     }
-
-
-		     //user items
-		      $lp_user_item =   LearnPressUserItem::create([
-		                                 'user_id' => $user->ID,
-		                                 'item_id'  => $line_item['market_details']['id'],
-		                                 'start_time' => $now,
-		                                 'start_time_gmt' => $now,
-		                                 'end_time' => '0000-00-00 00:00:00',
-		                                 'end_time_gmt' => '0000-00-00 00:00:00',
-		                                 'item_type' => 'lp_course',
-		                                 'status' => 'enrolled',
-		                                 'ref_id' => $child_post->ID ,
-		                                 'ref_type' => 'lp_order',
-		                                 'parent_id' => 0,
-		                         ]);
-
-
-		     //user itemsmeta
-		         $user_item_meta_keys = [
-		             '_last_status' => '', 
-		             '_current_status' => 'enrolled', 
-		             'course_results_evaluate_lesson' => '', 
-		             'grade' => 'in-progress'
-		         ];
-
-		         foreach ($user_item_meta_keys as $key => $value) {
-		             LearnPressUserItemMeta::create([
-		                 'learnpress_user_item_id' => $lp_user_item->user_item_id,
-		                 'meta_key' => $key,
-		                 'meta_value' => $value,
-		             ]);
-
-		         }
-		 }
-
-
-		 $this->update(['status' => 'completed']);
-
-
-
-
-		     DB::commit();
-		 } catch (Exception $e) {
-		     print_r($e->getMessage());
-		     DB::rollback();
-		     
-		 }
-		 return;
-		 
-		 // $this->view('auth/courses');
-		
-	}												
 
 
 	public function getExtraDetailArrayAttribute()
@@ -835,9 +554,7 @@ ELL;
 
 			$this->update(['paid_at'=> date("Y-m-d H:i:s")]);
 			// $this->give_upline_sale_commission();
-
-			// $this->give_value_on_wordpress();
-			// $this->create_sale();
+			$this->settle();
 
 			DB::commit();
 			Session::putFlash("success","Payments Recieved Successfully");
@@ -849,66 +566,129 @@ ELL;
 	}
 
 
-	public function create_sale()
+
+	public function settle()
 	{
 
-		$line_items = $this->order_detail();
+		$settings= SiteSettings::find_criteria('rules_settings')->settingsArray;
+		$settlement_structure = $settings['settlement'];
 
-        $settings = SiteSettings::all()->keyBy('criteria');
+		$order_detail = $this->order_detail();
 
-        $priced_currency = $settings['currency_pricing']->settingsArray['priced_currency'];
-		foreach ($line_items as $key => $line_item) {
-
-
-			    	$tags = Terms::Levels()->get();
-					$item_tags = Post::find($line_item['market_details']['id'])->terms_relationships->KeyBy('term_id');
+		// print_r($order_detail);
 
 
-			    	$terms_ids_array = $item_tags->pluck('term_id')->toArray();
+		DB::beginTransaction();
 
-			    	$level_tags_array = $tags->pluck('term_id')->toArray();
+		try {
+				
+			foreach ($order_detail as $key => $item) {
+				$price =  $item['market_details']['price'];
+
+				$vendor_id = $item['market_details']['user_id'];
+
+				$company_share = $settlement_structure['company_percent'] * 0.01 * $price;
+
+				$affiliate_share = $settlement_structure['affiliate_percent'] * 0.01 * $price;
+				$vendor_share = $settlement_structure['vendor_percent'] * 0.01 * $price;
+
+				if ($this->affiliate_id == null) {
+					$vendor_share += $affiliate_share;
+				}
 
 
-			    	$intersecting_level = array_intersect($terms_ids_array, $level_tags_array);
-			    	$first_key = array_values($intersecting_level)[0];
-
-			    	$level_array = $tags->keyBy('term_id')->toArray() [$first_key];
-
-			    	$setting_array = collect($settings['points_value']->settingsArray['courses'])->keyBy('tag')->toArray();
-
-			    	$level_key = $level_array['name'];
-			    	$level = $setting_array[$level_key]['level'];
-			    	$points = $setting_array[$level_key]['points'];
 
 
-			$sale =    Sales::create([
-			            'user_id' => $this->user_id,
-			            'username' => $this->user->username,
-			            'buyer_id'  => $this->user_id,
-			            'level'  => $level,
-			            'points' => $points,
-			            'priced_amount' => $this->total_price(),
-			            'priced_currency' => $priced_currency,
-			            'order_id' => $this->id,
-			            'item_id' => $line_item['market_details']['id'],
-			            'is_paid'=> 1,
-			            'comment'=> "internal order<br> {$line_item['market_details']['name']}",
-			            'details'=> json_encode($line_item),
-			            
-			        ]);
 
-			$currency_pricing = $settings['currency_pricing']->settingsArray;
+				$extra_detail = [];
 
-			$sale->update_amount_with_conversion($currency_pricing);            
+				$comment ="settlement on #order_id:$this->id#item:{$item['market_details']['id']}";
+
+
+				$paid_at = date("Y-m-d", strtotime("+7 days"));
+
+				$identifier = "tv#u{$vendor_id}#item{$item['market_details']['id']}#o$this->id";
+				$vendor_credit = Wallet::createTransaction(
+				    'credit',
+				    $vendor_id,
+				    null,
+				    $vendor_share,
+				    'completed',
+				    'sale',
+				    $comment,
+				    $identifier,
+				    $this->id,
+				    null,
+				    json_encode($extra_detail),
+				    $paid_at
+				);
+
+				$identifier = "ta#u{$this->affiliate_id}#item{$item['market_details']['id']}#o$this->id";
+				if ($this->affiliate_id != null) {
+					$affiliate_credit = Wallet::createTransaction(
+					    'credit',
+					    $vendor_id,
+					    null,
+					    $affiliate_share,
+					    'completed',
+					    'affiliate',
+					    $comment,
+					    $identifier,
+					    $this->id,
+					    null,
+					    json_encode($extra_detail),
+					    $paid_at
+					);
+				}
+
+
+				$identifier = "tc#u1#item{$item['market_details']['id']}#o$this->id";
+				$affiliate_credit = Wallet::createTransaction(
+				    'credit',
+				    1,
+				    null,
+				    $affiliate_share,
+				    'completed',
+				    'adjustment',
+				    $comment,
+				    $identifier,
+				    $this->id,
+				    null,
+				    json_encode($extra_detail),
+				    $paid_at
+				);
+			
+			}
+
+
+			$this->mark_as_settled();
+			DB::commit();	
+		} catch (Exception $e) {
+			DB::rollback();	
+
+			print_r($e->getMessage());
 		}
 
 
+
+		return;
 	}
+
+
+
+	public function mark_as_settled()
+	{
+		$now = date("Y-m-d H:i:s");
+		$this->update(['settled_at' => $now]);
+
+	}
+
 
 
 	private function give_upline_sale_commission()
 	{
 
+		
 		$settings= SiteSettings::site_settings();
 
 		$user 	 = $this->user;

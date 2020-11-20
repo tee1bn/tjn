@@ -175,11 +175,11 @@ class Withdrawal extends Eloquent
 		$min_withdrawal = $setting['min_withdrawal_usd'];
 
 
-		$commission_balance =  Commission::bookBalanceOnUser($user_id);
+		$commissions =  Wallet::bookBalanceOnUser($user_id, 'affiliate');
+		$sales =  Wallet::bookBalanceOnUser($user_id, 'sale');
 
-		$commission_credits = Commission::onUser($user_id)->Credit()->Cleared()->sum('amount') ;
 
-		$total_earnings =  $commission_credits;
+		$total_earnings =  $commissions + $sales;
 
 		$completed_withdrawal = self::where('user_id' , $user_id)->Completed()->sum('amount');
 		$pending_withdrawal = self::where('user_id' , $user_id)->Pending()->sum('amount');
@@ -187,7 +187,7 @@ class Withdrawal extends Eloquent
 
 		$total_amount_withdrawn = $completed_withdrawal + $pending_withdrawal ;
 
-		$payout_wallet    =  Commission::availableBalanceOnUser($user_id);
+		$payout_wallet    =  Wallet::availableBalanceOnUser($user_id);
 
 		$payout_balance = $payout_wallet  - $total_amount_withdrawn;
 
@@ -200,7 +200,8 @@ class Withdrawal extends Eloquent
 		$state = compact(
 			'withdrawal_fee',
 			'min_withdrawal',
-			'commission_balance',
+			'commissions',
+			'sales',
 			'total_earnings',
 			'payout_balance',
 			'payout_book_balance',

@@ -18,13 +18,13 @@ $week = MIS::date_range($today, 'week', true);
 
 $month = MIS::date_range($today, 'month', true);
 
-
 /*
+
 $daterange = SiteSettings::binary_daterange();
 
 $already_paid = v2\Models\Commission::where('user_id', $user->id)->Completed()->Paid()->sum('binary_points');
 
-*/
+
 $life_personal_volume =  ($user->total_volumes('all', 'enrolment', [], 'volume', 'personal'));
 $life_group_volume =  ($user->total_volumes('all', 'enrolment', [], 'volume', 'group'));
 
@@ -41,7 +41,7 @@ $team_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment');
 
 $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment', 'direct_line');
 
-
+*/
 
 ;?>
 
@@ -104,7 +104,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
                  <div class="card-body">
                    <div class="media">
                      <div class="media-body text-left w-100">
-                       <h3 class="secondary"><?=$currency;?> <?=MIS::money_format($balances['commission_balance']);?></h3>
+                       <h3 class="secondary"><?=$currency;?> <?=MIS::money_format($balances['sales']);?></h3>
                        <span>SALES</span>
                      </div>
                      <div class="media-right media-middle">
@@ -123,7 +123,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
               <div class="card-body">
                 <div class="media">
                   <div class="media-body text-left w-100">
-                    <h3 class="secondary"><?=$currency;?> <?=MIS::money_format($balances['commission_balance']);?></h3>
+                    <h3 class="secondary"><?=$currency;?> <?=MIS::money_format($balances['commissions']);?></h3>
                     <span>COMMISSION</span>
                   </div>
                   <div class="media-right media-middle">

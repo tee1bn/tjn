@@ -33,10 +33,19 @@ class home extends controller
         echo "<pre>";
 
 
+        $w = Withdrawal::payoutBalanceFor(78);
+
+        print_r($w);
+
+        return;
+
+        $order = Orders::find(42);
+        $order->settle();
+
+        // print_r($order->toArray());
 
 
-        echo ProductsCategory::all();
-
+        return;
 
         print_r($this->auth()->Subscriptions);
         // echo MIS::custom_mime_content_type("uploads/images/products/self-made-millionaire_14.jpg");

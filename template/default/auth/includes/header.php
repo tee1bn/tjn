@@ -67,10 +67,10 @@
             <li class="nav-item"><a class="navbar-brand" href="#" style="padding: 0px;">
               <img class="brand-logo" alt="<?=project_name;?> logo" src="<?=$logo;?>"
                style="
-    height: 52px;
+    height: 45px;
     width: 172px;
     object-fit: contain;
-    margin-top: 2px;">
+    margin-top: 5px;">
             <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
           </ul>
         </div>
