@@ -48,6 +48,25 @@ class SalesController extends controller
 
     }
 
+    //previvew page for all sales
+    public function v($id)
+    {
+        
+        $auth = $this->auth();
+        $product = Products::where('id',$id)->where('user_id',$auth->id)->first();
+
+        if ($product == null) {
+
+            Session::putFlash("danger","Item not found");
+            // Redirect::back();
+        }
+
+
+        $this->view('guest/single-product', compact('product'));
+        // $this->view('composed/view_product', compact('product'));
+
+    }
+
     public function index($referral_username = null)
     {
 
