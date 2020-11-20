@@ -193,7 +193,7 @@ class Withdrawal extends Eloquent
 
 		$payout_book_balance = $payout_wallet  - $completed_withdrawal;
 
-		$available_payout_balance = ($payout_balance >= $min_withdrawal)? $payout_balance: 0 ;
+		$available_payout_balance = ($payout_balance >= $min_withdrawal)? $payout_balance: $payout_balance ;
 
 
 

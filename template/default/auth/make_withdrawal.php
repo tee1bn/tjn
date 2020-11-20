@@ -53,7 +53,7 @@ $balances = Withdrawal::payoutBalanceFor($auth->id);
                       <small>Minimum Withdrawal: <?=$currency;?><?=MIS::money_format($balances['min_withdrawal']);?></small><br>
                       <hr>
                       </div>
-                    <?php if ($balances['available_payout_balance'] > 0):?>
+                    <?php if ($balances['available_payout_balance'] > $balances['min_withdrawal']):?>
 
                     <form class="col-12 ajax_for" method="POST" action="<?=domain;?>/withrawals/submit_withdrawal_request">
 
