@@ -8,6 +8,8 @@ export function FilePreviewer($files, $index, $sce=null) {
              $file.file_path  = $sce.trustAsResourceUrl($file.file_path);
              return $file;
         });
+
+        console.log(this.$files);
     }
 
     this.next = function() {

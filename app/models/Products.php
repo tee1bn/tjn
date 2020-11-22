@@ -76,7 +76,8 @@ class Products extends Eloquent
 	public function getPreviewLinkAttribute()
 	{ 
 		$domain = Config::domain();
-		return "$domain/user/preview-link/$this->id";
+
+		return "$domain/s/v/$this->id";
 	}
 
 	public function getUserEditLinkAttribute()
@@ -614,8 +615,9 @@ class Products extends Eloquent
 
 
 		public static  function default_ebook_pix()
-		{
-			return 'https://wrappixel.com/demos/admin-templates/monster-admin/assets/images/big/img1.jpg';
+		{	
+			$domain = Config::domain();
+			return "$domain/template/default/app-assets/images/logo/download.png";
 		}
 
 

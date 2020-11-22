@@ -328,9 +328,9 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
             </div>
 
-            <label>Allow Customers pay what they want 
+           <!--  <label>Allow Customers pay what they want 
               <input type="checkbox" ng-model="$product_form.$product.extra_details.customer_sets_price">
-            </label>
+            </label> -->
             <div class="form-group" ng-hide="$product_form.$product.extra_details.customer_sets_price">
               <label>Price </label>
               <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">

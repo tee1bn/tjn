@@ -2,7 +2,7 @@ import { FilePreviewer } from "./carousel.js";
 
 app.controller('CarouselController', function($scope, $http, $sce) {
 
-    $http.get($base_url+'/shop/get_single_item_on_market/product/'+$this_item)
+    $http.get(`${$base_url}/shop/get_single_item_on_market/product/${$this_item}/${$preview}`)
     .then(function(response) {
       $scope.$item = response.data.single_good;
         $scope.$carousel = new FilePreviewer($scope.$item.market_details.cover.file, 0, $sce);
@@ -33,9 +33,10 @@ app.directive("coverDiv", function() {
             top: -29px;
           }
         </style>
-        <div class="cover">
-          <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
-          <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
+        <div class="cover" ng-cloak>
+
+          <i ng-hide="($carousel.$index==0) || ($carousel.$files.length == 0) " ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
+          <i ng-hide="(($carousel.$index+1)==$carousel.$files.length) || ($carousel.$files.length == 0) " ng-click="$carousel.next()" 
           class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
 
            <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 

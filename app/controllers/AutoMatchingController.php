@@ -87,9 +87,9 @@ class AutoMatchingController extends controller
 
     public function auth_cron()
     {
+        return;
         $auth = $this->auth();
         if (!$auth) {
-            return;
         }
 
         $this->fetch_news();

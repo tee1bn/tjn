@@ -5,6 +5,7 @@ include 'includes/header.php' ;?>
 <script>
     try{
         $this_item = <?=$product->id;?>;
+        $preview = <?=$is_preview ?? 0;?>;
     }catch(e){}
 
 </script>

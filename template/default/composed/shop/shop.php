@@ -33,7 +33,7 @@
                       </p>
                     
                       <span class="course-subtext">
-                        <span class="" ng-bind-html='$item.market_details.star_rating.stars'></span>
+                        <!-- <span class="" ng-bind-html='$item.market_details.star_rating.stars'></span> -->
                       </span>
 
                       <br>

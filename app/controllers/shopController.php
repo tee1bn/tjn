@@ -358,17 +358,20 @@ class shopController extends controller
         // echo "<pre>";
         header("content-type:application/json");
 
-        $cart = json_decode($_SESSION['cart'], true);
-
-        foreach ($cart['$items'] as $key =>  $item) {
-
-                 // $item_array =  json_decode($item, true);
-            unset($cart['$items'][$key]['$$hashKey']);
-            $items[] = $item;
-        }
 
         if (! isset($_SESSION['cart'])) {
             $cart = [];
+        }else{
+
+
+
+            $cart = json_decode($_SESSION['cart'], true);
+           foreach ($cart['$items'] as $key =>  $item) {
+                     // $item_array =  json_decode($item, true);
+                unset($cart['$items'][$key]['$$hashKey']);
+                $items[] = $item;
+            }
+
         }
 
         print_r(json_encode($cart));
@@ -536,7 +539,7 @@ class shopController extends controller
 
 
 
-    public function get_single_item_on_market($model_key, $item_id)
+    public function get_single_item_on_market($model_key, $item_id, $previvew= 0)
     {
         $register = Market::$register;
 
@@ -551,8 +554,16 @@ class shopController extends controller
         ->OnSale()
         ->first();
 
+        if ($item_on_sale==null) {
+            echo json_encode([]);
+            return;
+        }
 
         $good  = $item_on_sale->good()->market_details();
+        if ($previvew==1) {
+            $good  = $model::find($item_id)->market_details();
+        }
+
         $single_good = [
             'market_details' => $good
         ];
@@ -569,7 +580,6 @@ class shopController extends controller
     //previvew page for product
     public function v($id)
     {
-        
         $auth = $this->auth();
         $product = Products::where('id',$id)->where('user_id',$auth->id)->first();
 
@@ -579,8 +589,8 @@ class shopController extends controller
             Redirect::back();
         }
 
-
-        $this->view('guest/single-product', compact('product'));
+        $is_preview = 1;
+        $this->view('guest/single-product', compact('product','is_preview',));
         // $this->view('composed/view_product', compact('product'));
 
     }
