@@ -308,7 +308,7 @@ class Products extends Eloquent
 			'quick_description' => substr($this->description, 0, 250).'...',
 			'price' => $this->price,
 			'old_price' => $this->old_price,
-			'by' => ($this->instructor == null)? '' : "By {$this->instructor->fullname}",
+			'by' =>  $this->user->DisplayTradeName,
 			'star_rating' => self::star_rating(4, 5),
 			'quickview' =>  $this->quickview(),
 			'single_link' =>  $this->ViewLink,

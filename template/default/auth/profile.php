@@ -168,7 +168,12 @@ include 'includes/header.php';?>
                   action="<?=domain;?>/user-profile/update_profile" method="post">
                   <div class="form-group">
                     <label for="username" class="pull-left">Username *</label>
-                    <input type="text"  name="username" disabled="" value="<?=$auth->username;?>" id="username" class="form-control" value="">
+                    <input type="text"  name="username" disabled="" value="<?=$auth->username;?>" id="username" class="form-control" >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="tradename" class="pull-left">Tradename </label>
+                    <input type="text"  name="tradename"  value="<?=$auth->tradename;?>" id="tradename" class="form-control">
                   </div>
 
             <!--       <div class="form-group">

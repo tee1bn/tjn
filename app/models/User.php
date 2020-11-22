@@ -36,6 +36,7 @@ class User extends Eloquent
 				'firstname',
 				'lastname',
 				'username',	
+                'tradename', 
 				'account_plan',	
 	 			'locked_to_receive',	
 				'rank',
@@ -51,9 +52,6 @@ class User extends Eloquent
 				'country',
 				'worthy_cause_for_donation',
 				'phone_verification',
-				'bank_name',
-				'bank_account_name',
-				'bank_account_number',
 				'profile_pix',
 				'resized_profile_pix',
 				'password',
@@ -119,6 +117,13 @@ class User extends Eloquent
         'vendor' => 2,   //mapping to id
         'affiliate' => 1, 
     ]; 
+
+
+
+    public function getDisplayTradeNameAttribute()
+    {
+        return $this->tradename ?? $this->username;
+    }
 
     public function wp_user()
     {
