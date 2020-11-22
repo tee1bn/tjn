@@ -642,6 +642,9 @@ class UserController extends controller
 
     public function edit_product($product_id)
     {   
+        $this->edit_p($product_id);
+        return;
+
         $auth = $this->auth();
 
         $product = Products::where('user_id', $auth->id)->where('id', $product_id)->first();

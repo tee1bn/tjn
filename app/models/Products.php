@@ -387,6 +387,32 @@ class Products extends Eloquent
 
     public function is_ready_for_review()
     {
+
+
+    	$required =  [
+    		'name',
+    		'price',
+    		'category_id',
+    		'description',
+    	];
+
+    	$required_arrays =  [
+    		'FilesArray',
+    	];
+
+    	foreach ($required as $field) {
+    		if ($this->$field == null) {
+    			return false;
+    		}
+    	}
+
+
+    	foreach ($required_arrays as $field) {
+    		if ($this->$field['file'] == []) {
+    			return false;
+    		}
+    	}
+
     	return true;
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
 
 /**
  */
@@ -245,20 +246,33 @@ class ProductsController extends controller
         }
 
 
-        print_r($content_path_map);   
+        // print_r($content_path_map);   
 
         // return;
-        $db_product->update([
-            'extra_details' => json_encode($product['extra_details']),
-            'cover' => json_encode(['file' => $cover_path_map]),
-            'downloadable_files' => json_encode(['file' => $content_path_map]),
-            'extra_details' => json_encode($product['extra_details']),
-            'name' => $product['name'],
-            'description' => $product['description'],
-            'price' => $product['price'],
-            'category_id' => $product['category_id'],
-        ]);
 
+        DB::beginTransaction();
+
+        try {
+            
+            $db_product->update([
+                'extra_details' => json_encode($product['extra_details']),
+                'cover' => json_encode(['file' => $cover_path_map]),
+                'downloadable_files' => json_encode(['file' => $content_path_map]),
+                'extra_details' => json_encode($product['extra_details']),
+                'name' => $product['name'],
+                'description' => $product['description'],
+                'price' => $product['price'],
+                'category_id' => $product['category_id'],
+            ]);
+
+
+            DB::commit();
+            Session::putFlash("success","Changes saved successfully ");
+        } catch (Exception $e) {
+            DB::rollback();
+            Session::putFlash("danger","Something went wrong");
+            
+        }
 
 
     }

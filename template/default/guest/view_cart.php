@@ -78,7 +78,7 @@ include 'includes/header.php';?>
                               </div>
                               <ul>
                                 <li class="text-danger" ng-click="$shop.$cart.remove_item($item)"><a>Remove</a></li>
-                                <li><h2><b><?=$currency;?>{{$item.market_details.price }}<i class="fa fa-tags"></i> </b></h2></li>
+                                <li><h2><b><?=$currency;?>{{$item.market_details.price }}</b></h2></li>
                               </ul>
                                   <br>
                                   <div class="quantity">
