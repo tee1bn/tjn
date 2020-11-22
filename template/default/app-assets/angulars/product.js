@@ -146,6 +146,11 @@ class ProductForm {
 
     }
 
+    hideContentPad(){
+        return this.$product.content.length == 1;
+    }
+
+
     save($publish = 0) {
 
         var $form = new FormData();

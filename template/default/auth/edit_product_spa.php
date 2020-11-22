@@ -282,7 +282,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
             </div>
 
 
-            <div class="form-group">
+            <div class="form-group" ng-hide="$product_form.hideContentPad();">
               <label>Content <small></small> </label>
               <div class="file-upload">
                 <span ng-show="$product_form.file_pad.src=='local'" >
