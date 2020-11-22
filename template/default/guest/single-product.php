@@ -33,15 +33,8 @@ include 'includes/header.php' ;?>
 
 
     <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
-        <?php if (! $product->is_free()) :?>
             <a onclick="add_item_singly();"  style="<?=$show_add_to_cart;?>" title="Order Now" class="btn btn-outline-primary ft ft-shopping-cart" href="Javascript:void(0);">
-            Order Now </a>
-        <?php endif;?>
-        <?php if ($product->is_free()) :?>
-          <a class="btn btn-outline-primary" href="<?=domain;?>/courses/read/<?=$product->id;?>">
-            Start Course
-        </a>
-    <?php endif;?>
+            Order Now </a>       
 </div>
 
 </div>
@@ -86,11 +79,8 @@ body{
             <h6>By <?=$product->user->DisplayTradeName ?? '';?> </h6>
             <!-- <small>Updated <?=date("M j, Y h:iA" , strtotime($product->updated_at));?></small> -->
         </div>
-        <!-- Card sample -->
-        <!-- <div class="text-center">
-            <img style="width: 260px; height: 170px; object-fit: cover;" class="card-img-top mb-1 img-fluid" data-src="holder.js/100px180/" src="<?=domain;?>/<?=$product->imageJson;?>" alt="Card image cap">
-        </div> -->
-        <hr>
+        
+        <!-- <hr> -->
         <span style="color: #00b5b8;">
             <?=($product->market_details()['star_rating']['stars']);?>
         </span>
@@ -106,11 +96,8 @@ body{
 
         </h4>
 
-        <?php if (! $product->is_free()) :?>
-            <a href="javascript:void;" class="form-control text-center btn-primary"
-            onclick="add_item_singly();"  style="<?=$show_add_to_cart;?>"><i class="ft ft-shopping-cart"></i> Order Now</a>
-        <?php endif;?>
-
+            <a href="javascript:void;" class="form-control text-center btn-primary" onclick="add_item_singly();"  
+            style="<?=$show_add_to_cart;?>"><i class="ft ft-shopping-cart"></i> Order Now</a>
         <script>
 
             add_item_singly = function () {

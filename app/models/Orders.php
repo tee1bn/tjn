@@ -557,7 +557,7 @@ ELL;
 			$this->settle();
 
 			DB::commit();
-			Session::putFlash("success","Payments Recieved Successfully");
+			Session::putFlash("success","Order completed successfully");
 			return true;
 		} catch (Exception $e) {
 			DB::rollback();
@@ -566,13 +566,21 @@ ELL;
 	}
 
 
+	public function is_free()
+	{
+		return $this->amount_payable == 0;
+	}
+
 
 	public function settle()
 	{
 
+		if ($this->is_free()) {
+			return;
+		}
+
 		$settings= SiteSettings::find_criteria('rules_settings')->settingsArray;
 		$settlement_structure = $settings['settlement'];
-
 		$order_detail = $this->order_detail();
 
 		// print_r($order_detail);

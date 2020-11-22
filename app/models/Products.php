@@ -396,9 +396,6 @@ class Products extends Eloquent
     		'description',
     	];
 
-    	$required_arrays =  [
-    		'FilesArray',
-    	];
 
     	foreach ($required as $field) {
     		if ($this->$field == null) {
@@ -407,13 +404,54 @@ class Products extends Eloquent
     	}
 
 
-    	foreach ($required_arrays as $field) {
-    		if ($this->$field['file'] == []) {
-    			return false;
-    		}
+    	if ($this->Delivery == false) {
+    		return false;
     	}
 
+
     	return true;
+    }
+
+
+    public function getDeliveryAttribute()
+    {
+    	    	//ensure there is content
+    	$extra_details = $this->ExtraDetailsArray;
+    	$delivery = [
+    		'method'=> $extra_details['delivery_method'],
+    		'content' => [
+    			[
+    				'file_path'=>'',
+    				'name'=>'uoi',
+    			],
+    		],
+    	];
+
+
+    	if ($extra_details['delivery_method'] == 'external') {
+
+    		if ( !filter_var( $extra_details['after_purchase_link'], FILTER_VALIDATE_URL) === true) {
+    			return false;
+    		}
+
+    		$content = 
+    		[
+    			[
+    				'name' => 'delivery',
+    				'file_path' => $extra_details['after_purchase_link'],
+    			]
+    		];
+
+    	}else{
+    		if ($this->FilesArray['file'] ==null) {
+    			return false;
+    		}
+
+    		$content = $this->FilesArray['file'];
+    	}
+
+    	$delivery['content'] = $content;
+    	return $delivery;
     }
 
     public function update_product($inputs, $files, $downloadable_files)

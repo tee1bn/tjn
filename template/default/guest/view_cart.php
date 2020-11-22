@@ -165,8 +165,8 @@ include 'includes/header.php';?>
                             ng-model="$shop.$cart.$extra_detail.product_ref"  required=""> 
                           </div> 
 
-                          <!-- <input type="hidden" name="payment_method" value="paystack"> -->
-                          <div class="form-group">                                
+
+                          <div class="form-group" ng-if="$shop.$cart.calculate_total()>0">                                
                             <label>Pay With* </label> <small class="float-right">  </small>
 
                             <select class="form-control" required="" name="payment_method" onchange="present_payment_methods(form);">
@@ -176,6 +176,12 @@ include 'includes/header.php';?>
                               <?php endforeach;?>
                             </select>
                           </div>
+
+                          <span ng-show="$shop.$cart.calculate_total()==0">
+                            <input type="hidden" name="payment_method" value="bank_transfer">
+                            <button  id="get_breakdown_btn" type="submit" 
+                            class="btn btn-dark" onclick="get_breakdown(form)"> Complete Order</button>
+                          </span>
 
                           <button id="get_breakdown_btn" type="button" style="display: none;"
                           class="btn btn-dark" onclick="get_breakdown(form)"> Set Payment Method</button>
@@ -191,13 +197,21 @@ include 'includes/header.php';?>
                           }
                           
                           on_complete_breakdown = function($data){
-                            $('#payment_breakdown').html($data.breakdown.line);
-                            $('#get_breakdown_btn').css('display', 'none');
-                            $('#submit_btn').css('display', 'block');
+                            try{
+                              if (typeof $data.url !== 'undefined') {
+                                window.location.href = $data.url;
+                                return;
+                              }
 
-                            $action = $base_url+ '/shop/complete_order/make_payment';
-                            $($form).attr('action', $action);
-                            $($form).attr('data-function', 'on_complete_order');
+
+                              $('#payment_breakdown').html($data.breakdown.line);
+                              $('#get_breakdown_btn').css('display', 'none');
+                              $('#submit_btn').css('display', 'block');
+
+                              $action = $base_url+ '/shop/complete_order/make_payment';
+                              $($form).attr('action', $action);
+                              $($form).attr('data-function', 'on_complete_order');
+                            }catch(e){}
                             // console.log($form);
                           }
 

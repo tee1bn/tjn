@@ -233,9 +233,16 @@ class shopController extends controller
                     DB::commit();
                     $_SESSION['shop_checkout_id'] = $new_order->id;
 
-
-
                     header("content-type:application/json");
+
+                    //complete payment if it is free
+                    if ($new_order->is_free()) {
+                        $url = $new_order->after_payment_url();
+                        $payment_details = $shop->initializePayment()->attemptPayment();
+                        $new_order->mark_paid();
+                        echo json_encode(compact('url','new_order','payment_details'));
+                        return;
+                    }
 
                     switch ($action) {
                         case 'get_breakdown':
@@ -268,7 +275,7 @@ class shopController extends controller
 
                     DB::rollback();
                     Session::putFlash('danger', "We could not create your order.");
-            // Redirect::back();
+                    // Redirect::back();
                 }
             }
 
