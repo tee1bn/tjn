@@ -1,5 +1,5 @@
 <?php 
-$page_title = MIS::encode_for_url($product->title);
+$page_title = MIS::encode_for_url($product->name);
 include 'includes/header.php' ;?>
 
 <script>

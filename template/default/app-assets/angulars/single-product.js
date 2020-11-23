@@ -39,12 +39,12 @@ app.directive("coverDiv", function() {
           <i ng-hide="(($carousel.$index+1)==$carousel.$files.length) || ($carousel.$files.length == 0) " ng-click="$carousel.next()" 
           class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
 
-           <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 
+           <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.safe_file_path}}" 
            class ="d-block w-100 cover-video" alt="">
 
            <span ng-if="$carousel.$current_file.file_type=='video'">
              
-           <iframe class="cover-video" ng-src="{{$carousel.$current_file.file_path}}" allowfullscreen>
+           <iframe class="cover-video" ng-src="{{$carousel.$current_file.safe_file_path}}" allowfullscreen>
            </iframe>
            </span>
 

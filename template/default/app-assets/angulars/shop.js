@@ -188,13 +188,23 @@ import { FilePreviewer } from "./carousel.js";
 		
 
 		this.quickview = function ($item) {
-					$('#quick_view_modal').modal('show');			
-					this.$quickview = $item;
+					$('#quick_view_modal').modal({backdrop: 'static',keyboard: false});			
 					// this.$quickview.$carousel = new FilePreviewer($item.market_details.cover.file, 0 , $sce);
 					let $scope = angular.element($('#content')).scope();
-					$scope.$carousel = new FilePreviewer($item.market_details.cover.file, 0, $sce);
+
+					try{
+
+						if ($item.market_details.cover.file != []) {
+							$scope.$carousel = new FilePreviewer($item.market_details.cover.file, 0, this.$sce);
+						}
+					}catch(e){
+						// console.log(e);
+					}
+
+					this.$quickview = $item;
+					console.log($item);
 					// $scope.$apply();
-					console.log($scope.$carousel);
+
 			}
 
 		this.fetch_products = function () {
@@ -340,28 +350,30 @@ app.directive("w3TestDirective", function() {
             position: relative;
             top: -29px;
           }
+
         </style>
-        <div class="cover">
-          <i ng-hide="$carousel.$index==0" ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
-          <i ng-hide="($carousel.$index+1)==$carousel.$files.length" ng-click="$carousel.next()" 
-          class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
+       <div class="cover" ng-cloak>
 
-           <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.file_path}}" 
-           class ="d-block w-100 cover-video" alt="">
+         <i ng-hide="($carousel.$index==0) || ($carousel.$files.length == 0) " ng-click="$carousel.back()" class="fa fa-chevron-circle-left fa-2x backleft"> </i>  
+         <i ng-hide="(($carousel.$index+1)==$carousel.$files.length) || ($carousel.$files.length == 0) " ng-click="$carousel.next()" 
+         class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
 
-           <span ng-if="$carousel.$current_file.file_type=='video'">
-             
-           <iframe class="cover-video" ng-src="{{$carousel.$current_file.file_path}}" allowfullscreen>
-           </iframe>
+          <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.safe_file_path}}" 
+          class ="d-block w-100 cover-video" alt="">
+
+          <span ng-if="$carousel.$current_file.file_type=='video'">
+            
+          <iframe class="cover-video" ng-src="{{$carousel.$current_file.safe_file_path}}" allowfullscreen></iframe>
+          </span>
+
+         <center class="carousel-dot">
+           <span ng-repeat="($index, $file) in $carousel.$files">
+             <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
+             <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
            </span>
+         </center>
+       </div>
 
-          <center class="carousel-dot">
-            <span ng-repeat="($index, $file) in $carousel.$files">
-              <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
-              <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
-            </span>
-          </center>
-        </div>
         `,
     };
 });

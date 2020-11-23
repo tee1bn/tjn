@@ -6,6 +6,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use v2\Shop\Contracts\OrderInterface;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use  Filters\Traits\Filterable;
+use  v2\Shop\Shop;
 
 
 use v2\Models\Sales;
@@ -555,8 +556,8 @@ ELL;
 			$this->update(['paid_at'=> date("Y-m-d H:i:s")]);
 			// $this->give_upline_sale_commission();
 			$this->settle();
-
 			DB::commit();
+			Shop::empty_cart_in_session();
 			Session::putFlash("success","Order completed successfully");
 			return true;
 		} catch (Exception $e) {

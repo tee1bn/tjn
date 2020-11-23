@@ -185,6 +185,14 @@ class UserProfileController extends controller
                                 ],
 
 
+                    'tradename' => [
+                                    // 'required'=> true,
+                                    'min'=> 1,
+                                    // 'no_special_character'=> true,
+                                    'replaceable'=> 'User|'.$this->auth()->id,
+                                ],
+
+
                     'email' => [
                                     'required'=> true,
                                     'email'=> true,

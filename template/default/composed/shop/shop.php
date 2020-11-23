@@ -1,3 +1,12 @@
+<style>
+  
+  .cover-video{
+      height: 25em !important;
+      width: 100%;
+      object-fit: cover;
+  }
+
+</style>
 
           <div  id="content"  ng-controller="ShopController" ng-cloak>
               
@@ -27,7 +36,7 @@
                     <img class="card-img-top" src="{{$item.market_details.thumbnail}}" alt="Card image cap">
                     <div class="card-body">
                       <hr>
-                      <b>{{$item.market_details.short_name}}...</b>
+                      <b>{{$item.market_details.name}}</b>
                       <p class="card-text course-subtext">
                          <!-- <small ng-bind-html="$item.market_details.short_description"></small> -->
                       </p>
@@ -66,8 +75,8 @@
 
 
             <!-- Modal -->
-            <div id="quick_view_modal" class="modal fade" role="dialog">
-              <div class="modal-dialog modal-lg">
+            <div id="quick_view_modal" class="modal fade"  role="dialog">
+              <div class="modal-dialog modal-lg" >
 
               <div class="modal-content">
               <!--     <div class="modal-header">

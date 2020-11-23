@@ -4,12 +4,12 @@ export function FilePreviewer($files, $index, $sce=null) {
     this.$current_file = $files[$index];
 
     if ($sce != null) {
+        // console.log(this.$files);
         this.$files.map(function($file){
-             $file.file_path  = $sce.trustAsResourceUrl($file.file_path);
+             $file.safe_file_path  = $sce.trustAsResourceUrl($file.file_path);
              return $file;
         });
 
-        console.log(this.$files);
     }
 
     this.next = function() {
