@@ -249,7 +249,8 @@ class Products extends Eloquent
 	{
 		$product = $this;
 		$controller = new \home;
-		$view = $controller->buildView('composed/view_product', compact('product'), null, true);
+		$view = $controller->buildView('composed/view_product', compact('product'), true, true);
+
 
 		$last_updated = date("M j, Y h:iA" , strtotime($this->updated_at));
 		$quickview = "$view";
