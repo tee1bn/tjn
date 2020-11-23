@@ -132,8 +132,9 @@ class shopController extends controller
             {   
                 $order_id = MIS::dec_enc('decrypt', $order_id);
                 $order = Orders::where('id', $order_id)->Paid()->first();
-                if ($order == null) {
 
+
+                if ($order == null) {
                     Redirect::back();
                 }
 
@@ -580,6 +581,47 @@ class shopController extends controller
         header("content-type:application/json");
 
         echo json_encode(compact('single_good'));
+
+
+    }
+
+    //donwloaditem
+
+    public function d($id)
+    {
+        $link = explode("/", MIS::dec_enc('decrypt', $id));
+        $order = Orders::where('id', $link[0])->Paid()->first(); 
+        $product_id = $link[1];
+
+        $products = [];
+        foreach ($order->order_detail() as $key => $item) {
+
+          $product = v2\Models\Market::where('item_id', $item['market_details']['id'])
+          ->latest()
+          ->OnSale()
+          ->first()
+          ->good();
+
+            $product['files'] = collect($product->FilesArray['file'])->pluck('file_path')->toArray();
+
+          $products[$item['market_details']['id']] = $product;
+
+        }  
+
+
+        if ($link[2] == 'single') {
+            $product = $products[$product_id];
+            $extra_detail = $product->ExtraDetailsArray;
+          if ($extra_detail['delivery_method'] == 'local') {
+                $zipped_file = MIS::zipFiles($product['files'], "uploads/content.zip");
+
+          }else{
+
+            $link = $extra_detail['after_purchase_link'];
+            Redirect::to($link);
+          }
+
+        }
 
 
     }

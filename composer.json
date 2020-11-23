@@ -12,16 +12,11 @@
     },
 
 
-"autoload":{
-
-
-"classmap": [
-
-	"app/models",
-	"app/classes",
-	"app/core"
-]
-
-}
-
+    "autoload":{
+        "classmap": [
+           "app/models",
+           "app/classes",
+           "app/core"
+       ]
+    }
 }

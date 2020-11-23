@@ -31,7 +31,7 @@ class Products extends Eloquent
 	protected $table = 'products';
 
 
-	protected $hidden = ['downloadable_files'];
+	// protected $hidden = ['downloadable_files'];
 
 	public static $category_in_market = 'product';
 
@@ -443,6 +443,8 @@ class Products extends Eloquent
     		];
 
     	}else{
+
+
     		if ($this->FilesArray['file'] ==null) {
     			return false;
     		}
@@ -454,6 +456,8 @@ class Products extends Eloquent
     	return $delivery;
     }
 
+
+    
     public function update_product($inputs, $files, $downloadable_files)
     {
 
