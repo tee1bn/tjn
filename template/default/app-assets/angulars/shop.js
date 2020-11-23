@@ -188,9 +188,10 @@ import { FilePreviewer } from "./carousel.js";
 		
 
 		this.quickview = function ($item) {
+					this.$quickview = $item;
 					$('#quick_view_modal').modal({backdrop: 'static',keyboard: false});			
-					// this.$quickview.$carousel = new FilePreviewer($item.market_details.cover.file, 0 , $sce);
 					let $scope = angular.element($('#content')).scope();
+					// console.log($item);
 
 					try{
 
@@ -201,8 +202,6 @@ import { FilePreviewer } from "./carousel.js";
 						// console.log(e);
 					}
 
-					this.$quickview = $item;
-					console.log($item);
 					// $scope.$apply();
 
 			}

@@ -247,11 +247,6 @@ class Products extends Eloquent
 
 	public function quickview()
 	{
-
-		$currency = Config::currency();
-		$price = MIS::money_format($this->price);
-		$by = ($this->instructor == null)? '' : "By {$this->instructor->fullname} ";
-		
 		$product = $this;
 		$controller = new \home;
 		$view = $controller->buildView('composed/view_product', compact('product'), null, true);
