@@ -68,7 +68,7 @@ include 'includes/header.php';?>
                               </div><br>
                               <ul>
                                 <!-- <li class="text-danger"><a>34mb</a></li> -->
-                                <li><a class="btn btn-sm btn-outline-dark" href="<?=domain;?>/s/d/<?=$download_link;?>">Download</a></li>
+                                <li><a class="btn btn-sm btn-outline-dark" onclick="location.href= `<?=domain;?>/s/d/<?=$download_link;?>` " >Download</a></li>
                               </ul>                                 
 
                             </div>
