@@ -16,6 +16,8 @@
   
   <script>
     var $model = '<?=(isset($model))?  $model: '';?>';
+  $request_url = `<?=$request_url ?? "$domain/shop/market?";?>`;
+
   </script>
 
   <script src="<?=asset;?>/angulars/shop.js" type="module"></script>

@@ -29,19 +29,19 @@
         <li class="nav-item">
           <i class="fa fa-envelope"></i>
           <b>Support Email</b><br>
-          <a href="mailto://<?=$site_setting['support_email'];?>"><?=$site_setting['support_email'];?></a>
+          <a href="mailto://<?=$site_setting['support_email']??'';?>"><?=$site_setting['support_email']??'';?></a>
         </li>
 
         <li class="nav-item">
           <i class="fa fa-phone"></i>
           <b>Phone</b><br>
-          <a href="tel://<?=$site_setting['contact_phone'];?>"><?=$site_setting['contact_phone'];?></a>
+          <a href="tel://<?=$site_setting['contact_phone']??'';?>"><?=$site_setting['contact_phone']??'';?></a>
         </li>
 
         <li class="nav-item">
           <i class="fa fa-map-marker"></i>
           <b>Address</b><br>
-          <span> <?=$site_setting['contact_address'];?></span>
+          <span> <?=$site_setting['contact_address']??'';?></span>
         </li>
       </ul>                
 
@@ -61,9 +61,9 @@
 
     <b>Socials</b><hr>
     <ul class="nav navbar-nav ml-1" style="display: inline;">
-      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['facebook'];?>"><i class="ft-facebook fa-3x"></i></a></li>
-      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['twitter'];?>"><i class="ft-twitter fa-3x"></i></a></li>
-      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['instagram'];?>"><i class="ft-instagram fa-3x"></i></a></li>
+      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['facebook']??'';?>"><i class="ft-facebook fa-3x"></i></a></li>
+      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['twitter']??'';?>"><i class="ft-twitter fa-3x"></i></a></li>
+      <li class="nav-" style="display: inline;"><a href="<?=$site_setting['instagram']??'';?>"><i class="ft-instagram fa-3x"></i></a></li>
 
     </ul>                
 
