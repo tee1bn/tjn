@@ -614,7 +614,7 @@ ELL;
 				$comment ="settlement on #order_id:$this->id#item:{$item['market_details']['id']}";
 
 
-				$paid_at = date("Y-m-d", strtotime("+7 days"));
+				$paid_at = date("Y-m-d", strtotime("+0 days"));
 
 				$identifier = "tv#u{$vendor_id}#item{$item['market_details']['id']}#o$this->id";
 				$vendor_credit = Wallet::createTransaction(

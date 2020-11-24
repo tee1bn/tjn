@@ -1,5 +1,5 @@
 <?php 
-
+$page_title = "Discover high quality products by expert";
 include 'includes/header.php';?>
 
 
