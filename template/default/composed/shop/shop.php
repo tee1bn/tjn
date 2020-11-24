@@ -71,8 +71,8 @@
             </section>
 
             <center ng-cloak>
-              <button ng-show="$shop.$items.length>0" ng-click="$shop.fetch_products()" ng-hide="$shop.$no_more_product" class="btn btn-secondary">Load More</button>
-              <button  ng-show="$shop.$no_more_product" class="btn btn-secondary">No More Records</button>
+              <button ng-show="$shop.$items.length>0" ng-click="$shop.fetch_products()" ng-hide="$shop.$no_more_product" class="btn btn-outline-light">Load More</button>
+              <button  ng-show="$shop.$no_more_product" class="btn btn-outline-light">No More Records</button>
             </center>
 
 
