@@ -28,6 +28,7 @@ class User extends Eloquent
                 'placement_position',
                 'enrolment_position',
                 'settings',
+                'extra_details',
 				'placement_cut_off',
 				'type_of_registration',
 				'rejoin_id', //former id
@@ -117,6 +118,27 @@ class User extends Eloquent
         'vendor' => 2,   //mapping to id
         'affiliate' => 1, 
     ]; 
+
+
+
+    public function getExtraDetailsArrayAttribute()
+    {
+
+        if (($this->extra_details == null) || ($this->extra_details == '[]') ) {
+            $default = [
+                'facebook',
+                'twitter',
+                'instagram',
+                'youtube',
+                'bio',
+            ];
+
+            return $default;
+        }
+
+        return json_decode($this->extra_details, true);
+
+    }
 
 
 

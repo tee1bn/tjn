@@ -13,6 +13,60 @@ class UserProfileController extends controller
 
     }
 
+    public function extra_detail()
+    {
+
+        echo "<pre>";
+        print_r($_REQUEST);
+        $validator = new Validator;
+
+        $validator->check($_REQUEST['extra_details'], [
+            'support_phone' => [
+                'required' => true,
+                'min' => 3,
+                'max' => 32,
+            ],
+            'support_email' => [
+                'required' => true,
+                'email' => true,
+            ],
+
+            'bio' => [
+                'min' => 3,
+                'max' => 300,
+            ],
+        ]);
+
+
+        $validator->check($_REQUEST, [
+            
+                'tradename' => [
+                                // 'required'=> true,
+                                'min'=> 1,
+                                // 'no_special_character'=> true,
+                                'replaceable'=> 'User|'.$this->auth()->id,
+                            ],
+        ]);
+
+
+    
+        if (! $validator->passed()) {
+            Redirect::back();
+        }
+
+        $auth = $this->auth();
+
+
+
+        $auth->update([
+            'extra_details' => json_encode($_REQUEST['extra_details']),
+            'tradename' => $_REQUEST['tradename']
+        ]);
+        Session::putFlash("success","Changes saved successfully");
+
+        Redirect::back();
+    }
+
     public function update_payment_info()
     {
         echo "<pre>";
@@ -184,13 +238,6 @@ class UserProfileController extends controller
                                     'replaceable'=> 'User|'.$this->auth()->id,
                                 ],
 
-
-                    'tradename' => [
-                                    // 'required'=> true,
-                                    'min'=> 1,
-                                    // 'no_special_character'=> true,
-                                    'replaceable'=> 'User|'.$this->auth()->id,
-                                ],
 
 
                     'email' => [
