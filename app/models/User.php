@@ -1401,6 +1401,18 @@ public static function where_to_place_new_user_within_team_introduced_by($team_l
     {
         $username = str_replace(" ", "_", $this->username);
         $link = Config::domain()."/l/".$username;
+        $a =  "<a target='_blank' href='{$link}'> $this->DisplayTradeName </a>";
+
+        return $a;
+    }
+
+
+    public function getPageHrefAttribute()
+    {
+        $username = str_replace(" ", "_", $this->username);
+        $link = Config::domain()."/l/".$username;
+        $a =  "<a target='_blank' href='{$link}'> $this->DisplayTradeName </a>";
+
         return $link;
     }
 

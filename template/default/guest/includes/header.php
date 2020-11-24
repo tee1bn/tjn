@@ -65,14 +65,24 @@
     <!-- BEGIN: Header-->
     <nav class="header-navbar navbar-expand-md navbar navbar-with-menu navbar-static-top navbar-white bg-white navbar-border navbar-brand-center">
       <div class="navbar-wrapper">
+
         <div class="navbar-header sticky-wrapper" id="sticky-wrapper">
           <ul class="nav navbar-nav flex-row">
             <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
-            <li class="nav-item"><a class="navbar-brand" href="<?=domain;?>">
+            <li class="nav-item">
+              <?php if (isset($merchant)) :?>
+              <a class="navbar-brand" href="<?=$merchant->PageHref;?>">
+                <h2 class="brand-text" style="text-transform: capitalize;"><?=$merchant->DisplayTradeName;?></h2>
+              </a>
+              <?php else :?>
+
+              <a class="navbar-brand" href="<?=domain;?>">
                 <!-- <h2 class="brand-text"><?=project_name;?></h2> -->
                 <img src="<?=$logo;?>" style="height: 34px; width:auto;">
+              </a>
+              <?php endif  ?>
 
-              </a></li>
+            </li>
             <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
           </ul>
         </div>
@@ -128,7 +138,7 @@
               </li> -->
 
 
-                        <?php include_once 'template/default/composed/auth_dropdown.php'; ;?>
+              <?php include_once 'template/default/composed/auth_dropdown.php'; ;?>
 
             </ul>
           </div>
@@ -152,12 +162,19 @@
               <span>Home</span></a>
           </li>
 
-
+<!-- 
 
           <li class=" nav-item" data-menu="">
             <a class="-toggle nav-link" href="<?=domain;?>/" data-toggle="">
               <i class="ft-bookmark"></i>
               <span>About</span></a>
+          </li> -->
+      
+      
+          <li class=" nav-item" data-menu="">
+            <a class="-toggle nav-link" href="<?=domain;?>/login" data-toggle="">
+              <i class="ft-lock"></i>
+              <span>Login</span></a>
           </li>
       
       
@@ -175,15 +192,6 @@
           </li>
 
             
-          
-          <li class="dropdown nav-item d-block d-sm-none"  data-menu="dropdown"><a class="dropdown-toggle nav-link" href="#" data-toggle="dropdown">
-            <i class="ft-user"></i><span>9gforex Profile</span></a>
-
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="<?=domain;?>/register"><i class=""></i> Sign Up</a></li>
-              <li><a class="dropdown-item" href="<?=domain;?>/login"><i class=""></i> Sign In</a></li>
-            </ul>
-          </li>
 
 
       

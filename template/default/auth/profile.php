@@ -60,17 +60,20 @@ include 'includes/header.php';?>
                   margin-bottom: 20px;
                   border: 1px solid #14181f42;
                   padding: 19px;">
-                  <form class="form-horizontal ajax_form" id="p_form" method="post" enctype="multipart/form-data" >
+                <form class="form-horizontal" id="p_form" method="post" enctype="multipart/form-data" action="<?=domain;?>/user-profile/update_profile_picture">
                     <div class="user-profile-image" align="center" style="">
                       <img id="myImage" src="<?=domain;?>/<?=$auth->profilepic;?>" alt="your-image" class="full_pro_pix" />
                       <input type='file' name="profile_pix" onchange="form.submit();" id="uploadImage" style="display:none ;" />
-                      <h4><?=ucfirst($auth->username);?></h4>
+                      <h4><?=ucfirst($auth->DisplayTradeName);?></h4>
                       <h4><?=ucfirst($auth->fullname);?></h4>
                       <?=$auth->activeStatus;?>
 <!--                       <span class="badge badge-secondary">
                         <?=$auth->subscription->payment_plan->name;?>
                       </span>
- -->                      <br>
+ -->                      
+                                         <label for="uploadImage" class="btn btn-secondary " style=""> Change Picture</label>
+
+ <br>
                       <!-- <span class="text-danger">*click update profile to apply change</span> -->
                     </div>
                   </form>

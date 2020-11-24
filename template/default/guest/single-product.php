@@ -76,7 +76,7 @@ body{
   <div class="sidebar"><div class="sidebar-content card">
     <div class="card-body" id="content" ng-controller="ShopController">
         <div class="category-title pb-1">
-            <h6>By <?=$product->user->DisplayTradeName ?? '';?> </h6>
+            <h6>By <?=$product->user->PageLink ?? '';?> </h6>
             <!-- <small>Updated <?=date("M j, Y h:iA" , strtotime($product->updated_at));?></small> -->
         </div>
         

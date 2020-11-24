@@ -210,7 +210,8 @@ import { FilePreviewer } from "./carousel.js";
 
 				let $this= this;
 				$model = ($model != undefined) ? $model : null;
-				let $url = $base_url+'/shop/market/'+$this.$items_page+'/'+$model;
+				// let $url = $base_url+'/shop/market/'+$this.$items_page+'/'+$model;
+				let $url = `${$request_url}&page=${$this.$items_page}`;
 				// $("#page_preloader").css('display', 'block');
 			 $.ajax({
 	            type: "POST",

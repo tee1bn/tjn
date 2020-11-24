@@ -3,6 +3,8 @@
 include 'template/default/guest/includes/header.php';?>
 
 
+
+
 <div class="app-content container center-layout mt-2">
   <div class="content-wrapper">
     <div class="content-header row">
@@ -141,11 +143,13 @@ include 'template/default/guest/includes/header.php';?>
             </style>
             <div class="col-md-12 ">
               <div class="banner" style="text-align: center;">
-                    <img class="shop-logo" src="<?=$logo;?>">
+                    <?php if ($user->profilepic!='') :?>
+                        <img class="shop-logo" alt="<?=$user->DisplayTradeName;?> logo" src="<?=$domain;?>/<?=$user->profilepic;?>">
+                    <?php endif?>
                     <br><h3><?=$user->DisplayTradeName;?></h3>
                     <div class="btn-group btn-group-sm socials">
-                      <button type="button" class="btn btn-outline-light ">Store</button>
-                      <button type="button" class="btn btn-outline-light ">Posts</button>
+                      <button type="button" class="btn btn-outline-light "><i class="fa fa-facebook" ></i></button>
+                      <button type="button" class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">Contact</button>
                     </div>
 
 
@@ -155,7 +159,7 @@ include 'template/default/guest/includes/header.php';?>
                     tiramisu pie powder.Donut sweet roll marzipan pastry cookie cake tootsie roll oat cake cookie.</p>
                     <div class="row">
                       
-                    <fieldset class="col-7">
+                    <fieldset class="col-md-7 col-12">
                       <div class="input-group">
                         <input type="text" class="form-control" placeholder="Button on right" aria-describedby="button-addon4">
                         <div class="input-group-append" id="button-addon4">
@@ -163,11 +167,6 @@ include 'template/default/guest/includes/header.php';?>
                         </div>
                       </div>
                     </fieldset>                      
-                    <div class="col-5">
-                      <div class="btn-group">
-                        <!-- <button type="button" class="btn btn-outline-light ">Store</button> -->
-                        <button type="button" class="btn btn-outline-light " data-toggle="modal" data-target="#myModal">Contact</button>
-                      </div>
                     </div>
                     </div>
                     </div>

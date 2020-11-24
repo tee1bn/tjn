@@ -9,7 +9,8 @@ include 'includes/header.php';?>
 
           <?php
           $show_affiliate_link = $auth ? $auth->is('affiliate') : false;
-          echo $this->buildView("composed/shop/shop", compact('show_affiliate_link'));?>
+          $request_url = "$domain/shop/market/?seller_id=$user->id";
+          echo $this->buildView("composed/shop/shop", compact('show_affiliate_link','user', 'request_url'));?>
 	     <br>
 
         </div>

@@ -94,11 +94,7 @@
         </p>
 
       </footer>
-      <style>
-        #textAngular-editableFix-010203040506070809{
-          display: none;
-        }
-      </style>
+     
       <!-- END: Footer-->
 
 

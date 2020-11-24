@@ -23,6 +23,7 @@ class LandingPageController extends controller
             //return;
         }
 
+        $merchant = $user;
 
         switch ($page) {
             case 'store':
@@ -41,7 +42,7 @@ class LandingPageController extends controller
 
             $model = 'course';
             $show_personal = '1';
-            $this->view('merchant/shop', compact('model','show_personal','user'));
+            $this->view('merchant/shop', compact('model','show_personal','user','merchant'));
 
             break;
         }

@@ -4,7 +4,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use  v2\Shop\Shop;
 use  v2\Models\Market;
 use wp\Models\Post;
-use wp\Models\User as WpUser;
+use Filters\Filters\MarketFilter;
 
 
 /**
@@ -688,7 +688,10 @@ class shopController extends controller
 
         $_SESSION['product_ref'] = $product_ref;
 
-        $this->view('guest/single-product', compact('product'));
+
+        $merchant = $product->user;
+
+        $this->view('guest/single-product', compact('product','merchant'));
 
 
     }
@@ -714,7 +717,7 @@ class shopController extends controller
 
 
     
-    public function market($page=1 , $type = 'product', $seller_id=null)
+    public function market($seller_id=null)
     {   
         $type = 'product';
 
@@ -738,10 +741,15 @@ class shopController extends controller
 
         ];
 
+        $page = $_REQUEST['page'] ?? 1;
         $market_category = $register[$type];
         $per_page = $market_category['per_page'];
         $skip = (($page -1 ) * $per_page) ;
 
+
+        $sieve = $_REQUEST;
+
+        $filter = new  MarketFilter($sieve);
 
 
 
@@ -749,6 +757,7 @@ class shopController extends controller
         ->GoodsBelongingTo($type)
         ->OnSale()
         ->skip($skip)
+        ->Filter($filter)
         ->take($per_page)
         ->get()
         ;

@@ -5,8 +5,10 @@
       width: 100%;
       object-fit: cover;
   }
-
 </style>
+<script>
+  $request_url = `<?=$request_url ?? "$domain/shop/market?";?>`;
+</script>
 
           <div  id="content"  ng-controller="ShopController" ng-cloak>
               

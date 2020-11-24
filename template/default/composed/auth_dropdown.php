@@ -64,7 +64,7 @@
 
   <?php if ($auth):?>
       <li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown"><span class="avatar avatar-online">
-        <img src="<?=domain;?>/<?=$auth->resized_profile_pix;?>" alt="avatar"
+        <img src="<?=domain;?>/<?=$auth->profilepic;?>" alt="avatar"
         style="height: 30px;object-fit: cover;"><i></i></span><span class="user-name">
     <?=$auth->fullname;?>
       

@@ -6,7 +6,7 @@
 
                   <cover-div></cover-div>
               <h4 class="card-title" ><?=$product->name;?></h4>
-              <p class="card-text"><small class="text-muted">By <?=$product->user->tradename ?? '';?></small></p>
+              <p class="card-text"><small class="text-muted">By <?=$product->user->PageLink ?? '';?></small></p>
               <p class="card-text"> <?=$product->description;?> </p>
 
 
