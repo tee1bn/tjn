@@ -148,25 +148,28 @@ include 'template/default/guest/includes/header.php';?>
                     <?php endif?>
                     <br><h3><?=$user->DisplayTradeName;?></h3>
                     <div class="btn-group btn-group-sm socials">
-                      <button type="button" class="btn btn-outline-light "><i class="fa fa-facebook" ></i></button>
+                        <?php foreach (User::$socials as $key => $value) :
+                                if (@$user->ExtraDetailsArray[$key]=='') {continue;}
+                            ?>
+                            <a target="_blank" href="https://<?=$key;?>.com/<?=$user->ExtraDetailsArray[$key];?>" class="btn btn-outline-light "><i class="fa fa-<?=$key;?>" ></i></a>
+                        <?php endforeach ;?>
                       <button type="button" class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">Contact</button>
                     </div>
 
 
                 <div class="card-content">
                   <div class="card-body">
-                    <p class="card-text">Jelly beans sugar plum cheesecake cookie oat cake soufflé.Tootsie roll bonbon liquorice
-                    tiramisu pie powder.Donut sweet roll marzipan pastry cookie cake tootsie roll oat cake cookie.</p>
+                    <p class="card-text"><?=$user->ExtraDetailsArray['bio'];?></p>
                     <div class="row">
-                      
-                    <fieldset class="col-md-7 col-12">
+                    <!--   
+                    <fieldset class="col-md-12 col-12">
                       <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Button on right" aria-describedby="button-addon4">
+                        <input type="email" class="form-control" placeholder="Your Email" aria-describedby="button-addon4">
                         <div class="input-group-append" id="button-addon4">
-                          <button class="btn btn-outline-light" type="button"><i class="fa fa-skyatlas"></i></button>
+                          <button class="btn btn-outline-light" type="button">Follow</button>
                         </div>
                       </div>
-                    </fieldset>                      
+                    </fieldset>     -->                  
                     </div>
                     </div>
                     </div>

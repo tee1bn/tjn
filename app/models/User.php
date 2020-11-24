@@ -119,7 +119,13 @@ class User extends Eloquent
         'affiliate' => 1, 
     ]; 
 
+      public static $socials = [
+        'twitter' => 2,   //mapping to id
+        'facebook' => 1, 
+        'youtube' => 1, 
+    ]; 
 
+    
 
     public function getExtraDetailsArrayAttribute()
     {

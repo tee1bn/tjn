@@ -31,13 +31,10 @@ include 'includes/header.php';?>
 
           <section id="video-gallery" class="card">
             <div class="card-header">
-              <h4 class="card-title">Profile <!-- <?=$auth->VerifiedBagde;?> --></h4>
+              <h4 class="card-title">Profile <!-- <?=$auth->VerifiedBagde;?> --> <?=$auth->PageLink;?></h4>
               <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
               <div class="heading-elements">
-                <ul class="list-inline mb-0">
-                  <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                  <li><a data-action="expand"><i class="ft-maximize"></i></a></li>
-                </ul>
+               <a href="<?=$auth->PageHref;?>">Go to Store</a>
               </div>
             </div>
 
@@ -170,7 +167,7 @@ include 'includes/header.php';?>
 <div class="card-header">
     <a data-toggle="collapse"  href="#collapse1"><i class="ft-caret"></i>Personal</a>
 </div>
-<div id="collapse1" class="collapse" >
+<div id="collapse1" class="collapse show" >
 
 
                   <div class="card-body card-body-bordered collapse show" id="demo1" >
