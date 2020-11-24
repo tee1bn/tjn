@@ -32,12 +32,16 @@ class LandingPageController extends controller
             case 'posts':
                 # code...
                 break;
+
+            case 'contact':
+                # code...
+                break;
             
             default:
 
             $model = 'course';
             $show_personal = '1';
-            $this->view('guest/shop', compact('model','show_personal','user'));
+            $this->view('merchant/shop', compact('model','show_personal','user'));
 
             break;
         }

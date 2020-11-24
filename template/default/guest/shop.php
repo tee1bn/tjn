@@ -20,9 +20,9 @@ include 'includes/header.php';?>
             </div>
           </div> -->
 
-          <div class="content-header-right col-md-6 col-12">
 
-          </div>
+
+          <?php// include_once 'template/default/merchant/banner.php';?>
 
           <?php if (isset($show_personal)) :?>
             <style>
@@ -76,8 +76,8 @@ include 'includes/header.php';?>
                     </fieldset>                      
                     <div class="col-5">
                       <div class="btn-group">
-                        <button type="button" class="btn btn-outline-light ">Store</button>
-                        <button type="button" class="btn btn-outline-light ">Posts</button>
+                        <!-- <button type="button" class="btn btn-outline-light ">Store</button> -->
+                        <button type="button" class="btn btn-outline-light " data-toggle="modal" data-target="#myModal">Contact</button>
                       </div>
                     </div>
                     </div>
@@ -85,6 +85,119 @@ include 'includes/header.php';?>
                   </div>
                 </div>
               </div>
+
+
+              <!-- The Modal -->
+              <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                      <h4 class="modal-title">Modal Heading</h4>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+
+                      <?php if ($auth) :?>
+                      <!-- Contact FORM -->
+                      <form class="contact-form" id="contact" method="post" action="<?=domain;?>/ticket_crud/create_ticket">
+                          <div class="row">
+                              <div class="col-md-12 col-lg-12">
+
+                                  <div class="form-field">
+                                      <input  class="form-control"
+                                      value="<?=$auth->full_name;?>" 
+                                      readonly="readonly"
+                                      id="name" type="hidden" required="" name="full_name" placeholder="Your Name">
+
+                                      <input  class="form-control" id="email"
+                                      value="<?=$auth->email;?>" 
+                                      readonly="readonly"
+                                       type="hidden" required="" name="email" placeholder="Email">
+                                  </div>
+                                  <div class="form-field">
+                                      <input  class="form-control" id="sub"
+                                      value="<?=$auth->phone;?>" 
+                                      readonly="readonly"
+                                       type="hidden" required="" name="phone" placeholder="Phone">
+                                  </div>
+
+                                  <input type="hidden" name="from_client" value="true">
+
+                              </div>
+                              <div class="col-md-12 col-lg-12">
+                                  <div class="form-field">
+
+                                      <textarea class="form-control" id="message" rows="7" name="comment" required=""
+                                       placeholder="Your Message"></textarea>
+                                  </div>
+                              </div>
+                              <div class="col-md-6 col-offset-md-2">
+                                  <br>
+                                  <?=MIS::use_google_recaptcha();?>
+                              </div>
+
+
+                              <div class="col-md-12 col-lg-12 mt-30">
+                                  <button class=" btn" type="submit" id="submit" name="button">
+                                      Send Message
+                                  </button>
+                              </div>
+                          </div>
+                      </form>
+                      <!-- END Contact FORM -->
+                      <?php else:?>
+                        <form class="form ajax_form" id="contact" method="post" action="<?=domain;?>/home/contact_us">
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12">
+
+                                    <div class="form-group">
+                                        <input class="form-control" id="name" type="text" required="" name="full_name" placeholder="Your Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" id="email" type="text" required="" name="email" placeholder="Email">
+                                    </div>
+                                    <div class="form-group">
+                                        <input class="form-control" id="sub" type="text" required="" name="phone" placeholder="Phone">
+
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group">
+
+                                        <textarea class="form-control" id="message" rows="4" name="comment" required=""
+                                         placeholder="Your Message"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <br>
+                                    <?=MIS::use_google_recaptcha();?>
+                                </div>
+
+
+                                <div class="col-md-12 col-lg-12 mt-30">
+                                    <button class="btn-dark btn" type="submit" id="submit" name="button">
+                                        Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>                     
+                      <?php endif;?>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+
             <?php endif ;?>
           </div>
 
