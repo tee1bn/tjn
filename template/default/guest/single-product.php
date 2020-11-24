@@ -33,7 +33,7 @@ include 'includes/header.php' ;?>
 
 
     <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
-            <a onclick="add_item_singly();"  style="<?=$show_add_to_cart;?>" title="Order Now" class="btn btn-outline-primary ft ft-shopping-cart" href="Javascript:void(0);">
+            <a onclick="add_item_singly();"  title="Order Now" class="btn btn-outline-primary ft ft-shopping-cart" href="Javascript:void(0);">
             Order Now </a>       
 </div>
 
@@ -97,7 +97,7 @@ body{
         </h4>
 
             <a href="javascript:void;" class="form-control text-center btn-primary" onclick="add_item_singly();"  
-            style="<?=$show_add_to_cart;?>"><i class="ft ft-shopping-cart"></i> Order Now</a>
+           ><i class="ft ft-shopping-cart"></i> Order Now</a>
         <script>
 
             add_item_singly = function () {
