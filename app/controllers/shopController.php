@@ -714,7 +714,7 @@ class shopController extends controller
 
 
     
-    public function market($page=1 , $type = 'product')
+    public function market($page=1 , $type = 'product', $seller_id=null)
     {   
         $type = 'product';
 

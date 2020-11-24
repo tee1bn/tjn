@@ -189,7 +189,7 @@ import { FilePreviewer } from "./carousel.js";
 
 		this.quickview = function ($item) {
 					this.$quickview = $item;
-					$('#quick_view_modal').modal({backdrop: 'static',keyboard: false});			
+					$('#quick_view_modal').modal('show');			
 					let $scope = angular.element($('#content')).scope();
 					// console.log($item);
 
