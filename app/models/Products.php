@@ -761,13 +761,20 @@ class Products extends Eloquent
 
 		public function getmainimageAttribute()
 		{
-			$value =  $this->images['images'][0]['main_image'];
+			$val = '';
+			foreach ($this->CoverArray['file'] as $key => $value) {
+			    if ($value['file_type'] == 'image') {
 
-			if (! file_exists($value) &&  (!is_dir($value))) {
+			      	return  $value['file_path'];
+			        break;
+			    }
+			}
+
+			if (! file_exists($val) &&  (!is_dir($val))) {
 				return (self::default_ebook_pix());
 			}
 
-			$pic_path = Config::domain()."/".$value;
+			$pic_path = $val;
 			return $pic_path;
 		}
 

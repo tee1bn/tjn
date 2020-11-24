@@ -78,13 +78,9 @@
 </div> -->
 
 <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
-  <span class="float-md-left d-block d-md-inline-block">
-  </a></span>
-  <br>
          <!--  <small class="" style="color: #00000061; font-size: 10px;">
             <b class="text-danger">RISK WARNING </b>: Foreign Exchange Trading and Investments is not suitable for many members of the public, it has large potential rewards, but also large potential risks. Please do not trade with borrowed money or money you cannot afford to lose. This website does not take into account special investment goals, situations or specific requirements of individual users.  All information on this website is provided as general market commentary and does not constitute investment advice. We will not accept liability for any loss or damage, including without limitation to, any loss of profit, which may arise directly or indirectly from the use of or reliance on such information. Please remember that the past performance of any trading system or methodology is not necessarily indicative of future results.
           </small> -->
-          <hr>
 
           <div class="text-center" style="color: #00000061; font-size: 12px;">
             <span class=""> 

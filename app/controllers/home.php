@@ -32,7 +32,18 @@ class home extends controller
 
         echo "<pre>";
 
+        $product = Products::find(54);
+        print_r($product->CoverArray);
 
+        foreach ($product->CoverArray['file'] as $key => $value) {
+            if ($value['file_type'] == 'image') {
+
+                echo $value['file_path'];
+                break;
+            }
+        }
+
+        return;
         $w = Withdrawal::payoutBalanceFor(78);
 
         print_r($w);

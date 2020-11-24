@@ -103,7 +103,7 @@ include 'includes/header.php';
                class="ajax_form"
                data-overlay="in"
                data-function="initiate_payment"
-               action="<?=domain;?>/user/create_upgrade_request">
+               action="<?=domain;?>/subscribe/create_upgrade_request">
 
 
                 <input type="hidden" name="wallet" value="deposit">
@@ -167,7 +167,7 @@ include 'includes/header.php';
 
                 case 'bank_transfer':
 
-                  window.location.href = $base_url+"/user/bank-transfer/"+$data.order_unique_id+"/packages";
+                  window.location.href = $base_url+"/shop/bank-transfer/"+$data.order_unique_id+"/packages";
 
                 break;
                 case 'rave':

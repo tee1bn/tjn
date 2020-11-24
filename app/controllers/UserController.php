@@ -21,13 +21,8 @@ use v2\Shop\Shop;
 
 use Filters\Filters\WithdrawalFilter;
 use wp\Models\Post;
-use wp\Models\PostMeta;
-use wp\Models\LearnPressOrderItem;
-use wp\Models\LearnPressOrderItemMeta;
-use wp\Models\LearnPressUserItem;
-use wp\Models\LearnPressUserItemMeta;
 
-use wp\Models\User as WpUser;
+
 
 class UserController extends controller
 {
@@ -401,12 +396,10 @@ class UserController extends controller
 
     public function create_upgrade_request($subscription_id = null)
     {
-
         $subscription_id = $_REQUEST['subscription_id'];
         $response = SubscriptionPlan::create_subscription_request($subscription_id, $this->auth()->id);
         header("content-type:application/json");
         echo json_encode($response);
-
         // Redirect::back();
     }
 
