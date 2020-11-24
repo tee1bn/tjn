@@ -66,8 +66,9 @@ include 'includes/header.php';?>
                                 <h4 class="media-heading"><b><?=$product->name;?></b></h4>
                                 <span> <?=$product->ShortDescription;?> </span>
                               </div><br>
+
                               <ul>
-                                <!-- <li class="text-danger"><a>34mb</a></li> -->
+                                <li class="text-"><a href="<?=$product->user->PageLink;?>">by <?=$product->user->DisplayTradeName;?></a></li>
                                 <li><a class="btn btn-sm btn-outline-dark" onclick="location.href= `<?=domain;?>/s/d/<?=$download_link;?>` " >Download</a></li>
                               </ul>                                 
 

@@ -1391,14 +1391,18 @@ public static function where_to_place_new_user_within_team_introduced_by($team_l
 
 	public function referral_link()
 	{
-
         $username = str_replace(" ", "_", $this->username);
-
 		$link = Config::domain()."/r/".$username;
-        $link = "http://millionairesacademy.org?r=$username";
 		return $link;
-
 	}
+
+
+    public function getPageLinkAttribute()
+    {
+        $username = str_replace(" ", "_", $this->username);
+        $link = Config::domain()."/l/".$username;
+        return $link;
+    }
 
 
       public function next_rank()
