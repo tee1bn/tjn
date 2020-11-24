@@ -639,7 +639,7 @@ class shopController extends controller
         }
 
         $is_preview = 1;
-        $this->view('guest/single-product', compact('product','is_preview',));
+        $this->view('guest/single-product', compact('product','is_preview'));
         // $this->view('composed/view_product', compact('product'));
 
     }
