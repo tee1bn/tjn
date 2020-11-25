@@ -626,6 +626,7 @@ ELL;
 			DB::commit();
 			Shop::empty_cart_in_session();
 			Session::putFlash("success","Order completed successfully");
+			$this->send_delivery_email();
 			return true;
 		} catch (Exception $e) {
 			DB::rollback();

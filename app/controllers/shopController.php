@@ -141,7 +141,6 @@ class shopController extends controller
                 $time =  strtotime("+1 minute $order->paid_at");
                 $now = time();
                 if ($now < $time) {
-                    $order->send_delivery_email();
                 }
 
                 $this->view('guest/delivery', compact('order'));
