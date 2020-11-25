@@ -46,7 +46,7 @@ include 'includes/header.php' ;?>
 
     /*height: 450px !important; */
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .price{
