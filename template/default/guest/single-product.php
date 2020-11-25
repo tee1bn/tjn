@@ -112,11 +112,9 @@ body{
                 success: function(data) {
                     $item = data.single_good;
                     $scope = angular.element($('#content')).scope();
-                    $scope.$shop.$cart.add_item($item);
+                    $scope.$shop.$cart.buy_now($item);
 
                     $scope.$apply();
-
-                    window.location.href = $base_url+"/shop/cart";
 
                 },
                 error: function (data) {

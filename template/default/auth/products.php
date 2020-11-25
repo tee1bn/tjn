@@ -43,8 +43,12 @@ include 'includes/header.php';
                                           Action
                                       </button>
                                       <div class="dropdown-menu">
+                                          <?php if ($product->is_approved()) :?>
                                           <a class="dropdown-item" 
                                           onclick="copy_text(`<?=$product->getPromotionLinkFor($auth->id);?>`)" href="javascript:void(0);">Promotional Link</a>
+                                          <?php endif ;?>
+
+
                                           <a class="dropdown-item" href="<?=$product->UserEditLink;?>">Edit</a>
                                           <!-- <a class="dropdown-item" href="#">Link 3</a> -->
                                       </div>

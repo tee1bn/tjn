@@ -686,6 +686,11 @@ class Products extends Eloquent
 
 
 
+		public function is_approved()
+		{
+			return $this->ApprovalState==2;
+		}
+
 		public function getApprovalStateAttribute()
 		{
 			$last_submission =  Market::where('category', $this::$category_in_market)
