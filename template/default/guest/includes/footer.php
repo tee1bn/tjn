@@ -8,10 +8,6 @@
 
 <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2">
           <div class="text-center" style="color: #00000061; font-size: 12px;">
-            <span class=""> 
-              Copyright  &copy;<?=date("Y");?> All rights reserved. 
-            </span>
-
             <span class="float-righ">
               <ul class="nav navbar-nav ml-1" style="display: inline;">
                 <li class="nav-" style="display: inline;"><a href="<?=domain;?>">Home</a></li> |
@@ -22,6 +18,11 @@
               </ul>         
               
             </span>
+            <br>
+            <span class=""> 
+              &copy;<?=date("Y");?>Copyright. All rights reserved. 
+            </span>
+
 
           </div>
         </p>
