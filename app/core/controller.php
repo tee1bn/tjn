@@ -489,6 +489,7 @@ if ($response == true) {
 			}
 			$view_folder = rtrim($view_folder, '/');
 
+			$site_setting = SiteSettings::find_criteria('site_settings')->settingsArray;
 
 			$host			= Config::host();
 			$currency		= Config::currency();

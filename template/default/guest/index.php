@@ -88,7 +88,7 @@ include 'includes/header.php';?>
                             <br>  
                             <a href="<?=domain;?>/register" class="btn btn-outline-light">Sign up</a>
                             <a href="<?=domain;?>/login" class="btn btn-outline-light">Log in</a>
-                            <a href="<?=domain;?>/login" class="btn btn-outline-light"><i class="fa fa-telegram"></i> Learn More</a>
+                            <a href="<?=$site_setting['telegram'];?>" class="btn btn-outline-light"><i class="fa fa-telegram"></i> Learn More</a>
 
                             
                         </div>
