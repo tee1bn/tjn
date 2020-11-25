@@ -497,7 +497,7 @@ ELL;
 
 
 		$mailer = new Mailer;
-		$status = $mailer->sendMail($to, $subject, $body, $reply, $recipient_name = '', $from);
+		$status = $mailer->sendMail($to, $subject, $body, $recipient_name = '', $reply, $from);
 
 	}
 
