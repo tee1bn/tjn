@@ -471,6 +471,35 @@ ELL;
 
 	}
 
+	public function send_delivery_email()
+	{
+
+		$order = $this;
+		$controller = new home;
+
+		$body = $controller->buildView('emails/group_delivery', compact('order') );
+
+		$subject = $this->delivery_heading();
+
+
+		$to = $this->Buyer->email;
+		$sellers =$this->sellers();
+		if ($sellers->count() > 1) {
+
+			$reply = "";
+			$from="";
+		}else{
+			$seller =$sellers->first();
+			$reply = $seller->ExtraDetailsArray['support_email'];
+			$from= $seller->DisplayTradeName;
+		}
+
+
+		$mailer = new Mailer;
+		$status = $mailer->sendMail($to, $subject, $body, $reply, $recipient_name = '', $from);
+
+	}
+
 	public  function scheme_html($item_id)
 	{
 		$product = Products::find($item_id);
