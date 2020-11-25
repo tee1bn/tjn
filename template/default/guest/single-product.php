@@ -46,7 +46,7 @@ include 'includes/header.php' ;?>
 
     /*height: 450px !important; */
     width: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .price{
@@ -56,7 +56,7 @@ include 'includes/header.php' ;?>
 .cover-video{
     height: 25em !important;
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 body{
