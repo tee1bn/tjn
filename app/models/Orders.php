@@ -569,7 +569,7 @@ ELL;
 
 	public function is_free()
 	{
-		return $this->amount_payable == 0;
+		return $this->total_price() == 0;
 	}
 
 

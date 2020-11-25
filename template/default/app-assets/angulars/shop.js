@@ -43,7 +43,7 @@ import { FilePreviewer } from "./carousel.js";
 			//ensure item is not added in cart more than once
 			if (this.contains_object($item, this.$items)) {
 				window.show_notification('<b>'+$item.market_details.name+
-					'</b><br> Already in Cart! <br> <a class="btn btn-outline-teal btn-sm" href='+$checkout_url+'>Check out</a>');
+					'</b><br> Already in Cart! <br> <a class="btn btn-outline-light btn-sm" href='+$checkout_url+'>Check out</a>');
 				return ;
 			}
 

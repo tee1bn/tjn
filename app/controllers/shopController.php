@@ -722,7 +722,7 @@ class shopController extends controller
         $type = 'product';
 
         $domain = Config::domain();
-        $shop_link = "$domain/user/shop";
+        $shop_link = "$domain/shop";
 
         $register = [
             'course' => [

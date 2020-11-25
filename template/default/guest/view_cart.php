@@ -90,7 +90,7 @@ include 'includes/header.php';?>
                                 </div>
                                 <hr />
                                 <a href="javascript:void;" ng-click="$shop.$cart.empty_cart()"  class="btn btn-outline-dark">Empty Cart</a>
-                                <a href="{{$shop.$cart.$config.shop_link}}" class="pull-right btn btn-dark"> Continue Shopping</a><br>
+                                <a href="{{$shop.$cart.$config.shop_link}}" class="pull-right btn btn-outline-light"> Continue Shopping</a><br>
                               </div>
                             </div>
                           </div>
@@ -125,7 +125,7 @@ include 'includes/header.php';?>
                             </tbody>
                           </table>
 
-                          <form id="" class="ajax_form" data-function="on_complete_order"
+                          <form ng-show="$shop.$cart.$items.length > 0" id="" class="ajax_form" data-function="on_complete_order"
                           method="post" action="<?=domain;?>/shop/complete_order/get_breakdown">
                           <textarea style="display:none ;" name="cart">
                             {{$shop.$cart}}
