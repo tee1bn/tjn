@@ -63,6 +63,43 @@ class Orders extends Eloquent  implements OrderInterface
 
 
 
+
+
+	public function delivery_heading()
+	{
+		$heading = "";
+		$sellers = $this->sellers();
+		if (count($sellers) > 1) {
+			$date = date("M j, Y", strtotime($order->paid_at));
+
+			$heading = "Delivery Order#$order->id, $date";
+
+		}else{
+
+			$seller = $sellers->first();	
+			$heading = $seller->DisplayTradeName;
+		}
+
+		return $heading;
+	}												
+    
+	public function sellers()
+	{
+
+		$order_details =  $this->order_detail();
+		$sellers = [];
+		foreach ($order_details as $order) {
+			$sellers[] = $order['market_details']['user_id'];
+		}
+
+		$sellers = array_unique($sellers);
+		$sellers = User::whereIn('id', $sellers)->get();
+
+		return $sellers;
+	}
+
+
+
 	public function items_sold_by_editor($editor_id)
 	{
 		$order_detail = $this->order_detail();
@@ -337,7 +374,7 @@ ELL;
 	{
 		$payment_details = json_decode($this->payment_details,true);
 		$gateway = str_replace("coinpay", "coinwaypay", $payment_details['gateway']);
-		$method = "{$payment_details['ref']}<br><span class='badge badge-sm badge-primary'>{$gateway}</span>";
+		$method = "{$payment_details['ref']} <span class='badge badge-sm badge-primary'>{$gateway}</span>";
 					
 		return $method;
 	}
@@ -753,6 +790,8 @@ ELL;
 		return (json_decode($this->buyer_order,true));
 	}
 
+
+
 	public function total_item()
 	{
 
@@ -776,7 +815,7 @@ ELL;
 	{
 
 		$substr = substr(strval(time()), 7 );
-		$order_id = "MA{$this->id}C{$this->Buyer->id}";
+		$order_id = "SRA{$this->id}P{$this->Buyer->id}";
 
 		return $order_id;
 	}

@@ -30,8 +30,11 @@ class home extends controller
     public function test2()
     {
 
-        echo "<pre>";
 
+        $order = Orders::find(37);
+
+        $this->view('emails/group_delivery',compact('order'));
+        return;
         $product = Products::find(54);
         print_r($product->CoverArray);
 
