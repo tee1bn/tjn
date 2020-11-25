@@ -667,6 +667,7 @@ ELL;
 				$company_share = $settlement_structure['company_percent'] * 0.01 * $price;
 
 				$affiliate_share = $settlement_structure['affiliate_percent'] * 0.01 * $price;
+
 				$vendor_share = $settlement_structure['vendor_percent'] * 0.01 * $price;
 
 				if ($this->affiliate_id == null) {
@@ -674,6 +675,9 @@ ELL;
 				}
 
 
+				$clearance_in_days = $settlement_structure['clearance_in_days'];
+
+				$guarantee_in_days = $settlement_structure['guarantee_in_days'];
 
 
 
@@ -682,7 +686,7 @@ ELL;
 				$comment ="settlement on #order_id:$this->id#item:{$item['market_details']['id']}";
 
 
-				$paid_at = date("Y-m-d", strtotime("+0 days"));
+				$paid_at = date("Y-m-d", strtotime("+$clearance_in_days days"));
 
 				$identifier = "tv#u{$vendor_id}#item{$item['market_details']['id']}#o$this->id";
 				$vendor_credit = Wallet::createTransaction(

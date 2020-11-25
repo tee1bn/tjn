@@ -28,9 +28,7 @@ include 'includes/header.php';?>
  -->
         <div class="row">
 
-          <?php include 'includes/sidebar.php';?>
-
-          <div class="col-md-9">
+          <div class="col-md-12">
             <div class="card">
                     <div class="card-content">
 
@@ -54,7 +52,7 @@ include 'includes/header.php';?>
                                       </div>
                                       <div class="card-content">
 
-                                          <p class="card-text">We could not find the page you are looking for on <a href="<?=domain;?>">9gforex.com</a></p>
+                                          <p class="card-text">We could not find the page you are looking for on <a href="<?=domain;?>"><?=project_name;?></a></p>
                                           <p>May be that:</p>
                                           <ul>
                                             <li>The Url is not spelt correctly. Try to confirm that the url is correctly spelt</li>
@@ -66,7 +64,7 @@ include 'includes/header.php';?>
 
                                           <div class="row py-2">
                                               <div class="col-12 mb-1">
-                                                  <a href="<?=domain;?>" class="btn btn-primary btn-block"><i class="feather icon-home"></i> Home</a>
+                                                  <a href="<?=domain;?>" class="btn btn-outline-light btn-block"><i class="feather icon-home"></i> Home</a>
                                               </div>
                                           </div>
                                       </div>

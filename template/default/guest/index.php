@@ -47,7 +47,7 @@ include 'includes/header.php';?>
                           <li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
                         </ol>
                         <!-- <div class="slider-text">We are The best</div> -->
-                        <div class="carousel-inner" role="listbox">
+                        <div class="carousel-inner" role="listbox" style="display: none;">
                           <div class="carousel-item">
                             <img src="<?=general_asset;?>/img/image1.jpg" class="d-block w-100" alt="<?=project_name;?> trading slide">
                           </div>
@@ -68,9 +68,61 @@ include 'includes/header.php';?>
                         </a>
                       </div>
                         <div class="card-body">
-                            home content
-                           <div class="card-text">
-                           </div>
+                          <h4 class="card-title">What is Salesra</h4>
+                          <p class="card-text">
+                           1)  Salesra is a simple solution for <b>creators</b> like you looking to sell fast/more digital products/services
+                            without worrying about all the technical headache. 
+                           </p>
+
+
+
+                            <p class="card-text">
+                            2)  Salesra is a stop for quality digital products by experts you can be proud to recommend as an <b>afilliate</b>. We pay affiliates every Friday. 
+                           </p>
+                           
+                           <br>
+                           <b> Registration is currently Free</b>
+
+                           <p class="card-text">
+                          <!--   
+                            With us, you are able to enjoy seamless forex services from Brokers that are worth it. This is what we mean in 3 simple steps
+                            <ul>
+                              <li>Create a profile with us <a href="<?=domain;?>/register">here</a></li>
+                              <li>Don't know much about forex? Take the <a href="<?=domain;?>/shop/full-view/1/course/Forex-101">Forex 101</a> beginner course and set yourself up for raining pips. It is FREE!</li>
+                                 <li class="nav-item">
+                                  <a href="javascript:void(0);" class=" -link dropdown-toggle" data-toggle="dropdown">Open a trading account </a>with any listed broker of your choice.
+                                  <div class="dropdown-menu">
+                                    <?php foreach ($brokers_in_header as $key => $broker_in_header) :?>
+                                     <a class="dropdown-item" target="_blank" href="<?=domain;?>/forex-account/open-live-account/<?=MIS::dec_enc('encrypt',$broker_in_header->id);?>"><small>Open <b><?=$broker_in_header->name;?></b> Live Account</small></a>
+                                    <?php endforeach;?>
+                                  </div>
+                                </li>
+
+                              <li><a href="<?=domain;?>/user/make-deposit">Fund your account</a>, trade, make profit, <a href="<?=domain;?>/user/make-withdrawal">withdraw</a>. Rinse and repeat</li>
+                                
+                               <li class="nav-item">
+                                Are you too busy to trade? you can
+                                <a href="javascript:void(0);" class=" -link dropdown-toggle" data-toggle="dropdown">copy successful traders </a>.
+                                <div class="dropdown-menu">
+                                  <?php foreach ($brokers_in_header as $key => $broker_in_header) :?>
+                                    <a class="dropdown-item" target="_blank" href="<?=$broker_in_header->DetailsArray['copy_trading'];?>">
+                                     <small><b><?=$broker_in_header->name;?></b> Copy Trading</small></a>
+                                  <?php endforeach;?>
+                                </div>
+                              </li>
+
+
+                              <br>
+                            </ul> -->
+
+
+                            <br>  
+                            <br>  
+                            <a href="<?=domain;?>/register" class="btn btn-outline-light">Sign up</a>
+                            <a href="<?=domain;?>/login" class="btn btn-outline-light">Log in</a>
+                            <a href="<?=domain;?>/login" class="btn btn-outline-light"><i class="fa fa-telegram"></i> Learn More</a>
+
+                            
                         </div>
                     </div>
 
@@ -81,11 +133,19 @@ include 'includes/header.php';?>
 
               
 
-                  <hr>
-                  <h4 style="text-align: center; display:none ;">Blogs</h4>
-                  <hr>
+                  <!-- <h4 style="text-align: center;">Blogs</h4> -->
 
                                             
+                 <!--  <div class="card text-white border-0 box-shadow-0" style="">
+
+
+                  </div>
+
+                  <hr>
+                  <hr>
+                  <h4 style="text-align: center; display:none;">Blogs</h4>
+                  <hr> -->
+
                   <div class="card text-white border-0 box-shadow-0" style="display:none ;">
                            
                            <div class="row">

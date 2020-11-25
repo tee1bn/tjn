@@ -343,39 +343,7 @@ class home extends controller
                 $this->view('guest/about');
                 break;
 
-            case 'packages':
-
-                $this->view('guest/packages');
-                break;
-
-            case 'services':
-                $this->view('guest/services');
-                break;
-
-            case 'products':
-                $this->view('guest/products');
-                break;
-
-            case 'payment-method':
-                $this->view('guest/payment-method');
-                break;
-
-
-            case 'referral':
-                $this->view('guest/referral');
-                break;
-
-            case 'leadership-program':
-                $this->view('guest/leadership-program');
-                break;
-
-            case 'how-to-be-part':
-                $this->view('guest/how-to-be-part');
-                break;
-
-            case 'trucash':
-                $this->view('guest/trucash');
-                break;
+   
 
             case 'faqs':
                 $this->view('guest/faqs');
@@ -391,23 +359,19 @@ class home extends controller
                 $this->view('guest/terms');
                 break;
 
-            case 'privacy':
-                $this->view('guest/privacy');
-                break;
 
-            case 'user-agreement':
-                $this->view('guest/user-agreement');
+            case 'disclaimer':
+                $this->view('guest/disclaimer');
                 break;
 
             case null:
 
                 $this->view('guest/index');
-                // Redirect::to('w');
                 break;
 
             default:
 
-                $this->view('guest/404');
+                $this->view('guest/error-404');
                 break;
         }
 

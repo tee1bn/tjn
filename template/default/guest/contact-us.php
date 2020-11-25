@@ -34,7 +34,7 @@ include 'includes/header.php';?>
                 <div class="card-content">
                   <div class="card-body">
                     <h4 class="card-title">Contact us</h4>
-                    <h6 class="card-subtitle text-muted">Support card subtitle</h6>
+                    <h6 class="card-subtitle text-muted">Support</h6>
                   </div>
 
                  
