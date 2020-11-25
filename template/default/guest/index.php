@@ -81,39 +81,7 @@ include 'includes/header.php';?>
                            </p>
                            
                            <br>
-                           <b> Registration is currently Free</b>
-
-                           <p class="card-text">
-                          <!--   
-                            With us, you are able to enjoy seamless forex services from Brokers that are worth it. This is what we mean in 3 simple steps
-                            <ul>
-                              <li>Create a profile with us <a href="<?=domain;?>/register">here</a></li>
-                              <li>Don't know much about forex? Take the <a href="<?=domain;?>/shop/full-view/1/course/Forex-101">Forex 101</a> beginner course and set yourself up for raining pips. It is FREE!</li>
-                                 <li class="nav-item">
-                                  <a href="javascript:void(0);" class=" -link dropdown-toggle" data-toggle="dropdown">Open a trading account </a>with any listed broker of your choice.
-                                  <div class="dropdown-menu">
-                                    <?php foreach ($brokers_in_header as $key => $broker_in_header) :?>
-                                     <a class="dropdown-item" target="_blank" href="<?=domain;?>/forex-account/open-live-account/<?=MIS::dec_enc('encrypt',$broker_in_header->id);?>"><small>Open <b><?=$broker_in_header->name;?></b> Live Account</small></a>
-                                    <?php endforeach;?>
-                                  </div>
-                                </li>
-
-                              <li><a href="<?=domain;?>/user/make-deposit">Fund your account</a>, trade, make profit, <a href="<?=domain;?>/user/make-withdrawal">withdraw</a>. Rinse and repeat</li>
-                                
-                               <li class="nav-item">
-                                Are you too busy to trade? you can
-                                <a href="javascript:void(0);" class=" -link dropdown-toggle" data-toggle="dropdown">copy successful traders </a>.
-                                <div class="dropdown-menu">
-                                  <?php foreach ($brokers_in_header as $key => $broker_in_header) :?>
-                                    <a class="dropdown-item" target="_blank" href="<?=$broker_in_header->DetailsArray['copy_trading'];?>">
-                                     <small><b><?=$broker_in_header->name;?></b> Copy Trading</small></a>
-                                  <?php endforeach;?>
-                                </div>
-                              </li>
-
-
-                              <br>
-                            </ul> -->
+                           <b> Registration is currently Free</b>                     
 
 
                             <br>  

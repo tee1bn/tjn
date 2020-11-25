@@ -1,6 +1,6 @@
 <?php 
-$page_title = 'Terms of service';
-$page_description = "Terms of service and conditions";
+$page_title = 'Terms';
+$page_description = "";
 
 include 'includes/header.php';?>
 
@@ -12,32 +12,31 @@ include 'includes/header.php';?>
         <div class="content-header row">
         </div>
         <div class="content-body">
-      
+    
         <div class="row">
 
+
           <div class="col-md-12">
-            <div class="card">
+
+            <div class="col-md-12 col-sm-12">
+                  <div class="card" style="">
                     <div class="card-content">
-
-
-
-
-                      <div class="card-body">
-
-                        <?=CMS::fetch('terms');?>
-
-
-                      </div>
-
-
-
+                      
+                        <div class="card-body">
+                          <?=CMS::fetch('term_and_conditions');?>
+                            
+                        </div>
                     </div>
+
+
+
+
                   </div>
 
-            
+              
           </div>
 
-         
+       
 
 
         </div>
