@@ -104,7 +104,7 @@
     <script src="<?=asset;?>/vendors/js/extensions/jquery.steps.min.js"></script>
     <script src="<?=asset;?>/js/scripts/forms/wizard-steps.min.js"></script> -->
 
-    <script src="<?=$asset;?>/vendors/js/ui/jquery.sticky.js"></script>
+    <!-- <script src="<?=$asset;?>/vendors/js/ui/jquery.sticky.js"></script> -->
     <!-- BEGIN: Page Vendor JS--><!-- 
     <script src="<?=$asset;?>/vendors/js/charts/jquery.sparkline.min.js"></script>
     <script src="<?=$asset;?>/vendors/js/charts/raphael-min.js"></script>

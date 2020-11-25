@@ -51,11 +51,11 @@
     <!-- BEGIN: Theme JS-->
     <script src="<?=$asset;?>/js/core/app-menu.min.js"></script>
     <script src="<?=$asset;?>/js/core/app.min.js"></script>
-    <script src="<?=$asset;?>/js/scripts/customizer.min.js"></script>
+    <!-- <script src="<?=$asset;?>/js/scripts/customizer.min.js"></script> -->
     <!-- END: Theme JS-->
 
     <!-- BEGIN: Page JS-->
-    <script src="<?=$asset;?>/js/scripts/pages/dashboard-analytics.min.js"></script>
+    <!-- <script src="<?=$asset;?>/js/scripts/pages/dashboard-analytics.min.js"></script> -->
     <!-- END: Page JS-->
 
   </body>

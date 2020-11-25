@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html ng-app="app" class="loading" lang="en" data-textdirection="ltr">
+<html ng-app="app" class="" lang="en" data-textdirection="ltr">
   <!-- BEGIN: Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
