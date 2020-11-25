@@ -33,7 +33,7 @@ include 'includes/header.php' ;?>
 
 
     <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
-            <a onclick="add_item_singly();"  title="Order Now" class="btn btn-outline-primary ft ft-shopping-cart" href="Javascript:void(0);">
+            <a onclick="add_item_singly();"  title="Order Now" class="btn btn-outline-light ft ft-shopping-cart" href="Javascript:void(0);">
             Order Now </a>       
 </div>
 
@@ -72,7 +72,7 @@ body{
 
 </div>
 </div>
-<div id="sticky-wrapper" class="sticky-wrapper" style="float: right; height: 1133.75px;"><div class="sidebar-detached sidebar-right sidebar-sticky" ,="," style="float: none;">
+<div id="sticky-wrapper" class="sticky-wrapper" style="float: right; height: 1133.75px;"><div class="sidebar-detached sidebar-right sidebar-sticky"  style="float: none;">
   <div class="sidebar"><div class="sidebar-content card">
     <div class="card-body" id="content" ng-controller="ShopController">
         <div class="category-title pb-1">
@@ -96,7 +96,7 @@ body{
 
         </h4>
 
-            <a href="javascript:void;" class="form-control text-center btn-primary" onclick="add_item_singly();"  
+            <a href="javascript:void;" class="form-control text-center btn-success" onclick="add_item_singly();"  
            ><i class="ft ft-shopping-cart"></i> Order Now</a>
         <script>
 
