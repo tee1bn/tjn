@@ -48,7 +48,7 @@ app.directive("coverDiv", function() {
            </iframe>
            </span>
 
-          <center class="carousel-dot">
+          <center class="carousel-dot" ng-if="$carousel.$files.length>1">
             <span ng-repeat="($index, $file) in $carousel.$files">
               <i ng-show="$file==$carousel.$current_file" class="fa fa-circle"></i>
               <i ng-hide="$file==$carousel.$current_file" ng-click="$carousel.setCurrentIndex($index)" class="fa fa-circle-o"></i>
