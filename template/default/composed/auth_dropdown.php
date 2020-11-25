@@ -60,7 +60,7 @@
               {{$cart.$items.length}} Item(s)
             </span>
           </div>
-          <a ng-hide="$cart.$items.length==0" class="btn btn-outline-dark btn-block text-center" href="<?=domain;?>/shop/cart">Proceed to Checkout</a>
+          <a ng-hide="$cart.$items.length==0" class="btn btn-success btn-block text-center" href="<?=domain;?>/shop/cart">Proceed to Checkout</a>
         </li>
       </ul>
     </li>   
