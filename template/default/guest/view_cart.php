@@ -74,7 +74,7 @@ include 'includes/header.php';?>
 
                                <div class="media-body">
                                 <h4 class="media-heading"><b>{{$item.market_details.name}}</b></h4>
-                                <span ng-bind-html = $item.market_details.short_description></span>
+                                <!-- <span ng-bind-html = $item.market_details.short_description></span> -->
                               </div>
                               <ul>
                                 <li class="text-danger" ng-click="$shop.$cart.remove_item($item)"><a>Remove</a></li>

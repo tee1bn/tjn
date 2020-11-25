@@ -57,7 +57,7 @@ import { FilePreviewer } from "./carousel.js";
 			window.show_notification('<b>'+$item.market_details.name+'</b><br> Added to cart successfully! <br> <a class="btn btn-success btn-sm" href='+$checkout_url+'>Check out</a>', 'success');
 
 			if ($is_buy) {
-				location.href = $base_url+"/user/cart";
+				location.href = $base_url+"/shop/cart";
 
 			}
 		}
