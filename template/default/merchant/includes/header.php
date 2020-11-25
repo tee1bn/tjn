@@ -129,14 +129,14 @@ include 'template/default/guest/includes/header.php';?>
 
               .socials{
 
-                position: absolute;
-                top: 10px;
-                right: 40px;
+                /*position: absolute;*/
+                /*top: 10px;*/
+                /*right: 40px;*/
               }
               
               .banner{
 
-                border: 2px solid #eeeff5;
+                /*border: 2px solid #eeeff5;*/
                 text-align: center;
                 padding: 2px;
               }
@@ -152,13 +152,14 @@ include 'template/default/guest/includes/header.php';?>
                                 if (@$user->ExtraDetailsArray[$key]=='') {continue;}
                             ?>
                             <a target="_blank" href="https://<?=$key;?>.com/<?=$user->ExtraDetailsArray[$key];?>" class="btn btn-outline-light "><i class="fa fa-<?=$key;?>" ></i></a>
+                        
                         <?php endforeach ;?>
                       <button type="button" class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">Contact</button>
                     </div>
 
-
                 <div class="card-content">
-                  <div class="card-body">
+                  <div class="card-bod">
+                    <p></p>
                     <p class="card-text"><?=$user->ExtraDetailsArray['bio'];?></p>
                     <div class="row">
                     <!--   
