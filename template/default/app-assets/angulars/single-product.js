@@ -40,7 +40,7 @@ app.directive("coverDiv", function() {
           class="fa fa-chevron-circle-right fa-2x nextright"> </i>  
 
            <img ng-if="$carousel.$current_file.file_type=='image'" src="{{$carousel.$current_file.safe_file_path}}" 
-           class ="d-block w-100 cover-video" alt="">
+           class ="d-block w-100 cover-image" alt="">
 
            <span ng-if="$carousel.$current_file.file_type=='video'">
              

@@ -58,6 +58,11 @@ include 'includes/header.php' ;?>
     width: 100%;
     object-fit: contain;
 }
+.cover-image{
+    height: 100% !important;
+    width: 100%;
+    object-fit: contain;
+}
 
 body{
     overflow-x: hidden;
