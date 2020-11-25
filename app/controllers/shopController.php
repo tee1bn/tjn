@@ -138,7 +138,7 @@ class shopController extends controller
                     Redirect::back();
                 }
 
-                $time =  strtotime("+1 week $order->paid_at");
+                $time =  strtotime("+1 minute $order->paid_at");
                 $now = time();
                 if ($now < $time) {
                     $order->send_delivery_email();

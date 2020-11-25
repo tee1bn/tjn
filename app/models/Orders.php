@@ -483,6 +483,7 @@ ELL;
 
 
 		$to = $this->Buyer->email;
+
 		$sellers =$this->sellers();
 		if ($sellers->count() > 1) {
 
