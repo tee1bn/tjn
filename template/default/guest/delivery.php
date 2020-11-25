@@ -90,7 +90,7 @@ include 'includes/header.php';?>
                          Date: <?= date("M j, Y" , strtotime($order->paid_at));?>
                        </p>
 
-                       <form>
+                    <!--    <form>
                           <div class="form-group">
                             <label>Your rating:</label>
                             <select class="form-control">
@@ -100,7 +100,7 @@ include 'includes/header.php';?>
                             </select>
                           </div>
 
-                       </form>
+                       </form> -->
 
                      </div>
                    </div>

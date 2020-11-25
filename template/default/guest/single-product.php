@@ -81,9 +81,9 @@ body{
         </div>
         
         <!-- <hr> -->
-        <span style="color: #00b5b8;">
+        <!-- <span style="color: #00b5b8;">
             <?=($product->market_details()['star_rating']['stars']);?>
-        </span>
+        </span> -->
         <h4 class="card-title">
 
             <?php  if ($product->old_price != '') :?>

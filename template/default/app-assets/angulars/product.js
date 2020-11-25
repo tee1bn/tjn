@@ -168,6 +168,7 @@ class ProductForm {
 
 
         $form.append('publish', $publish);
+        $("#page_preloader").css('display', 'block');
 
         $.ajax({
             type: "POST",
@@ -181,13 +182,12 @@ class ProductForm {
                 "cache-control": "no-cache"
             },
             success: function(data) {
-                console.log(data);
-                // $("#page_preloader").css('display', 'none');
+                $("#page_preloader").css('display', 'none');
                 // $scope.fetch_page_content();
                 window.notify();
             },
             error: function(data) {
-                alert("fail" + JSON.stringify(data));
+                $("#page_preloader").css('display', 'none');
             }
 
         });
@@ -367,7 +367,7 @@ app.controller('ProductController', function($scope, $http) {
 
 
                 // angular.element($('#content')).scope().$apply();
-                console.log(response);
+                // console.log(response);
 
             });
     };
@@ -406,7 +406,9 @@ app.directive('ckEditor', function() {
 
             ngModel.$render = function(value) {
                 ck.setData(ngModel.$viewValue);
+
             };
+                   scope.$apply();
         }
 
 

@@ -22,12 +22,12 @@
       <p></p>
       <br>
       <br>
-      <div>Share the word!
+      <!-- <div>Share the word!
         <p>
           <a><button class="btn btn-twitter">Twitter</button></a>
           <a><button class="btn btn-facebook">Facebook</button></a>
         </p>
-      </div>
+      </div> -->
 
                        
     </div>

@@ -160,10 +160,10 @@ $allowed_file_for_cover = ['image/*','video/*'];
                       </div> -->
 
 
-                      <div class="media-holder" style="height: 100%; width: 100%;">
+                    <!--   <div class="media-holder" style="height: 100%; width: 100%;">
                         <iframe width="100%" height="100%" src="https://www.youtube.com/embed/zmOGBvjQtl0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                       </div>
-
+                    -->
 
 
                     </div>
