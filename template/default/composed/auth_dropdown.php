@@ -8,8 +8,10 @@
       'user/courses',
       'user/view_cart',
       'shop/view_cart',
+      'shop/cart',
       'shop',
       'shop/full_view',
+      's/s',
     ];
   ;?>
 
@@ -22,7 +24,7 @@
 
   <script src="<?=asset;?>/angulars/shop.js" type="module"></script>
   <?php if (in_array($current_url, $allowed) || true)  :?>
-    <li ng-cloak ng-controller="CartNotificationController" id="cart-notification" class="dropdown dropdown-notification nav-item">
+    <li ng-cloak ng-controller="CartNotificationController" id="cart-notification" ng-show="$cart.$items.length>0" class="dropdown dropdown-notification nav-item">
       <a class="nav-link nav-link-label" href="#" data-toggle="dropdown"><i class="ficon ft-shopping-cart"></i>
         <span class="badge badge-pill badge-default badge-danger badge-default badge-up">{{$cart.$items.length}} </span>
       </a>

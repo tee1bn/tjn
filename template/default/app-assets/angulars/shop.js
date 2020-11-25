@@ -40,11 +40,11 @@ import { FilePreviewer } from "./carousel.js";
 
 
 		this.add_item = function($item, $is_buy=false){
-			$checkout_url = $base_url+"/shop/cart";
+			let $checkout_url = $base_url+"/shop/cart";
 
 			//ensure item is not added in cart more than once
 			if (this.contains_object($item, this.$items)) {
-				window.show_notification('<b>'+$item.market_details.name+'</b><br> Already in Cart! <br> <a class="btn btn-outline-teal btn-sm" href='+$checkout_url+'>Check out</a>');
+				window.show_notification('<b>'+$item.market_details.name+'</b><br> Already in Cart! <br> <a class="btn btn-success btn-sm" href='+$checkout_url+'>Check out</a>', 'success');
 				return ;
 			}
 
@@ -54,7 +54,7 @@ import { FilePreviewer } from "./carousel.js";
 
 			this.update_server();
 
-			window.show_notification('<b>'+$item.market_details.name+'</b><br> Added to cart successfully! <br> <a class="btn btn-outline-teal btn-sm" href='+$checkout_url+'>Check out</a>');
+			window.show_notification('<b>'+$item.market_details.name+'</b><br> Added to cart successfully! <br> <a class="btn btn-success btn-sm" href='+$checkout_url+'>Check out</a>', 'success');
 
 			if ($is_buy) {
 				location.href = $base_url+"/user/cart";
