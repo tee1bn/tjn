@@ -42,7 +42,9 @@ class LandingPageController extends controller
 
             $model = 'course';
             $show_personal = '1';
-            $this->view('merchant/shop', compact('model','show_personal','user','merchant'));
+            $domain = Config::domain();
+            $request_url = "$domain/shop/market/?seller_id=$user->id";
+            $this->view('merchant/shop', compact('model','show_personal','user','merchant','request_url'));
 
             break;
         }

@@ -1,6 +1,6 @@
 
 
-    <script src="https://cdn.ckeditor.com/4.5.3/full/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.11.4/full/ckeditor.js"></script>
     <script src="<?=asset;?>/angulars/angularjs.js"></script>
     <script src="<?=asset;?>/angulars/angular-sanitize.js"></script>
     <script>

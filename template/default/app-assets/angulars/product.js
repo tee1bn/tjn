@@ -408,7 +408,6 @@ app.directive('ckEditor', function() {
                 ck.setData(ngModel.$viewValue);
 
             };
-                   scope.$apply();
         }
 
 

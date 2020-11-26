@@ -564,7 +564,7 @@ class shopController extends controller
     public function get_single_item_on_market($model_key, $item_id, $previvew= 0)
     {
         $register = Market::$register;
-
+/*
         $model = $register[$model_key]['model'];
 
 
@@ -585,7 +585,8 @@ class shopController extends controller
         if ($previvew==1) {
             $good  = $model::find($item_id)->market_details();
         }
-
+*/
+        $good = Products::find($item_id)->market_details();
         $single_good = [
             'market_details' => $good
         ];
@@ -704,7 +705,7 @@ class shopController extends controller
         $product = Products::OnSale()->where('id', $item_id)->first();
 
         if ($product==null){
-            Session::putFlash("danger","Item not found");
+            // Session::putFlash("danger","Item not found");
             Redirect::back();
         }
 
@@ -770,6 +771,7 @@ class shopController extends controller
         $filter = new  ProductsFilter($sieve);
 
         $items_on_sale = Products::latest()
+        ->OnSale($filter)
         ->Filter($filter)
         ->skip($skip)
         ->take($per_page)

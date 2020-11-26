@@ -380,6 +380,18 @@
 
             <?php endif  ;?>
 
+            <?php if (isset($user_type)&& ($user_type=='admin')) :?>
+
+              <a class="btn btn-outline-dark"
+                onclick="$confirm_dialog = new ConfirmationDialog('<?= domain; ?>/shop/submit_for_review/<?= $product->id; ?>')" >Review</a>
+
+
+                
+
+
+
+                
+            <?php endif ;?>
             <a class="btn btn-outline-dark" href="<?=$product->PreviewLink;?>">Preview</a>
           </div>
 
