@@ -16,18 +16,20 @@
 
     <!-- BEGIN: Vendor CSS-->
 
-    <link rel="stylesheet" type="text/css" href="<?=asset;?>/vendors/css/tables/datatable/datatables.min.css">    
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/vendors.min.css">
+    
+<!-- 
+    <link rel="stylesheet" type="text/css" href="<?=asset;?>/vendors/css/tables/datatable/datatables.min.css">    
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/jquery-jvectormap-2.0.3.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/charts/morris.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/extensions/unslider.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css">
+    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/vendors/css/weather-icons/climacons.min.css"> -->
     <!-- END: Vendor CSS-->
 
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap-extended.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css"> -->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/components.min.css">
     <!-- END: Theme CSS-->
 
@@ -36,7 +38,7 @@
 
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/menu/menu-types/vertical-menu.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css"> -->
     <!-- link(rel='stylesheet', type='text/css', href=app_assets_path+'/css'+rtl+'/pages/users.css')-->
     <!-- END: Page CSS-->
 

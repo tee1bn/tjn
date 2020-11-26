@@ -27,7 +27,7 @@
     <!-- BEGIN: Theme CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/bootstrap-extended.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/colors.min.css"> -->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/components.min.css">
     <!-- END: Theme CSS-->
 
@@ -36,7 +36,7 @@
 
     <!-- BEGIN: Page CSS-->
     <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/menu/menu-types/vertical-menu.min.css">
-    <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="<?=$asset;?>/css/core/colors/palette-gradient.min.css"> -->
     <!-- link(rel='stylesheet', type='text/css', href=app_assets_path+'/css'+rtl+'/pages/users.css')-->
     <!-- END: Page CSS-->
 
