@@ -679,9 +679,8 @@ class AdminController extends controller
 
     public function edit_product($product_id)
     {   
-        $auth = $this->auth();
 
-        $product = Products::where('user_id', $auth->id)->where('id', $product_id)->first();
+        $product = Products::where('id', $product_id)->first();
         if ($product == null) {
             Redirect::back();
         }

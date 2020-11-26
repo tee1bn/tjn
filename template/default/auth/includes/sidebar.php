@@ -146,17 +146,17 @@ $icon = "$asset/images/logo/icons";
     </li>
 
 
-
+<!-- 
     <li class=" nav-item"><a href="#">
         <i class="ft-life-buoy"></i>
         <span class="menu-title" data-i18n="">Support</span></a>
       <ul class="menu-content">
         <li><a class="menu-item" href="<?=domain;?>/user/support"> Support Tickets</a>
         <li><a class="menu-item" href="<?=domain;?>/user/contact-us"> Contact us</a>
-          <!-- <li><a class="menu-item" href="<?=domain;?>/user/broadcast">News</a></li> -->
 
+          <li><a class="menu-item" href="<?=domain;?>/user/broadcast">News</a></li>
       </ul>
-    </li>
+    </li> -->
 
 
     </ul>
