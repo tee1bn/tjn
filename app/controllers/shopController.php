@@ -644,8 +644,9 @@ class shopController extends controller
     //previvew page for product
     public function v($id)
     {
+        
         $auth = $this->auth();
-        $product = Products::where('id',$id)->where('user_id',$auth->id)->first();
+        $product = Products::where('id',$id)->first();
 
         if ($product == null) {
 
