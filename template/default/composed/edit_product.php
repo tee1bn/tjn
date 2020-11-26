@@ -372,16 +372,17 @@
 
            <div class="btn-group float-right" role="group" aria-label="Button group with nested dropdown">
 
-            <?php if ($product->allow_edit()) :?>
-
             <a class="btn btn-outline-dark" type="a" ng-click="$product_form.save();" >Save Changes</a>
+            <?php if ($product->allow_edit()) :?>
             <a class="btn btn-outline-dark"
             onclick="$confirm_dialog = new ConfirmationDialog('<?= domain; ?>/shop/submit_for_review/<?= $product->id; ?>')" >Publish</a>
 
-            <?php endif  ;?>
+            <?php else:?>
+
+
+            <?php endif ;?>
 
             <?php if (isset($user_type)&& ($user_type=='admin')) :?>
-
 
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
                   Review

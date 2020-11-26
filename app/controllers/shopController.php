@@ -507,6 +507,7 @@ class shopController extends controller
         }
 
         $item->submit_for_review();
+        Session::putFlash('info' ,'Admin will decline or approve before you can re-submit.');
 
 
         Redirect::back();
