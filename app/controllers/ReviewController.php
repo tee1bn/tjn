@@ -47,7 +47,7 @@ class ReviewController extends controller
 
             AdminComment::create([
                         'admin_id' => $this->admin()->id,
-                        'model' => $commentables['model'],
+                        'model' => $key,
                         'model_id' => $product->id,
                         'comment' => $comment,
                         'status' => $state                      

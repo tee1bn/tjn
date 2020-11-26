@@ -416,7 +416,7 @@
             <!-- Modal body -->
             <div class="modal-body">
 
-              <form action="<?=domain;?>/review/push_to_state/product" method="post">
+              <form class="ajax_form" action="<?=domain;?>/review/push_to_state/product" method="post">
 
                 <div class="form-group">
                   <textarea rows="5" class="form-control" placeholder="Admin Comment" required="" name="comment"></textarea>
