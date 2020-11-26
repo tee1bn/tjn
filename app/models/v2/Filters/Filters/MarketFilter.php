@@ -16,7 +16,35 @@ class MarketFilter extends QueryFilter
 
 
 	
-	
+
+
+
+public function on_affiliate($on_affiliate)
+{	
+
+	if ($on_affiliate == null) {
+			return ;
+		}
+
+$identifier1 = <<<ELL
+"affiliate_commission
+ELL;
+
+ $identifier1 = trim($identifier1);
+
+
+ 	// $this->builder->join('products', 'products.id', '=' ,'market.item_id');
+
+	$this->builder->whereRaw("(item like ? )", 
+
+								array(
+									"%$identifier1%"
+							));
+
+// echo $this->builder->toSql();
+	}
+
+		
 
 	public function seller_id($seller_id)
 	{

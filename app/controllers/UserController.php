@@ -366,9 +366,10 @@ class UserController extends controller
 
 
     public function shop()
-    {
-        
-        $this->view('auth/shop');
+    {   
+        $domain = Config::domain();
+        $request_url = "$domain/shop/market?on_affiliate=1";
+        $this->view('auth/shop', compact('request_url'));
     }
 
 

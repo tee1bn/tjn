@@ -727,6 +727,8 @@ class User extends Eloquent
 
     public function is($type='affiliate')
     {
+        return true;
+
         $outcome = $this->ActiveSubscriptions;
         $index = self::$subscription_type[$type];
 
@@ -859,7 +861,7 @@ public static function generate_phone_code_for($user_id)
 
         $rank = $this->TheRank['name'];
 
-    	return  "<a target='_blank' href='{$this->AdminViewUrl}'>{$this->full_name} ($this->username)<br> Rank-$rank </a>";
+    	return  "<a target='_blank' href='{$this->AdminViewUrl}'>{$this->full_name} ($this->username)</a>";
     }
 
 

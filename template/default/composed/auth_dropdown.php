@@ -18,7 +18,7 @@
   
   <script>
     var $model = '<?=(isset($model))?  $model: '';?>';
-  $request_url = `<?=$request_url ?? "$domain/shop/market?";?>`;
+    var $request_url = `<?=$request_url ?? "$domain/shop/market?";?>`;
 
   </script>
 

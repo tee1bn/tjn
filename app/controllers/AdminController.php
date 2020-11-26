@@ -7,6 +7,7 @@ use Filters\Filters\UserFilter;
 use Filters\Filters\WalletFilter;
 use Filters\Filters\WithdrawalFilter;
 use Filters\Filters\SalesFilter;
+use Filters\Filters\ProductsFilter;
 use Filters\Filters\OrderFilter;
 use Filters\Filters\TestimonialsFilter;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -675,22 +676,49 @@ class AdminController extends controller
     }
 
 
-    public function edit_book($ebook_id)
-    {
 
-        $ebook = Ebooks::find($ebook_id);
+    public function edit_product($product_id)
+    {   
+        $auth = $this->auth();
 
-        $this->view('admin/edit_book', compact('ebook'));
+        $product = Products::where('user_id', $auth->id)->where('id', $product_id)->first();
+        if ($product == null) {
+            Redirect::back();
+        }
 
+
+        $this->view('admin/edit_product_spa', compact('product'));
     }
 
 
     public function products()
     {
 
-        $this->view('admin/products');
+        $query = Products::latest();
 
+        $sieve = $_REQUEST;
+
+
+        $sieve = array_merge($sieve);
+        $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
+        $per_page = 50;
+        $skip = (($page - 1) * $per_page);
+
+        $filter = new  ProductsFilter($sieve);
+
+        $data = $query->Filter($filter)->count();
+
+        $products = $query->Filter($filter)
+            ->offset($skip)
+            ->take($per_page)
+            ->get();  //filtered
+
+
+
+        $this->view('admin/products', compact('products','data','per_page') );
     }
+
+
 
 
     public function licensing()

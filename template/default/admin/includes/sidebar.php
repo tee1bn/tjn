@@ -26,6 +26,7 @@
 
         <li><a class="menu-item" href="<?=domain;?>/admin/cms"><i class="fa fa-edit"></i>CMS</a></li>
 
+             <li><a class="menu-item" href="<?=domain;?>/admin/products">Products</a></li>
 
 
 

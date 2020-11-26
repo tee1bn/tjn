@@ -5,6 +5,7 @@ use  v2\Shop\Shop;
 use  v2\Models\Market;
 use wp\Models\Post;
 use Filters\Filters\MarketFilter;
+use Filters\Filters\ProductsFilter;
 
 
 /**
@@ -486,9 +487,9 @@ class shopController extends controller
 
 
 
+
     public function submit_for_review($item_id, $model_key='product')
     {
-        
 
         $register = Market::$register;
 
@@ -505,12 +506,21 @@ class shopController extends controller
             Redirect::back();
         }
 
+        $item->submit_for_review();
+
+
+        Redirect::back();
+
+
         //ensure this is not in review already
         $last_submission =  Market::where('seller_id', $auth->id)
         ->where('category', $item::$category_in_market)
         ->where('item_id', $item->id)
         ->latest()
         ->first();
+
+
+
 
 /*
         if ($last_submission != null) {
@@ -663,7 +673,7 @@ class shopController extends controller
         $affiliate_id = $product_references[1] ?? null;
 
 
-        $model_key ='product';
+/*        $model_key ='product';
 
         $register = Market::$register;
 
@@ -677,11 +687,12 @@ class shopController extends controller
         ->latest()
         ->OnSale()
         ->first();
-
+        
+        
 
         if ($item_on_sale == null) {
 
-            // Session::putFlash("danger","Item not found");
+            Session::putFlash("danger","Item not found");
             Redirect::back();
         }
 
@@ -689,6 +700,15 @@ class shopController extends controller
         $good = $item_on_sale->preview();
 
         $product = $item_on_sale->preview();
+*/      
+        $product = Products::OnSale()->where('id', $item_id)->first();
+
+        if ($product==null){
+            Session::putFlash("danger","Item not found");
+            Redirect::back();
+        }
+
+
 
         $_SESSION['product_ref'] = $product_ref;
 
@@ -720,9 +740,87 @@ class shopController extends controller
 
 
 
+    public function direct_products($seller_id=null)
+    {
+
+        $type = 'product';
+        $domain = Config::domain();
+        $shop_link = "$domain/shop";
+        $register = [
+
+            'product' => [
+                'per_page' => 25,
+                'currency' => Config::currency(),
+                'shop_link' => $shop_link,
+                'order_storage' => 'Orders',
+            ],
+
+        ];
+
+
+
+
+        $page = $_REQUEST['page'] ?? 1;
+        $per_page = $register[$type]['per_page'];
+        $skip = (($page -1 ) * $per_page) ;
+
+
+        $sieve = $_REQUEST;
+
+        $filter = new  ProductsFilter($sieve);
+
+        $items_on_sale = Products::latest()
+        ->Filter($filter)
+        ->skip($skip)
+        ->take($per_page)
+        ->get()
+        ;
+
+        foreach ($items_on_sale as $key => $value) {
+            $shaded_market[]['market_details'] = $value->market_details();
+        }
+
+
+        header("Content-type: application/json");
+
+        $register = [
+            'course' => [
+                'per_page' => 25,
+                'currency' => '&#8358;',
+                'shop_link' => $shop_link,
+                'order_storage' => 'Orders',
+            ],
+
+            'product' => [
+                'per_page' => 25,
+                'currency' => Config::currency(),
+                'shop_link' => $shop_link,
+                'order_storage' => 'Orders',
+            ],
+
+        ];
+
+        $page = $_REQUEST['page'] ?? 1;
+        $market_category = $register[$type];
+
+
+        
+        $config = $market_category;
+        $items = $shaded_market ?? [];
+
+
+        $shop = compact('items', 'config');
+        echo json_encode($shop);    
+
+    }
+
     
     public function market($seller_id=null)
     {   
+
+        $this->direct_products($seller_id);
+        return;
+
         $type = 'product';
 
         $domain = Config::domain();
@@ -766,7 +864,12 @@ class shopController extends controller
         ->get()
         ;
 
-        $shaded=[];
+        $items_on_sale = Products::all();
+
+        foreach ($items_on_sale as $key => $value) {
+            $shaded_market[]['market_details'] = $value->market_details();
+        }
+
         foreach ($items_on_sale as $key => $item_on_sale) {
             $market_content = $item_on_sale->item;
 

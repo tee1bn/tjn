@@ -51,7 +51,11 @@
                         <a><span ng-click="$shop.quickview($item)" class="ft-eye fa-2x"></span></a>
                         <?php if (isset($show_affiliate_link) && ($show_affiliate_link)) :?>
 
-                          <a><span title="copy promotional link" ng-click="$shop.$cart.copy($item.market_details.promotional_link)" class="ft-link fa-2x"></span></a>
+                          <a ng-show="$item.market_details.extra_details.affiliate_commission>0">
+                            <span title="copy promotional link" ng-click="$shop.$cart.copy($item.market_details.promotional_link)" class="">
+                              <small class="ft-link">{{$item.market_details.extra_details.affiliate_commission}}%</small>
+                            </span>
+                          </a>
                         <?php endif ;?>
                       </span>
                       <span class="pull-right">      

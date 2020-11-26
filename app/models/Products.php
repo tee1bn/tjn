@@ -25,6 +25,7 @@ class Products extends Eloquent
 		'versions',
 		'settings',
 		'cover',
+		'status',
 		'extra_details',
 	];
 	
@@ -34,6 +35,13 @@ class Products extends Eloquent
 	// protected $hidden = ['downloadable_files'];
 
 	public static $category_in_market = 'product';
+
+	public static $statuses = [
+		0=>'declined',
+		1=>'draft',
+		2=>'submitted',
+		3=>'approved',
+	];
 
 	public function user()
 	{
@@ -84,6 +92,12 @@ class Products extends Eloquent
 	{ 
 		$domain = Config::domain();
 		return "$domain/user/edit-product/$this->id";
+	}
+
+	public function getAdminEditLinkAttribute()
+	{ 
+		$domain = Config::domain();
+		return "$domain/admin/edit-product/$this->id";
 	}
 
 
@@ -312,7 +326,7 @@ class Products extends Eloquent
 			'cover' =>  $this->CoverArray,
 			'promotional_link' =>  $this->getPromotionLinkFor($auth->id ?? null),
             'unique_name' =>  'product',  // this name is used to identify this item in cart and at delivery
-			'extra_details' =>  $this->extra_details,
+			'extra_details' =>  $this->ExtraDetailsArray,
         ];
 
         return $market_details;
@@ -686,14 +700,46 @@ class Products extends Eloquent
 		}
 
 
+		public function scopeOnSale($query)
+		{
+			//2 is approved
+			return $query->where('status', 3);
+		}
+
+		public function allow_edit($type='user')
+		{
+			switch ($type) {
+				case 'admin':
+					return true;
+					break;
+				
+				default:
+
+					if ($this->status > 1) {
+						return false;
+					}
+
+					return true;
+				break;
+			}
+
+		}
+
+
+		public function submit_for_review()
+		{
+			$this->update(['status'=> 2]);
+		}
+
 
 		public function is_approved()
 		{
-			return $this->ApprovalState==2;
+			return $this->ApprovalState==3;
 		}
 
 		public function getApprovalStateAttribute()
 		{
+			return $this->status;
 			$last_submission =  Market::where('category', $this::$category_in_market)
 			->where('item_id', $this->id)
 			->latest()
@@ -707,19 +753,18 @@ class Products extends Eloquent
 		public function getApprovalStatusAttribute()
 		{
 
-			$last_submission = $this->ApprovalState;
-			
-			if ($last_submission == null) {
-				return "<span class='badge badge-sm badge-dark'>Drafting</span>";
-			}
 
-			switch ($last_submission->approval_status) {
-				case 2:
+			switch ($this->status) {
+				case 3:
 				$status = "<span class='badge badge-sm badge-success'>Approved</span>";
 				break;
 
+				case 2:
+				$status = "<span class='badge badge-sm badge-warning'>Submitted</span>";
+				break;
+
 				case 1:
-				$status = "<span class='badge badge-sm badge-warning'>In review</span>";
+				$status = "<span class='badge badge-sm badge-secondary'>Draft</span>";
 				break;
 
 				case 0:

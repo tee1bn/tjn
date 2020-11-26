@@ -712,7 +712,8 @@ ELL;
 
 				$identifier = "ta#u{$this->affiliate_id}#item{$item['market_details']['id']}#o$this->id";
 				$comment ="$affiliate_percent% on {$item['market_details']['price']} #order_id:$this->id#item:{$item['market_details']['id']}";
-				if ($this->affiliate_id != null) {
+				$affiliate = User::find($affiliate_id);
+				if (($this->affiliate_id != null) && ($affiliate->is('affiliate'))) {
 					$affiliate_credit = Wallet::createTransaction(
 					    'credit',
 					    $vendor_id,
