@@ -117,14 +117,16 @@ body{
                 success: function(data) {
                     $item = data.single_good;
                     $scope = angular.element($('#content')).scope();
-                    $scope.$shop.$cart.buy_now($item);
-
+                    $scope.$shop.$cart.add_item($item);
                     $scope.$apply();
+
 
                 },
                 error: function (data) {
                 },
-                complete: function(){}
+                complete: function(){
+                    location.href = $base_url+"/shop/cart";
+                }
             });
             }
 

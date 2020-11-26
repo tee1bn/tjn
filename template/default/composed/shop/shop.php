@@ -35,7 +35,7 @@
                     <img class="card-img-top" src="{{$item.market_details.thumbnail}}" alt="Card image cap" style="height: 140px;object-fit: cover;">
                     <div class="card-body">
                       <!-- <hr> -->
-                      <a target="_blank" href="<?=$domain;?>/shop/full_view/{{$item.market_details.id}}"><b>{{$item.market_details.name}}</b></a>
+                      <a  href="<?=$domain;?>/shop/full_view/{{$item.market_details.id}}"><b>{{$item.market_details.name}}</b></a>
                       <p class="card-text course-subtext">
                          <!-- <small ng-bind-html="$item.market_details.short_description"></small> -->
                       </p>

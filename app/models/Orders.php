@@ -11,6 +11,7 @@ use  v2\Shop\Shop;
 
 use v2\Models\Sales;
 use v2\Models\Wallet;
+use v2\Models\Market;
 
 
 
@@ -664,9 +665,13 @@ ELL;
 
 				$vendor_id = $item['market_details']['user_id'];
 
-				$company_share = $settlement_structure['company_percent'] * 0.01 * $price;
+				$company_percent = $settlement_structure['company_percent'];
+				$company_share = $company_percent * 0.01 * $price;
 
-				$affiliate_share = $settlement_structure['affiliate_percent'] * 0.01 * $price;
+				$extra_detail = json_decode($item['market_details']['extra_details'], true);
+
+				$affiliate_percent = $extra_detail['affiliate_commission'];
+				$affiliate_share = $affiliate_percent * 0.01 * $price;
 
 				$vendor_share = $settlement_structure['vendor_percent'] * 0.01 * $price;
 
@@ -683,8 +688,9 @@ ELL;
 
 				$extra_detail = [];
 
-				$comment ="settlement on #order_id:$this->id#item:{$item['market_details']['id']}";
 
+
+				$comment ="settlement on #order_id:$this->id#item:{$item['market_details']['id']}";
 
 				$paid_at = date("Y-m-d", strtotime("+$clearance_in_days days"));
 
@@ -705,6 +711,7 @@ ELL;
 				);
 
 				$identifier = "ta#u{$this->affiliate_id}#item{$item['market_details']['id']}#o$this->id";
+				$comment ="$affiliate_percent% on {$item['market_details']['price']} #order_id:$this->id#item:{$item['market_details']['id']}";
 				if ($this->affiliate_id != null) {
 					$affiliate_credit = Wallet::createTransaction(
 					    'credit',
@@ -724,6 +731,7 @@ ELL;
 
 
 				$identifier = "tc#u1#item{$item['market_details']['id']}#o$this->id";
+				$comment ="$company_percent% on {$item['market_details']['price']} #order_id:$this->id#item:{$item['market_details']['id']}";
 				$affiliate_credit = Wallet::createTransaction(
 				    'credit',
 				    1,

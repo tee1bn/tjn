@@ -177,9 +177,9 @@ include 'includes/header.php';?>
                             </select>
                           </div>
 
-                          <span ng-show="$shop.$cart.calculate_total()==0">
+                          <span ng-if="$shop.$cart.calculate_total()==0">
                             <input type="hidden" name="payment_method" value="bank_transfer">
-                            <button  id="get_breakdown_btn" type="submit" 
+                            <button   type="submit" 
                             class="btn btn-dark" onclick="get_breakdown(form)"> Complete Order</button>
                           </span>
 

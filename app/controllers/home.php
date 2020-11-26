@@ -31,10 +31,11 @@ class home extends controller
     {
 
 
-        $order = Orders::find(37);
+        $order = Orders::find(54);
 
-        $this->view('emails/group_delivery',compact('order'));
+        $order->settle();
         return;
+        $this->view('emails/group_delivery',compact('order'));
         $product = Products::find(54);
         print_r($product->CoverArray);
 

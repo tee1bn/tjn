@@ -331,9 +331,17 @@ $allowed_file_for_cover = ['image/*','video/*'];
            <!--  <label>Allow Customers pay what they want 
               <input type="checkbox" ng-model="$product_form.$product.extra_details.customer_sets_price">
             </label> -->
-            <div class="form-group" ng-hide="$product_form.$product.extra_details.customer_sets_price">
-              <label>Price </label>
-              <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">
+            <div class="row">
+              <div class="form-group col-6" ng-hide="$product_form.$product.extra_details.customer_sets_price">
+                <label>Price </label>
+                <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">
+              </div>
+
+              <div class="form-group col-6" >
+                <label>Affililate Commission (%) </label>
+                <input class="form-control" step="5" type="number" min="0" max="90" ng-model="$product_form.$product.extra_details.affiliate_commission" 
+                 placeholder="% commission">
+              </div>
             </div>
 
             <div class="form-group">
@@ -359,7 +367,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
 
             <div class="form-group">
              <label>Thank you note</label>
-             <textarea class="form-control" rows="4" ng-model="$product_form.$product.extra_details.thank_you_note"></textarea>
+             <textarea class="form-control" rows="4" placeholder="Optional" ng-model="$product_form.$product.extra_details.thank_you_note"></textarea>
            </div>
 
 

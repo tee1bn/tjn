@@ -312,6 +312,7 @@ class Products extends Eloquent
 			'cover' =>  $this->CoverArray,
 			'promotional_link' =>  $this->getPromotionLinkFor($auth->id ?? null),
             'unique_name' =>  'product',  // this name is used to identify this item in cart and at delivery
+			'extra_details' =>  $this->extra_details,
         ];
 
         return $market_details;
