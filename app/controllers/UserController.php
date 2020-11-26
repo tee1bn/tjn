@@ -32,7 +32,7 @@ class UserController extends controller
     {
 
 
-        if (!$this->admin() || true) {
+        if (!$this->admin()) {
             $this->middleware =   $this->middleware('current_user')
                                         ->mustbe_loggedin()
                                         ->must_have_verified_email()

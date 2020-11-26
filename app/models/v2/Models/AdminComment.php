@@ -33,6 +33,9 @@ class AdminComment extends Eloquent
 		'withdrawal' => [
 			'model' => 'v2\Models\Withdrawal'
 		],
+		'product' => [
+			'model' => 'Products'
+		],
 
 	];
 

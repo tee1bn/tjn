@@ -382,15 +382,13 @@
 
             <?php if (isset($user_type)&& ($user_type=='admin')) :?>
 
-              <a class="btn btn-outline-dark"
-                onclick="$confirm_dialog = new ConfirmationDialog('<?= domain; ?>/shop/submit_for_review/<?= $product->id; ?>')" >Review</a>
 
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                  Review
+                </button>
 
-                
+            
 
-
-
-                
             <?php endif ;?>
             <a class="btn btn-outline-dark" href="<?=$product->PreviewLink;?>">Preview</a>
           </div>
@@ -404,16 +402,87 @@
 
 
 
+      <!-- The Modal -->
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Review</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+              <form action="<?=domain;?>/review/push_to_state/product" method="post">
+
+                <div class="form-group">
+                  <textarea rows="5" class="form-control" placeholder="Admin Comment" required="" name="comment"></textarea>
+                  <input type="hidden" name="product_id" value="<?=$product->id;?>">
+                </div>
+
+                <div class="form-group">
+                  <select class="form-control" name="status" required="">
+                    <option value="">Select</option>
+                    <?php foreach(Products::$statuses as $key => $value) :?>
+                      <option value="<?=$key;?>"> <?=$value;?></option>
+                    <?php endforeach ; ?>
+                  </select>                                   
+
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-dark">Submit</button>
+                </div>
+
+              </form>
+
+            </div>
+
+            <!-- Modal footer -->
+           <!--  <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div> -->
+
+          </div>
+        </div>
+      </div>
 
 
-             <!--  <div class="col-md-5">
+
+
+              <div class="col-md-5">
                 <div class="card">
-                  <div class="card-body">
-                    <iframe id="preview-iframe" src="<?=$product->PreviewLink;?>" class="preview-card"></iframe>
-                  </div>
+
+                        <div class="admin_comment col-md-12" style="height: 182px;overflow-y: scroll;">
+
+                          <table class="table table-striped table-sm">
+
+
+                            <?php
+                            foreach ($product->adminComments() as $key => $comment):?>
+                              <tr>
+                                <td><?=$comment->comment;?>
+                                <br>
+                                <small><i>
+                                  <?=$comment->admin->fullname;?> 
+                                  <?=Products::get_status($comment->status);?>
+                                  <?=date("M j, Y h:iA", strtotime($comment->created_at));?> 
+                                </i>
+                              </small> 
+                            </td>
+                          </tr>
+                        <?php endforeach;?>
+                      </table>
+
+
+                    </div>
+
+                    <!-- <iframe id="preview-iframe" src="<?=$product->PreviewLink;?>" class="preview-card"></iframe> -->
                   
                 </div>
-              </div> -->
+              </div>
 
             </div>
           </div>

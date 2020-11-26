@@ -4,6 +4,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 use  v2\Models\Market;
+use  v2\Models\AdminComment;
 
 
 use  Filters\Traits\Filterable;
@@ -43,9 +44,33 @@ class Products extends Eloquent
 		3=>'approved',
 	];
 
+	
+	public static function get_status($status)
+	{
+		$order = new self();
+		$order->status = $status;
+
+		return $order->ApprovalStatus;
+	}
+
+
+
+	public function getStateAttribute()
+	{
+		return self::$statuses[$this->status];
+	}
 	public function user()
 	{
 		return $this->belongsTo('User','user_id');
+	}
+
+
+
+
+	public function adminComments()
+	{       
+		$comments =   AdminComment::where('model_id', $this->id)->where('model', 'product')->get();
+	     return $comments;
 	}
 
 

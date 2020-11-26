@@ -51,6 +51,7 @@ $router =[
 	'paypal' => 'payments/PayPalController', 
 
 	'product' => 'ProductsController', 
+	'review' => 'ReviewController', 
 
 
 
