@@ -644,7 +644,7 @@ class shopController extends controller
     //previvew page for product
     public function v($id)
     {
-        
+
         $auth = $this->auth();
         $product = Products::where('id',$id)->first();
 
@@ -703,8 +703,9 @@ class shopController extends controller
 
         $product = $item_on_sale->preview();
 */      
-        $product = Products::OnSale()->where('id', $item_id)->first();
+        
 
+        $product = Products::OnSale()->where('id', $item_id)->first();
         if ($product==null){
             // Session::putFlash("danger","Item not found");
             Redirect::back();

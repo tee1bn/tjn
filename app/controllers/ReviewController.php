@@ -45,6 +45,13 @@ class ReviewController extends controller
         DB::beginTransaction(); 
         try {
 
+
+            $product->update([
+                        'status'=> $state,
+                    ]);
+
+
+
             AdminComment::create([
                         'admin_id' => $this->admin()->id,
                         'model' => $key,
