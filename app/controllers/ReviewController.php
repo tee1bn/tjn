@@ -80,7 +80,7 @@ class ReviewController extends controller
         $content = "
                     <p><strong>NOTICE</strong></p>
 
-                    <p>Your product $product->name has been {$product->State}</p>
+                    <p>Your product  <b>$product->name</b> has been {$product->State}</p>
 
 
                 <p>Please <a href='$domain/login'>login </a>to confirm.</p>
