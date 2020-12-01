@@ -673,10 +673,12 @@ ELL;
 				$affiliate_percent = $extra_detail['affiliate_commission'];
 				$affiliate_share = $affiliate_percent * 0.01 * $price;
 
-				$vendor_share = $settlement_structure['vendor_percent'] * 0.01 * $price;
+				// $vendor_share = $settlement_structure['vendor_percent'] * 0.01 * $price;
 
+				$vendor_share = $price - $company_share - $affiliate_share;
+				
 				if ($this->affiliate_id == null) {
-					$vendor_share += $affiliate_share;
+					$company_share += $affiliate_share;
 				}
 
 

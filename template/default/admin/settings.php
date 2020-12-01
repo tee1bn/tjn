@@ -341,8 +341,13 @@ include 'includes/header.php';?>
                     </div>
 
                     <div class="form-group col-md-4">
-                      <label>Affiliate Percent </label>
-                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.affiliate_percent">
+                      <label>Clearance Days </label>
+                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.clearance_in_days">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                      <label>X-day Money back </label>
+                      <input type="" class="form-control" name="" ng-model="$rules_settings.settlement.guarantee_in_days">
                     </div>
 
                  <!--

@@ -12,7 +12,6 @@
               <ul class="nav navbar-nav ml-1" style="display: inline;">
                 <li class="nav-" style="display: inline;"><a href="<?=domain;?>">Home</a></li> |
                 <li class="nav-" style="display: inline;"><a href="<?=domain;?>/terms">Terms</a></li> |
-                <li class="nav-" style="display: inline;"><a href="<?=domain;?>/disclaimer"> Disclaimer</a></li> |
                 <li class="nav-" style="display: inline;"><a href="<?=domain;?>/faqs"> Faqs</a></li> |
                 <li class="nav-" style="display: inline;"><a href="<?=domain;?>/contact-us"> Contact</a></li>
               </ul>         
