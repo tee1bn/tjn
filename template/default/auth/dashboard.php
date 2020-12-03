@@ -79,7 +79,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="card">
             <div class="card-content">
               <div class="card-body">
@@ -98,7 +98,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
         </div>
 
 
-        <div class="col-md-3">
+        <div class="col-md-4">
              <div class="card">
                <div class="card-content">
                  <div class="card-body">
@@ -117,7 +117,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
            </div>
 
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <div class="card">
             <div class="card-content">
               <div class="card-body">
@@ -136,7 +136,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
         </div>
 
 
-        <div class="col-md-3">
+        <div class="col-md-4" style="display: none;"> 
           <div class="card">
             <div class="card-content">
               <div class="card-body">
