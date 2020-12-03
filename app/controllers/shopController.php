@@ -733,8 +733,8 @@ class shopController extends controller
         $cart = json_decode($_SESSION['cart'], true)['$items'];
 
         if (count($cart) == 0) {
-            Session::putFlash("info", "Your cart is empty.");
-            Redirect::to('shop');
+            // Session::putFlash("info", "Your cart is empty.");
+            // Redirect::to('shop');
         }
 
         $this->view('guest/view_cart', compact('shop'));

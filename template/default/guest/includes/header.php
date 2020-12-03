@@ -80,7 +80,7 @@
 
               <a class="navbar-brand" href="<?=domain;?>">
                 <!-- <h2 class="brand-text"><?=project_name;?></h2> -->
-                <img src="<?=$logo;?>" style="height: 34px; width:auto;">
+                <img src="<?=$logo;?>" style="height: 22px; width:auto;">
               </a>
               <?php endif  ?>
 

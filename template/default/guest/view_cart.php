@@ -24,11 +24,11 @@ include 'includes/header.php';?>
 
         <div class="">
           <div class="content-header row">
-            <div class="content-header-left col-6 mb-2">
+            <div class="content-header-left col-3 mb-2">
               <h3 class="content-header-title mb-0">Cart</h3>
 
             </div>
-            <div class="content-header-right text-right col-6">
+            <div class="content-header-right text-right col-9">
               <small><b>Need help?</b> Whatsapp 08123351819 <br>
             Email: support@salesra.com </small>
 
