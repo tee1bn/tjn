@@ -100,9 +100,10 @@ body{
             <?=$currency;?><?=$this->money_format($product->price);?>
 
         </h4>
-
             <a href="javascript:void;" class="form-control text-center btn-success" onclick="add_item_singly();"  
            ><i class="ft ft-shopping-cart"></i> Order Now</a>
+
+
         <script>
 
             add_item_singly = function () {
@@ -117,7 +118,7 @@ body{
                 success: function(data) {
                     $item = data.single_good;
                     $scope = angular.element($('#content')).scope();
-                    $scope.$shop.$cart.add_item($item);
+                    $scope.$shop.$cart.buy_now($item);
                     $scope.$apply();
 
 
@@ -132,11 +133,15 @@ body{
 
             
         </script>
-        <hr>
+        <!-- <hr> -->
+        <small><i> Covered by <?=project_name;?> 
+        <?=$all_setting['rules_settings']->settingsArray['settlement']['guarantee_in_days'];?>-days guarantee</i></small>
+        <br>
+        
         <span id="to_find_scope"></span>                        
     </div>
 </div>
-
+<small>Access to this product is available once payment is confirmed.</small>
 </div>
 </div></div>
 </div>

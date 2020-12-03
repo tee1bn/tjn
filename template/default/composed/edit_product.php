@@ -393,7 +393,7 @@
             
 
             <?php endif ;?>
-            <a class="btn btn-outline-dark" href="<?=$product->PreviewLink;?>">Preview</a>
+            <a class="btn btn-outline-dark" target="_blank" href="<?=$product->PreviewLink;?>">Preview</a>
           </div>
 
         </form>
