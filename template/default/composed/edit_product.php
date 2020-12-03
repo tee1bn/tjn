@@ -342,20 +342,18 @@
               </div>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label>Category </label>
               <select  class="form-control custom-select" 
               ng-init="$product_form.$product.category_id"
               ng-model="$product_form.$product.category_id"
                ng-options="$category.id as $category.category for $category in categories">
               </select>
-            </div>
+            </div> -->
 
-            {{$product_form.$product.category_id}}
             <div class="form-group">
               <label>Category </label>
               <select  class="form-control custom-select" ng-model="$product_form.$product.category_id">
-
                <option ng-selected="$product_form.$product.category_id == $category.id" ng-repeat="(key, $category) in categories" value="{{$category.id}}"> {{$category.category}}</option>
               </select>
             </div>
