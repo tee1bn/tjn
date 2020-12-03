@@ -39,7 +39,7 @@ import { FilePreviewer } from "./carousel.js";
 		}
 
 
-		this.add_item = function($item, $is_buy=false){
+		this.add_item = async function($item, $is_buy=false){
 			let $checkout_url = $base_url+"/shop/cart";
 
 			//ensure item is not added in cart more than once
@@ -52,7 +52,8 @@ import { FilePreviewer } from "./carousel.js";
 			$item.qty = 1;
 			this.$items.push($item);
 
-			this.update_server();
+			await this.update_server();
+
 
 			window.show_notification('<b>'+$item.market_details.name+'</b><br> Added to cart successfully! <br> <a class="btn btn-success btn-sm" href='+$checkout_url+'>Check out</a>', 'success');
 
@@ -134,28 +135,30 @@ import { FilePreviewer } from "./carousel.js";
 				};
 					// $("#page_preloader").css('display', 'block');
 
-					 $.ajax({
-			            type: "POST",
-			            url: $base_url+"/shop/update_cart",
-			            cache: false,
-			            contentType: false,
-			            processData: false,
-			            data: $form,
-			            async: true,
-                        headers: {
-                          "cache-control": "no-cache"
-                        },
-			            success: function(data) {
-							$("#page_preloader").css('display', 'none');
-			              // console.log(data);
-			              // $scope.fetch_page_content();
-			              window.notify();
-			            },
-			            error: function (data) {
-			                 alert("fail"+JSON.stringify(data));
-			            }
+			 $.ajax({
+	            type: "POST",
+	            url: $base_url+"/shop/update_cart",
+	            cache: false,
+	            contentType: false,
+	            processData: false,
+	            data: $form,
+	            async: true,
+                headers: {
+                  "cache-control": "no-cache"
+                },
+	            success: function(data) {
+					$("#page_preloader").css('display', 'none');
+	              // console.log(data);
+	              // $scope.fetch_page_content();
+	              window.notify();
 
-			           });
+	              return true;
+	            },
+	            error: function (data) {
+	                 alert("fail"+JSON.stringify(data));
+	            }
+
+	           });
 
 
 		}

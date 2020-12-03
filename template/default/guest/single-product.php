@@ -126,7 +126,7 @@ body{
                 error: function (data) {
                 },
                 complete: function(){
-                    location.href = $base_url+"/shop/cart";
+                    // location.href = $base_url+"/shop/cart";
                 }
             });
             }
