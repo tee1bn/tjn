@@ -40,9 +40,6 @@
     <!-- link(rel='stylesheet', type='text/css', href=app_assets_path+'/css'+rtl+'/pages/users.css')-->
     <!-- END: Page CSS-->
 
-    <!-- BEGIN: Custom CSS-->
-    <link rel="stylesheet" type="text/css" href="../../../assets/css/style.css">
-    <!-- END: Custom CSS-->
     <link rel="stylesheet" type="text/css" href="<?=asset;?>/fonts/feather/style.min.css">
     <script src="<?=asset;?>/js/jquery1.12.min.js"></script>
   </head>
@@ -167,11 +164,6 @@
     }
     </style>
 
-<script>
-    $(function() {
-        $('#myTable').DataTable();
-    });
-</script>
 
   <?php include 'sidebar.php';?>
   

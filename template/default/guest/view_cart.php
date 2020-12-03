@@ -24,11 +24,13 @@ include 'includes/header.php';?>
 
         <div class="">
           <div class="content-header row">
-            <div class="content-header-left col-md-6 col-12 mb-2">
+            <div class="content-header-left col-6 mb-2">
               <h3 class="content-header-title mb-0">Cart</h3>
 
             </div>
-            <div class="content-header-right text-md-right col-md-6 col-12">
+            <div class="content-header-right text-right col-6">
+              <small><b>Need help?</b> Whatsapp 08123351819 <br>
+            Email: support@salesra.com </small>
 
             </div>
           </div>
@@ -76,7 +78,7 @@ include 'includes/header.php';?>
                                 <h4 class="media-heading"><b>{{$item.market_details.name}}</b></h4>
                                 <!-- <span ng-bind-html = $item.market_details.short_description></span> -->
                               </div>
-                              <ul>
+                              <ul style="margin-bottom: 0px;">
                                 <li class="text-danger" ng-click="$shop.$cart.remove_item($item)"><a>Remove</a></li>
                                 <li><h2><b><?=$currency;?>{{$item.market_details.price }}</b></h2></li>
                               </ul>
@@ -104,11 +106,11 @@ include 'includes/header.php';?>
                             <div class="card-body">
                               <h6>Summary</h6>
                               <table class="table table-striped">
-                                <tr>
+                                <!-- <tr>
                                   <th style="padding: 5px;">Order</th>
                                   <td class="text-right" style="padding: 5px;">
                                    <span ng-bind-html="$shop.$config.currency"></span> {{($shop.$cart.calculate_total()) |  number:2}} 
-                                 </td>  
+                                 </td>   -->
                                </tr>
 
                                <tbody id="payment_breakdown">

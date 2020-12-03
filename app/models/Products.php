@@ -424,7 +424,6 @@ class Products extends Eloquent
     public function is_ready_for_review()
     {
 
-
     	$required =  [
     		'name',
     		'price',

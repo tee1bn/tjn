@@ -74,7 +74,7 @@
             <li class="nav-item">
               <?php if (isset($merchant)) :?>
               <a class="navbar-brand" href="<?=$merchant->PageHref;?>">
-                <h2 class="brand-text" style="text-transform: capitalize;"><?=$merchant->DisplayTradeName;?></h2>
+                <!-- <h2 class="brand-text" style="text-transform: capitalize;"><?=$merchant->DisplayTradeName;?></h2> -->
               </a>
               <?php else :?>
 

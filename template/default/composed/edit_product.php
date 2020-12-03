@@ -127,7 +127,7 @@
     </style>
 
     <div class="content-body row">
-      <div class="col-md-7">
+      <div class="col-md-8">
         <form action="<?=domain;?>/product/update_product" id="nform" method="post" enctype="multipart/form-data">
 
           <div class="form-group">
@@ -254,7 +254,7 @@
                         <button ng-hide="$content.detail_pad" ng-click="$content.toggleDetailPad()" type="button" class="btn btn-light text-white">
                           <i class="fa fa-pencil"></i>
                         </button>
- -->
+              -->
 
                         <button ng-click="$product_form.deleteFile($content)" type="button" class="btn btn-light text-white"><i class="fa fa-trash"></i></button>
                       </div>
@@ -332,7 +332,7 @@
             <div class="row">
               <div class="form-group col-6" ng-hide="$product_form.$product.extra_details.customer_sets_price">
                 <label>Price </label>
-                <input class="form-control" type="number" min="0" ng-model="$product_form.$product.price"  placeholder="Amount">
+                <input class="form-control" type="number" min="0" max="100000" ng-model="$product_form.$product.price"  placeholder="Amount">
               </div>
 
               <div class="form-group col-6" >
@@ -344,7 +344,9 @@
 
             <div class="form-group">
               <label>Category </label>
-              <select  class="form-control custom-select" ng-model="$product_form.$product.category_id"
+              <select  class="form-control custom-select" 
+              ng-init="$product_form.$product.category_id"
+              ng-model="$product_form.$product.category_id"
                ng-options="$category.id as $category.category for $category in categories">
               </select>
             </div>
@@ -453,7 +455,7 @@
 
 
 
-              <div class="col-md-5">
+              <div class="col-md-4">
                 <div class="card">
 
                         <div class="admin_comment col-md-12" style="height: 182px;overflow-y: scroll;">

@@ -650,8 +650,7 @@ class shopController extends controller
         $product = Products::where('id',$id)->first();
 
         if ($product == null) {
-
-            Session::putFlash("danger","Item not found");
+            // Session::putFlash("danger","Item not found");
             Redirect::back();
         }
 
