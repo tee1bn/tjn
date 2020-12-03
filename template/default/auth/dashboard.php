@@ -47,7 +47,7 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 <style>
   .card{
-    border-radius: 10px;
+    /*border-radius: 10px;*/
   }
   .small-padding{
 
@@ -302,9 +302,6 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
 
 
 
-
-        <div class="col-md-12">
-
           <div class="col-md-12">
             <h4>FINANCIAL STATS</h4>
             <div class="card">
@@ -316,9 +313,9 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
                   <div class="media-body p-2">
                     <h4>Completed Withdrawals</h4>
                   </div>
-                  <div class="media-right p-2 media-middle">
+                 <!--  <div class="media-right p-2 media-middle">
                     <i class="ft-trending-down font-large-2"></i>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -345,8 +342,6 @@ $direct_qualifiers =  $user->total_member_qualifiers_by_path('all', 'enrolment',
           </div>
 
 
-
-        </div>
 
         <div class="col-md-6"  style="display: none;">
           <h4>CAREER INFORMATION
