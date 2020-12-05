@@ -1,5 +1,5 @@
 <?php 
-$page_title = '';
+$page_title = 'Order Cart';
 $page_description = "";
 
 include 'includes/header.php';?>
@@ -29,8 +29,8 @@ include 'includes/header.php';?>
 
             </div>
             <div class="content-header-right text-right col-9">
-              <small><b>Need help?</b> Whatsapp 08123351819 <br>
-            Email: support@salesra.com </small>
+              <small><b>Need help?</b> Whatsapp <?=$site_setting['contact_phone'];?> <br>
+            Email: <?=$site_setting['contact_email'];?> </small>
 
             </div>
           </div>

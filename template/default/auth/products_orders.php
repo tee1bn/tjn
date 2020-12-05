@@ -85,7 +85,7 @@ include 'includes/header.php';?>
 
                               <?php if(! $order->is_paid()) :?>
                               
-
+<!-- 
                                 <li>
                                  <a href="javascript:void;" class="dropdown-item"  onclick="document.getElementById('payment_proof_input<?= $order->id;?>').click()" >
                                     Upload Proof
@@ -94,10 +94,16 @@ include 'includes/header.php';?>
                                 <li>
                                  <a href="<?=domain;?>/user/pay_now/<?=$order->id;?>" class="dropdown-item" >
                                     Pay Now
-                                </a></li>
-                              
+                                </a></li> -->
                               <?php else:?>
                            
+                              
+                                <li>
+                                 <a href="<?=$order->after_payment_url();?>" class="dropdown-item" >
+                                  View Content
+                                </a></li>
+                              
+
                               <?php endif;?>                                             
 
 
@@ -108,11 +114,11 @@ include 'includes/header.php';?>
                                   </li>
                                 <?php endif ;?>
                              
-                                <li>          
+                                <!-- <li>          
                                 <a href="<?=domain;?>/user/bank-transfer/<?=$order->id;?>/advert_papers" class="dropdown-item" >
                                   Invoice
                                 </a>
-                              </li>
+                              </li> -->
                               <!-- <li><a href="#">JavaScript</a></li> -->
 
                             </ul>
