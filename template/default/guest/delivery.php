@@ -52,11 +52,7 @@ include 'includes/header.php';?>
                         <div class="card-body">
                           <div class="card-text">
                             <?php foreach ($order->order_detail() as $key => $item) :
-                              $product = v2\Models\Market::where('item_id', $item['market_details']['id'])
-                              ->latest()
-                              ->OnSale()
-                              ->first()
-                              ->good();
+                              $product = Products::where('id', $item['market_details']['id'])->first();
 
                               $download_link = MIS::dec_enc('encrypt', "$order->id/$product->id/single");
 
