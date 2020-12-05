@@ -611,12 +611,7 @@ class shopController extends controller
 
         $products = [];
         foreach ($order->order_detail() as $key => $item) {
-
-          $product = v2\Models\Market::where('item_id', $item['market_details']['id'])
-          ->latest()
-          ->OnSale()
-          ->first()
-          ->good();
+            $product = Products::where('id', $item['market_details']['id'])->first();
 
             $product['files'] = collect($product->FilesArray['file'])->pluck('file_path')->toArray();
 
