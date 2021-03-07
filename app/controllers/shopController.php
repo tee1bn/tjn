@@ -205,9 +205,9 @@ class shopController extends controller
                                                 'email' => $extra_detail['email'],
                                             ],
                                             [
-                                            'firstname' => $extra_detail['firstname'],
-                                            'lastname' => $extra_detail['lastname'],
-                                            'phone' => $extra_detail['phone']
+                                            'firstname' => $extra_detail['firstname'] ?? null,
+                                            'lastname' => $extra_detail['lastname'] ?? null,
+                                            'phone' => $extra_detail['phone'] ?? null
                                         ]);
 
                     }
@@ -892,10 +892,3 @@ class shopController extends controller
         echo json_encode($shop);    
     }
 }
-
-
-
-
-
-
-?>

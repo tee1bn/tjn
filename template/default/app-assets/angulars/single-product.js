@@ -3,10 +3,10 @@ import { FilePreviewer } from "./carousel.js";
 app.controller('CarouselController', function($scope, $http, $sce) {
 
     $http.get(`${$base_url}/shop/get_single_item_on_market/product/${$this_item}/${$preview}`)
-    .then(function(response) {
-      $scope.$item = response.data.single_good;
-        $scope.$carousel = new FilePreviewer($scope.$item.market_details.cover.file, 0, $sce);
-    });
+        .then(function(response) {
+            $scope.$item = response.data.single_good;
+            $scope.$carousel = new FilePreviewer($scope.$item.market_details.cover.file, 0, $sce);
+        });
 
 });
 
