@@ -282,6 +282,17 @@ include 'includes/header.php';?>
       </div>
 
       <div class="form-group">
+        <label>Your Instagram handle</label>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">https://instagram.com/</span>
+          </div>
+          <input type="text" value="<?=$auth->ExtraDetailsArray['instagram'] ?? '';?>"
+           class="form-control" name="extra_details[instagram]"  aria-describedby="basic-addon3">
+        </div>
+      </div>
+
+      <div class="form-group">
         <label>Your Twitter handle</label>
         <div class="input-group">
           <div class="input-group-prepend">

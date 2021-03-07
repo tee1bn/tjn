@@ -136,7 +136,7 @@ $allowed_file_for_cover = ['image/*','video/*'];
           var ifr = $('#preview-iframe')[0];
           ifr.src = "<?=$product->PreviewLink;?>";
 
-          console.log(ifr);
+          // console.log(ifr);
       }
 
     </script>

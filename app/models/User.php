@@ -120,6 +120,7 @@ class User extends Eloquent
     ]; 
 
       public static $socials = [
+        'instagram' => 1, 
         'twitter' => 2,   //mapping to id
         'facebook' => 1, 
         'youtube' => 1, 

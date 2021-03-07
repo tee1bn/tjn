@@ -506,9 +506,12 @@ class shopController extends controller
             Redirect::back();
         }
 
+        $item->mark_as_approved();
+        Session::putFlash('success' ,'Your product has been published successfully.');
+/*
         $item->submit_for_review();
         Session::putFlash('info' ,'Admin will decline or approve before you can re-submit.');
-
+*/
 
         Redirect::back();
 

@@ -134,9 +134,9 @@ body{
             
         </script>
         <!-- <hr> -->
-        <small><i> Covered by <?=project_name;?> 
+       <!--  <small><i> Covered by <?=project_name;?> 
         <?=$all_setting['rules_settings']->settingsArray['settlement']['guarantee_in_days'];?>-days guarantee</i></small>
-        <br>
+        <br> -->
         
         <span id="to_find_scope"></span>                        
     </div>

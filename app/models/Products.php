@@ -750,6 +750,11 @@ class Products extends Eloquent
 		}
 
 
+		public function mark_as_approved(){
+	
+			$this->update(['status'=> 3]);
+		}
+
 		public function submit_for_review()
 		{
 			$this->update(['status'=> 2]);

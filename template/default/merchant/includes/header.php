@@ -154,7 +154,7 @@ include 'template/default/guest/includes/header.php';?>
                             <a target="_blank" href="https://<?=$key;?>.com/<?=$user->ExtraDetailsArray[$key];?>" class="btn btn-outline-light "><i class="fa fa-<?=$key;?>" ></i></a>
                         
                         <?php endforeach ;?>
-                      <button type="button" class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">Contact</button>
+                      <!-- <button type="button" class="btn btn-outline-light" data-toggle="modal" data-target="#myModal">Contact</button> -->
                     </div>
 
                 <div class="card-content">
