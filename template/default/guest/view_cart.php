@@ -146,19 +146,18 @@ include 'includes/header.php';?>
                           <div class="form-group">                               
                             <!-- <label><small>First Name</small></label> -->
                             <input type=""
-                            placeholder="First Name"
+                            placeholder="Name"
                              name="firstname" class="form-control border-bottom" ng-init="$shop.$cart.$extra_detail.firstname='<?=$auth->firstname ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.firstname" value=""  required=""> 
                           </div> 
 
-                          <div class="form-group">                               
-                            <!-- <label><small>Last Name</small></label> -->
+<!--                           <div class="form-group">                               
                             <input type=""
                             placeholder="Last Name"
                              name="lastname" class="form-control border-bottom" ng-init="$shop.$cart.$extra_detail.lastname='<?=$auth->lastname ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.lastname" value=""  required=""> 
                           </div> 
-
+ -->
                           <div class="form-group">                               
                             <!-- <label><small>Your Email</small></label> -->
                             <input type="email" name="email"
@@ -167,13 +166,12 @@ include 'includes/header.php';?>
                             ng-model="$shop.$cart.$extra_detail.email" value=""  required=""> 
                           </div> 
 
-                          <div class="form-group">                               
-                            <!-- <label><small>Your Phone</small></label> -->
+                         <!--  <div class="form-group">                               
                             <input type="" name="phone" 
                             placeholder="Your Phone"
                             class="form-control border-bottom" ng-init="$shop.$cart.$extra_detail.phone='<?=$auth->phone ??'';?>'"
                             ng-model="$shop.$cart.$extra_detail.phone" value=""  required=""> 
-                          </div> 
+                          </div>  -->
 
 
                           <?php endif ;?>
