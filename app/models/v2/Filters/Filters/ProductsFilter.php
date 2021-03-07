@@ -18,6 +18,17 @@ class ProductsFilter extends QueryFilter
 	
 	
 
+	public function seller_id($seller_id)
+	{
+		
+		if ($seller_id == null) {
+				return ;
+			}
+
+		$this->builder->where('user_id', ($seller_id));
+	}
+	
+
 	public function category($category)
 	{
 		

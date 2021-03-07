@@ -26,7 +26,7 @@ $icon = "$asset/images/logo/icons";
         <a href="#"><i class="fa fa-list"></i><span class="menu-title" data-i18n="">Vendor</span></a>
         <ul class="menu-content">
 
-          <li><a class="menu-item" href="<?=domain;?>/user/products">Products</a></li>
+          <li><a class="menu-item" href="<?=domain;?>/user/products">My Products</a></li>
           <li><a class="menu-item" href="<?=domain;?>/user/sales">Sales</a></li>
           </li>
         </ul>

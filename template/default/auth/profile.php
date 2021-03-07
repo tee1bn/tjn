@@ -34,7 +34,7 @@ include 'includes/header.php';?>
               <h4 class="card-title">Profile <!-- <?=$auth->VerifiedBagde;?> --> <?=$auth->PageLink;?></h4>
               <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
               <div class="heading-elements">
-               <a href="<?=$auth->PageHref;?>">Go to Store</a>
+               <a target="_blank" href="<?=$auth->PageHref;?>">Go to Store</a>
               </div>
             </div>
 
@@ -68,7 +68,7 @@ include 'includes/header.php';?>
                         <?=$auth->subscription->payment_plan->name;?>
                       </span>
  -->                      
-                                         <label for="uploadImage" class="btn btn-secondary " style=""> Change Picture</label>
+                    <!-- <label for="uploadImage" class="btn btn-secondary " style=""> Change Picture</label> -->
 
  <br>
                       <!-- <span class="text-danger">*click update profile to apply change</span> -->

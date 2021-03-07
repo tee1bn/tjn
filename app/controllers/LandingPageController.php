@@ -20,7 +20,8 @@ class LandingPageController extends controller
         $user = User::where('username', $username)->first();
 
         if ($user==null) {
-            //return;
+            Session::putFlash("info","This merchant does not exist");
+            Redirect::to('shop');
         }
 
         $merchant = $user;

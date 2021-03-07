@@ -375,7 +375,7 @@ ELL;
 	{
 		$payment_details = json_decode($this->payment_details,true);
 		$gateway = str_replace("coinpay", "coinwaypay", $payment_details['gateway']);
-		$method = "{$payment_details['ref']} <span class='badge badge-sm badge-primary'>{$gateway}</span>";
+		$method = "{$payment_details['ref']}";
 					
 		return $method;
 	}
